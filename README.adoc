@@ -1,0 +1,7 @@
+= README for FTY
+
+FTY is a "dispatcher" repository which links (as "git submodules") to the
+repositories used to build the 42ITy(TM) project. This includes some third
+party projects (git HEADs), forks of third-party projects customized for
+42ITy(TM) needs, and of course lots of original development.
+

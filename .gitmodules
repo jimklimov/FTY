@@ -1,0 +1,73 @@
+[submodule "cxxtools"]
+	path = cxxtools
+	url = https://github.com/42ity/cxxtools
+	branch = 42ity
+[submodule "fty-proto"]
+	path = fty-proto
+	url = https://github.com/42ity/fty-proto
+[submodule "zproject"]
+	path = zproject
+	url = https://github.com/zeromq/zproject
+[submodule "gsl"]
+	path = gsl
+	url = https://github.com/imatix/gsl
+[submodule "libmagic"]
+	path = libmagic
+	url = https://github.com/42ity/libmagic
+[submodule "libcidr"]
+	path = libcidr
+	url = https://github.com/42ity/libcidr
+[submodule "tntdb"]
+	path = tntdb
+	url = https://github.com/42ity/tntdb
+[submodule "fty-outage"]
+	path = fty-outage
+	url = https://github.com/42ity/fty-outage
+[submodule "fty-email"]
+	path = fty-email
+	url = https://github.com/42ity/fty-email
+[submodule "fty-metric-cache"]
+	path = fty-metric-cache
+	url = https://github.com/42ity/fty-metric-cache
+[submodule "fty-sensor-env"]
+	path = fty-sensor-env
+	url = https://github.com/42ity/fty-sensor-env
+[submodule "fty-metric-store"]
+	path = fty-metric-store
+	url = https://github.com/42ity/fty-metric-store
+[submodule "fty-metric-tpower"]
+	path = fty-metric-tpower
+	url = https://github.com/42ity/fty-metric-tpower
+[submodule "fty-core"]
+	path = fty-core
+	url = https://github.com/42ity/fty-core
+[submodule "fty-asset"]
+	path = fty-asset
+	url = https://github.com/42ity/fty-asset
+[submodule "fty-alert-list"]
+	path = fty-alert-list
+	url = https://github.com/42ity/fty-alert-list
+[submodule "fty-metric-compute"]
+	path = fty-metric-compute
+	url = https://github.com/42ity/fty-metric-compute
+[submodule "fty-nut"]
+	path = fty-nut
+	url = https://github.com/42ity/fty-nut
+[submodule "malamute"]
+	path = malamute
+	url = https://github.com/zeromq/malamute
+[submodule "fty-alert-engine"]
+	path = fty-alert-engine
+	url = https://github.com/42ity/fty-alert-engine
+[submodule "fty-metric-composite"]
+	path = fty-metric-composite
+	url = https://github.com/42ity/fty-metric-composite
+[submodule "fty-rest"]
+	path = fty-rest
+	url = https://github.com/42ity/fty-rest
+[submodule "libzmq"]
+	path = libzmq
+	url = https://github.com/zeromq/libzmq
+[submodule "czmq"]
+	path = czmq
+	url = https://github.com/42ity/czmq
