@@ -6,14 +6,14 @@ party projects (git HEADs), forks of third-party projects customized for
 42ITy(TM) needs, and of course lots of original development.
 
 For a rebuild from scratch (to be automated) you'd need:
-* gsl
-* zproject (optional - to refresh project definitions)
-* libzmq
-* libczmq
-* malamute
-* cxxtools
-* tntdb
-* fty-proto
-* other fty-* components as needed and possibly with dependencies on
+
+* `gsl` and `zproject` (optional -- to refresh project definitions)
+* `libzmq`
+* `libczmq`
+* `malamute`
+* `cxxtools`
+* `tntdb`
+* `fty-proto`
+* other `fty-*` components as needed and possibly with dependencies on
   each other as defined in their `profile.xml` manifests for `zproject`
-* fty-core and fty-rest possibly come last
+* `fty-core` and `fty-rest` possibly come last
