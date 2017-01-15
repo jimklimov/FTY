@@ -23,6 +23,17 @@ get meta-data. To instantiate (or subsequently update) the actual source
 code for the components, run `./sync.sh` in this workspace.
 
 Also note that if you clone `FTY`, the checked-out repositories will likely
-refer to the component repository URLs as `origin`, while they are rather
-`upstream` for our context (and an `origin` would be your development fork
-of each such component repo you collaborate on).
+initially refer to the component repository URLs as an `origin`, while they
+are rather `upstream` for our context (and a real `origin` would be your
+development fork of each such component repo you collaborate on). In this
+case, change to the subdirectory of the component in question and run:
+
+````
+:; GIT_USER=mygitname
+:; REPO_NAME=fty-proto
+:; ( cd $REPO_NAME && \
+    git remote -v | egrep -i '^origin.*github.com/(42ity|imatix|zeromq)/' && \
+    git remote rename origin upstream && \
+    git remote add origin https://github.com/$GIT_USER/$REPO_NAME && \
+    git pull --all )
+````
