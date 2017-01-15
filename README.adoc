@@ -28,7 +28,7 @@ are rather `upstream` for our context (and a real `origin` would be your
 development fork of each such component repo you collaborate on). In this
 case, change to the subdirectory of the component in question and run:
 
-````
+----
 :; GIT_USER=mygitname
 :; REPO_NAME=fty-proto
 :; ( cd $REPO_NAME && \
@@ -36,4 +36,4 @@ case, change to the subdirectory of the component in question and run:
     git remote rename origin upstream && \
     git remote add origin https://github.com/$GIT_USER/$REPO_NAME && \
     git pull --all )
-````
+----
