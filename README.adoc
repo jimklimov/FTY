@@ -21,3 +21,8 @@ For a rebuild from scratch (to be automated) you'd need:
 Note that when you initially check out a clone of this repository, you only
 get meta-data. To instantiate (or subsequently update) the actual source
 code for the components, run `./sync.sh` in this workspace.
+
+Also note that if you clone `FTY`, the checked-out repositories will likely
+refer to the component repository URLs as `origin`, while they are rather
+`upstream` for our context (and an `origin` would be your development fork
+of each such component repo you collaborate on).
