@@ -17,3 +17,7 @@ For a rebuild from scratch (to be automated) you'd need:
 * other `fty-*` components as needed and possibly with dependencies on
   each other as defined in their `profile.xml` manifests for `zproject`
 * `fty-core` and `fty-rest` possibly come last
+
+Note that when you initially check out a clone of this repository, you only
+get meta-data. To instantiate (or subsequently update) the actual source
+code for the components, run `./sync.sh` in this workspace.
