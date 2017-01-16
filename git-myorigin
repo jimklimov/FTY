@@ -1,0 +1,57 @@
+#!/bin/sh
+
+# This looks for freshly cloned repos whose only remote reference named
+# "origin" points in fact to the central upstream repo. In this case the
+# script tries to reference the developer's fork and name it "origin",
+# after moving the initial reference to be named "upstream".
+#
+# Run this script from the FTY workspace root, passing names of the
+# checked-out submodules as arguments.
+#
+# Copyright (C) 2017 by Jim Klimov <EvgenyKlimov@eaton.com>
+#
+
+[ -f "${HOME}/.git-myorigin" ] && . "${HOME}/.git-myorigin"
+# Poor guess, but as good as any - if the value is not set
+[ -z "${GITHUB_USER-}" ] && GITHUB_USER="$USER"
+
+change_upstream() (
+    DIR_NAME="$1"
+    [ -z "$DIR_NAME" ] && echo "ERROR: Could not get DIR_NAME" >&2 && return 1
+    REPO_NAME="`echo "$1" | sed -e 's,/*$,,' -e 's,^.*/\([^/]*\)$,\1,'`" || REPO_NAME=""
+    [ -z "$REPO_NAME" ] && echo "ERROR: Could not get REPO_NAME from DIR_NAME='$DIR_NAME'" >&2 && return 1
+    REPO_URL="https://github.com/${GITHUB_USER}/${REPO_NAME}/"
+
+    echo "=== Processing repository '$REPO_NAME' in directory '$DIR_NAME' ..."
+    cd "$DIR_NAME" || return
+
+    echo "===== BEFORE: mis-named upstream posing as origin"
+    git remote -v | egrep -i '^origin.*github.com/(42ity|imatix|zeromq)/' && \
+        git remote rename origin upstream
+
+    echo "===== BEFORE: presence of any origin"
+    if ! git remote -v | egrep -i '^origin' ; then
+        echo "===== Trying to add personal origin (if exists) from $REPO_URL"
+        if curl "$REPO_URL" 2>/dev/null| egrep -v '{"error" *: *"Not Found"}' >/dev/null ; then
+            echo "GitHub says personal repository was found, adding reference to local checkout" >&2
+            git remote add origin "$REPO_URL"
+        else
+            echo "GitHub says personal repository was not found" >&2
+        fi
+    fi
+
+    echo "===== SYNC:"
+    git pull --all && \
+    git pull --tags
+
+    echo "===== AFTER:"
+    git remote -v && \
+    git branch -a
+)
+
+while [ -n "$1" ]; do
+    change_upstream "$1"
+    echo ""
+
+    shift
+done
