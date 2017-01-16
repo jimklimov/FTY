@@ -18,3 +18,15 @@ git submodule update --recursive --remote --merge && \
 git submodule sync --recursive && \
 git status -s
 
+git status -s | while read STATUS OBJNAME ; do
+    DO_BUMP=no
+    if [ -n "$OBJNAME" ]; then
+        case "$STATUS" in
+            M) DO_BUMP=yes ; break ;;
+        esac
+    fi
+    if [ "$DO_BUMP" = yes ]; then
+        echo "Adding changed objects to git commit..."
+        git commit -a -m 'Updated references to git submodule HEADs'
+    fi
+done
