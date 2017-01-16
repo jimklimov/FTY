@@ -30,11 +30,12 @@ case, change to the subdirectory of the component in question and run the
 `git remote` commands to rename references, for example:
 
 ----
-:; GIT_USER=mygitname
+:; GITHUB_USER=mygitname
 :; REPO_NAME=fty-proto
 :; ( cd "$REPO_NAME" && \
     git remote -v | egrep -i '^origin.*github.com/(42ity|imatix|zeromq)/' && \
+    git remote add origin-personal "https://github.com/${GITHUB_USER}/${REPO_NAME}" && \
     git remote rename origin upstream && \
-    git remote add origin "https://github.com/$GIT_USER/$REPO_NAME" && \
+    git remote rename origin-personal origin && \
     git pull --all )
 ----
