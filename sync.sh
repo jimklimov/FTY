@@ -25,8 +25,9 @@ git status -s | while read STATUS OBJNAME ; do
             M) DO_BUMP=yes ; break ;;
         esac
     fi
-    if [ "$DO_BUMP" = yes ]; then
-        echo "Adding changed objects to git commit..."
-        git commit -a -m 'Updated references to git submodule HEADs'
-    fi
 done
+
+if [ "$DO_BUMP" = yes ]; then
+    echo "Adding changed objects to git commit..."
+    git commit -a -m 'Updated references to git submodule HEADs'
+fi
