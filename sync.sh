@@ -2,6 +2,7 @@
 
 # Initially fetch or subsequently update the components
 # referred to as "git submodule"'s
+# Copyright (C) 2017 by Jim Klimov <EvgenyKlimov@eaton.com>
 
 # See also
 # https://git-scm.com/book/en/v2/Git-Tools-Submodules
