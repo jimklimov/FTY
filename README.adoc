@@ -20,7 +20,16 @@ For a rebuild from scratch (to be automated) you'd need:
 
 Note that when you initially check out a clone of this repository, you only
 get meta-data. To instantiate (or subsequently update) the actual source
-code for the components, run `./sync.sh` in this workspace.
+code for the components as well as to update the reference to Git HEADs of
+the referenced components, run `./sync.sh` in this workspace.
+
+NOTE: In order for updates from the common codebase to come without conflicts,
+never work in a `master` branch (or other preferred branch in certain repos)!
+Use dedicated private branches for development of new features!
+
+TODO: Add a regular job, or one triggered by commits to project repos, to
+run such updates and push new references to common FTY dispatcher repo's
+`upstream/master`.
 
 Also note that if you clone `FTY`, the checked-out repositories will likely
 initially refer to the component repository URLs as an `origin`, while they
