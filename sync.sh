@@ -29,5 +29,5 @@ done
 
 if [ "$DO_BUMP" = yes ]; then
     echo "Adding changed objects to git commit..."
-    git commit -a -m 'Updated references to git submodule HEADs'
+    git commit -a -m 'Updated references to git submodule HEADs at '"`date -u`"
 fi
