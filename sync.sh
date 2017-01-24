@@ -13,9 +13,12 @@
 git pull --all
 
 # Update component repos
+# NOTE: sync is toxic to established workspaces, as it "resyncs the URL" and
+# so overwrites locally defined "origin" URL (e.g. pointing to a developers'
+# fork) back to the upstream project URL. For daily usage, "update" suffices.
 # git submodule init --recursive && \
+# git submodule sync --recursive && \
 git submodule update --recursive --remote --merge && \
-git submodule sync --recursive && \
 git status -s
 
 git status -s | while read STATUS OBJNAME ; do
