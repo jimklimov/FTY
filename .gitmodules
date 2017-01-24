@@ -71,3 +71,6 @@
 [submodule "czmq"]
 	path = czmq
 	url = https://github.com/42ity/czmq
+[submodule "fty-kpi-power-uptime"]
+	path = fty-kpi-power-uptime
+	url = https://github.com/42ity/fty-kpi-power-uptime
