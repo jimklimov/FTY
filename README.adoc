@@ -42,3 +42,7 @@ case, change to the subdirectory of the component in question and run the
 :; echo 'GITHUB_USER="mygithubname"' > ~/.git-myorigin
 :; ./git-myorigin */
 ----
+
+For some more inspiration on workflow with submodules, refer to e.g.:
+
+* https://brooklyn.apache.org/developers/code/git-more.html
