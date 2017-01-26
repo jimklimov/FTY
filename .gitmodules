@@ -20,6 +20,7 @@
 [submodule "tntdb"]
 	path = tntdb
 	url = https://github.com/42ity/tntdb
+	branch = 1.3
 [submodule "fty-outage"]
 	path = fty-outage
 	url = https://github.com/42ity/fty-outage
@@ -71,9 +72,12 @@
 [submodule "czmq"]
 	path = czmq
 	url = https://github.com/42ity/czmq
+#	branch = v3.0.2
 [submodule "fty-kpi-power-uptime"]
 	path = fty-kpi-power-uptime
 	url = https://github.com/42ity/fty-kpi-power-uptime
 [submodule "tntnet"]
 	path = tntnet
-	url = https://github.com/maekitalo/tntnet
+	url = https://github.com/42ity/tntnet
+	branch = 2.2
+
