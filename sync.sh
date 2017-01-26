@@ -18,6 +18,7 @@ git pull --all
 # fork) back to the upstream project URL. For daily usage, "update" suffices.
 # git submodule init --recursive && \
 # git submodule sync --recursive && \
+git submodule init && \
 git submodule update --recursive --remote --merge && \
 git status -s
 
