@@ -80,4 +80,7 @@
 	path = tntnet
 	url = https://github.com/42ity/tntnet
 	branch = 2.2
-
+[submodule "nut"]
+	path = nut
+	url = https://github.com/42ity/nut
+	branch = FTY
