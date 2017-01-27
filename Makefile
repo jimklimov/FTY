@@ -2,6 +2,15 @@
 # This file aims to automate building the FTY dependencies and components
 # in correct order. System packaged dependencies are assumed to be present.
 #
+# It supports several actions on components (assumed to exist in same-named
+# subdirectories if the workspace root where this Makefile exists), such as
+# build/componentname or check/componentname. See the end of this file for
+# a list of catch-all rule names.
+#
+# In addition to that, the Makefile also aids in source code management by
+# providing simple rules to sync the current subcomponent workspace to its
+# relevant upstream default branch, and to regenerate zproject-based source.
+#
 # Copyright (C) 2017 by Eaton
 # Authors: Jim Klimov <EvgenyKlimov@eaton.com>
 #
