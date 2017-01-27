@@ -453,8 +453,20 @@ reinstall/%:
 	$(MAKE) clean/$(@F)
 	$(MAKE) $(BUILD_OBJ_DIR)/$(@F)/.installed
 
+### Use currently developed zproject to regenerate a project
 regenerate/%: install/zproject
 	( cd "$(@F)" && gsl project.xml && ./autogen.sh && git difftool -y )
+
+### Resync current checkout to upstream/master
+git-resync/%:
+	( BASEBRANCH="`git config -f $(abs_srcdir).gitmodules submodule.$(@F).branch`" || BASEBRANCH="" ; \
+	  test -n "$$BASEBRANCH" || BASEBRANCH=master ; \
+	  BASEREPO="upstream" ; \
+	  cd "$(@F)" && \
+	    git pull --all && \
+	    git merge "$$BASEREPO/$$BASEBRANCH" && \
+	    git rebase -i "$$BASEREPO/$$BASEBRANCH" \
+	)
 
 # Note this one would trigger a (re)build run
 uninstall/%: $(BUILD_OBJ_DIR)/%/.configured
@@ -482,12 +494,3 @@ reinstall-fty:
 
 %-fty: $(addprefix %/,$(COMPONENTS_FTY))
 	@echo "COMPLETED $@ : made '$^'"
-
-### Use currently developed zproject to regenerate a project
-# ( cd /home/jim/shared/eaton-deps/zeromq/zproject && make || exit
-# sudo make install || exit ) || exit
-# gsl project.xml
-# ./autogen.sh
-
-### Resync current checkout to upstream/master
-# git pull --all && git merge upstream/master && git rebase -i upstream/master
