@@ -473,14 +473,14 @@ reinstall/%:
 
 ### Use currently developed zproject to regenerate a project
 regenerate/%: install/zproject
-	( cd "$(@F)" && gsl project.xml && ./autogen.sh && git difftool -y )
+	( cd "$(abs_srcdir)/$(@F)" && gsl project.xml && ./autogen.sh && git difftool -y )
 
 ### Resync current checkout to upstream/master
 git-resync/%:
 	( BASEBRANCH="`git config -f $(abs_srcdir).gitmodules submodule.$(@F).branch`" || BASEBRANCH="" ; \
 	  test -n "$$BASEBRANCH" || BASEBRANCH=master ; \
 	  BASEREPO="upstream" ; \
-	  cd "$(@F)" && \
+	  cd "$(abs_srcdir)/$(@F)" && \
 	    git pull --all && \
 	    git merge "$$BASEREPO/$$BASEBRANCH" && \
 	    git rebase -i "$$BASEREPO/$$BASEBRANCH" \
