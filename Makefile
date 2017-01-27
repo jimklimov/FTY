@@ -14,6 +14,10 @@ all: build-fty
 install: install-fty
 uninstall: install-all
 clean: clean-all
+check: check-all
+distcheck: distcheck-all
+valgrind: memcheck
+memcheck: memcheck-all
 
 BUILD_OS ?= $(shell uname -s)
 BUILD_ARCH ?= $(shell uname -m)
@@ -130,6 +134,42 @@ define install_sub
 	)
 endef
 
+# This assumes that the Makefile is present in submodule's build-dir
+define check_sub
+	( $(MKDIR) "$(BUILD_OBJ_DIR)/$(1)/$(BUILD_SUB_DIR_$(1))" $(DESTDIR) $(INSTDIR) && \
+	  cd "$(BUILD_OBJ_DIR)/$(1)/$(BUILD_SUB_DIR_$(1))" && \
+	    CCACHE_BASEDIR="$(ORIGIN_SRC_DIR)/$(1)" \
+	    $(MAKE) DESTDIR="$(DESTDIR)" $(MAKE_COMMON_ARGS_$(1)) $(MAKE_INSTALL_ARGS_$(1)) check && \
+	  $(TOUCH) "$(BUILD_OBJ_DIR)/$(1)/".checked || \
+	  { $(TOUCH) "$(BUILD_OBJ_DIR)/$(1)/".check-failed ; exit 1; } \
+	)
+endef
+
+# This assumes that the Makefile is present in submodule's build-dir
+# Unfortunately, one may have to be careful about passing CONFIG_OPTS
+# values with spaces
+define distcheck_sub
+	( $(MKDIR) "$(BUILD_OBJ_DIR)/$(1)/$(BUILD_SUB_DIR_$(1))" $(DESTDIR) $(INSTDIR) && \
+	  cd "$(BUILD_OBJ_DIR)/$(1)/$(BUILD_SUB_DIR_$(1))" && \
+	    CCACHE_BASEDIR="$(ORIGIN_SRC_DIR)/$(1)" \
+	    DISTCHECK_CONFIG_OPTS="$(CONFIG_OPTS) $(CONFIG_OPTS_$(1))" \
+	    $(MAKE) DESTDIR="$(DESTDIR)" $(MAKE_COMMON_ARGS_$(1)) $(MAKE_INSTALL_ARGS_$(1)) distcheck && \
+	  $(TOUCH) "$(BUILD_OBJ_DIR)/$(1)/".distchecked || \
+	  { $(TOUCH) "$(BUILD_OBJ_DIR)/$(1)/".distcheck-failed ; exit 1; } \
+	)
+endef
+
+# This assumes that the Makefile is present in submodule's build-dir
+define memcheck_sub
+	( $(MKDIR) "$(BUILD_OBJ_DIR)/$(1)/$(BUILD_SUB_DIR_$(1))" $(DESTDIR) $(INSTDIR) && \
+	  cd "$(BUILD_OBJ_DIR)/$(1)/$(BUILD_SUB_DIR_$(1))" && \
+	    CCACHE_BASEDIR="$(ORIGIN_SRC_DIR)/$(1)" \
+	    $(MAKE) DESTDIR="$(DESTDIR)" $(MAKE_COMMON_ARGS_$(1)) $(MAKE_INSTALL_ARGS_$(1)) memcheck && \
+	  $(TOUCH) "$(BUILD_OBJ_DIR)/$(1)/".memchecked || \
+	  { $(TOUCH) "$(BUILD_OBJ_DIR)/$(1)/".memcheck-failed ; exit 1; } \
+	)
+endef
+
 define uninstall_sub
 	( $(MKDIR) "$(BUILD_OBJ_DIR)/$(1)/$(BUILD_SUB_DIR_$(1))" $(DESTDIR) $(INSTDIR) && \
 	  cd "$(BUILD_OBJ_DIR)/$(1)/$(BUILD_SUB_DIR_$(1))" && \
@@ -197,6 +237,9 @@ $(BUILD_OBJ_DIR)/gsl/.configured: $(BUILD_OBJ_DIR)/gsl/.autogened
 
 $(BUILD_OBJ_DIR)/gsl/.built: BUILD_SRC_DIR=$(BUILD_OBJ_DIR)
 $(BUILD_OBJ_DIR)/gsl/.installed: BUILD_SRC_DIR=$(BUILD_OBJ_DIR)
+$(BUILD_OBJ_DIR)/gsl/.checked: BUILD_SRC_DIR=$(BUILD_OBJ_DIR)
+$(BUILD_OBJ_DIR)/gsl/.distchecked: BUILD_SRC_DIR=$(BUILD_OBJ_DIR)
+$(BUILD_OBJ_DIR)/gsl/.memchecked: BUILD_SRC_DIR=$(BUILD_OBJ_DIR)
 
 ### Rinse and repeat for libcidr, but there's less to customize
 COMPONENTS_FTY += libcidr
@@ -206,6 +249,9 @@ $(BUILD_OBJ_DIR)/libcidr/.autogened: $(BUILD_OBJ_DIR)/libcidr/.prepped
 
 $(BUILD_OBJ_DIR)/libcidr/.built: BUILD_SRC_DIR=$(BUILD_OBJ_DIR)
 $(BUILD_OBJ_DIR)/libcidr/.installed: BUILD_SRC_DIR=$(BUILD_OBJ_DIR)
+$(BUILD_OBJ_DIR)/libcidr/.checked: BUILD_SRC_DIR=$(BUILD_OBJ_DIR)
+$(BUILD_OBJ_DIR)/libcidr/.distchecked: BUILD_SRC_DIR=$(BUILD_OBJ_DIR)
+$(BUILD_OBJ_DIR)/libcidr/.memchecked: BUILD_SRC_DIR=$(BUILD_OBJ_DIR)
 
 ######################## Other components ##################################
 # Note: for rebuilds with a ccache in place, the biggest time-consumers are
@@ -339,6 +385,15 @@ $(BUILD_OBJ_DIR)/%/.built: $(BUILD_OBJ_DIR)/%/.configured
 $(BUILD_OBJ_DIR)/%/.installed: $(BUILD_OBJ_DIR)/%/.built
 	$(call install_sub,$(notdir $(@D)))
 
+$(BUILD_OBJ_DIR)/%/.checked: $(BUILD_OBJ_DIR)/%/.built
+	$(call check_sub,$(notdir $(@D)))
+
+$(BUILD_OBJ_DIR)/%/.distchecked: $(BUILD_OBJ_DIR)/%/.built
+	$(call distcheck_sub,$(notdir $(@D)))
+
+$(BUILD_OBJ_DIR)/%/.memchecked: $(BUILD_OBJ_DIR)/%/.built
+	$(call memcheck_sub,$(notdir $(@D)))
+
 # Phony targets to make or clean up a build of components
 # Also note rules must be not empty to actually run something
 clean-obj/%:
@@ -373,8 +428,18 @@ build/%: $(BUILD_OBJ_DIR)/%/.built
 install/%: $(BUILD_OBJ_DIR)/%/.installed
 	@true
 
+check/%: $(BUILD_OBJ_DIR)/%/.checked
+	@true
+
+distcheck/%: $(BUILD_OBJ_DIR)/%/.distchecked
+	@true
+
+valgrind/%: memcheck/%
+memcheck/%: $(BUILD_OBJ_DIR)/%/.memchecked
+	@true
+
 assume/%:
-	@echo "ASSUMING that $(@F) is aailable through means other than building from sources"
+	@echo "ASSUMING that $(@F) is available through means other than building from sources"
 	@$(MKDIR) $(BUILD_OBJ_DIR)/$(@F)
 	@$(TOUCH) $(BUILD_OBJ_DIR)/$(@F)/.installed
 
