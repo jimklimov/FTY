@@ -83,6 +83,11 @@ COMPONENTS_FTY =
 # */.prepped */.autogened */.configured */.built */.installed
 .SECONDARY:
 
+# TODO : add a mode to check that a workspace has changed (dev work, git
+# checked out another branch, etc.) to trigger rebuilds of a project.
+# Otherwise it trusts the .prepped and other state flag-files.
+# Maybe find all files newer than exiting .prepped ?
+
 # Note: per http://lists.busybox.net/pipermail/buildroot/2013-May/072556.html
 # the autogen, autoreconf and equivalents mangle the source tree
 define autogen_sub
