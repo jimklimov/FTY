@@ -396,6 +396,8 @@ $(BUILD_OBJ_DIR)/%/.memchecked: $(BUILD_OBJ_DIR)/%/.built
 
 # Phony targets to make or clean up a build of components
 # Also note rules must be not empty to actually run something
+# NOTE: The use of $(@F) in the rules assumes submodules are not nested
+#       otherwise text conversions are needed to chomp until first slash
 clean-obj/%:
 	$(RMDIR) $(BUILD_OBJ_DIR)/$(@F)
 
