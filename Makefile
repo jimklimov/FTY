@@ -1,6 +1,9 @@
 # NOTE: GNU Makefile syntax support may be expected by recipe code below.
 # This file aims to automate building the FTY dependencies and components
 # in correct order. System packaged dependencies are assumed to be present.
+# Also note that the default recipes below make an accent on building and
+# checking the project code quickly. Unrequired but time-consuming bits,
+# such as generation and verification of docs, are skipped.
 #
 # It supports several actions on components (assumed to exist in same-named
 # subdirectories if the workspace root where this Makefile exists), such as
