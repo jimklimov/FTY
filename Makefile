@@ -194,6 +194,11 @@ define clone_ln
 	)
 endef
 
+# Reports a no-op for certain recipes
+define echo_noop
+	( echo "  NOOP    Generally recipe for $@ has nothing to do" ; $(TOUCH) $@ )
+endef
+
 CFLAGS ?=
 CPPFLAGS ?=
 CXXFLAGS ?=
@@ -233,12 +238,10 @@ $(BUILD_OBJ_DIR)/gsl/.prepped $(BUILD_OBJ_DIR)/libcidr/.prepped:
 
 # These are no-ops for GSL:
 $(BUILD_OBJ_DIR)/gsl/.autogened: $(BUILD_OBJ_DIR)/gsl/.prepped
-	@echo "  NOOP    Generally $@ has nothing to do"
-	$(TOUCH) $@
+	@$(call echo_noop,$@)
 
 $(BUILD_OBJ_DIR)/gsl/.configured: $(BUILD_OBJ_DIR)/gsl/.autogened
-	@echo "  NOOP    Generally $@ has nothing to do"
-	$(TOUCH) $@
+	@$(call echo_noop,$@)
 
 $(BUILD_OBJ_DIR)/gsl/.built: BUILD_SRC_DIR=$(BUILD_OBJ_DIR)
 $(BUILD_OBJ_DIR)/gsl/.installed: BUILD_SRC_DIR=$(BUILD_OBJ_DIR)
@@ -249,8 +252,7 @@ $(BUILD_OBJ_DIR)/gsl/.memchecked: BUILD_SRC_DIR=$(BUILD_OBJ_DIR)
 ### Rinse and repeat for libcidr, but there's less to customize
 COMPONENTS_FTY += libcidr
 $(BUILD_OBJ_DIR)/libcidr/.autogened: $(BUILD_OBJ_DIR)/libcidr/.prepped
-	@echo "  NOOP    Generally $@ has nothing to do"
-	$(TOUCH) $@
+	@$(call echo_noop,$@)
 
 $(BUILD_OBJ_DIR)/libcidr/.built: BUILD_SRC_DIR=$(BUILD_OBJ_DIR)
 $(BUILD_OBJ_DIR)/libcidr/.installed: BUILD_SRC_DIR=$(BUILD_OBJ_DIR)
@@ -372,9 +374,8 @@ COMPONENTS_ALL += $(COMPONENTS_FTY)
 # TODO2: somehow depend on timestamps of ALL source files and/or git metadata
 $(BUILD_OBJ_DIR)/%/.prepped: .git/modules/%/.git/FETCH_HEAD
 $(BUILD_OBJ_DIR)/%/.prepped:
-	@echo "  NOOP    Generally $@ has nothing to do"
 	@$(MKDIR) $(@D)
-	@$(TOUCH) $@
+	@$(call echo_noop,$@)
 
 $(BUILD_OBJ_DIR)/%/.autogened: $(BUILD_OBJ_DIR)/%/.prepped
 	$(call autogen_sub,$(notdir $(@D)))
