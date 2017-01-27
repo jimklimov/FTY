@@ -243,11 +243,11 @@ $(BUILD_OBJ_DIR)/gsl/.autogened: $(BUILD_OBJ_DIR)/gsl/.prepped
 $(BUILD_OBJ_DIR)/gsl/.configured: $(BUILD_OBJ_DIR)/gsl/.autogened
 	@$(call echo_noop,$@)
 
+$(BUILD_OBJ_DIR)/gsl/.checked $(BUILD_OBJ_DIR)/gsl/.distchecked $(BUILD_OBJ_DIR)/gsl/.memchecked: $(BUILD_OBJ_DIR)/gsl/.built
+	@$(call echo_noop,$@)
+
 $(BUILD_OBJ_DIR)/gsl/.built: BUILD_SRC_DIR=$(BUILD_OBJ_DIR)
 $(BUILD_OBJ_DIR)/gsl/.installed: BUILD_SRC_DIR=$(BUILD_OBJ_DIR)
-$(BUILD_OBJ_DIR)/gsl/.checked: BUILD_SRC_DIR=$(BUILD_OBJ_DIR)
-$(BUILD_OBJ_DIR)/gsl/.distchecked: BUILD_SRC_DIR=$(BUILD_OBJ_DIR)
-$(BUILD_OBJ_DIR)/gsl/.memchecked: BUILD_SRC_DIR=$(BUILD_OBJ_DIR)
 
 ### Rinse and repeat for libcidr, but there's less to customize
 COMPONENTS_FTY += libcidr
@@ -256,9 +256,9 @@ $(BUILD_OBJ_DIR)/libcidr/.autogened: $(BUILD_OBJ_DIR)/libcidr/.prepped
 
 $(BUILD_OBJ_DIR)/libcidr/.built: BUILD_SRC_DIR=$(BUILD_OBJ_DIR)
 $(BUILD_OBJ_DIR)/libcidr/.installed: BUILD_SRC_DIR=$(BUILD_OBJ_DIR)
-$(BUILD_OBJ_DIR)/libcidr/.checked: BUILD_SRC_DIR=$(BUILD_OBJ_DIR)
-$(BUILD_OBJ_DIR)/libcidr/.distchecked: BUILD_SRC_DIR=$(BUILD_OBJ_DIR)
-$(BUILD_OBJ_DIR)/libcidr/.memchecked: BUILD_SRC_DIR=$(BUILD_OBJ_DIR)
+
+$(BUILD_OBJ_DIR)/libcidr/.checked $(BUILD_OBJ_DIR)/libcidr/.distchecked $(BUILD_OBJ_DIR)/libcidr/.memchecked: $(BUILD_OBJ_DIR)/libcidr/.built
+	@$(call echo_noop,$@)
 
 ######################## Other components ##################################
 # Note: for rebuilds with a ccache in place, the biggest time-consumers are
@@ -269,6 +269,9 @@ $(BUILD_OBJ_DIR)/libcidr/.memchecked: BUILD_SRC_DIR=$(BUILD_OBJ_DIR)
 
 COMPONENTS_ALL += zproject
 $(BUILD_OBJ_DIR)/zproject/.autogened: install/gsl
+
+$(BUILD_OBJ_DIR)/zproject/.checked $(BUILD_OBJ_DIR)/zproject/.distchecked $(BUILD_OBJ_DIR)/zproject/.memchecked: $(BUILD_OBJ_DIR)/zproject/.built
+	@$(call echo_noop,$@)
 
 COMPONENTS_FTY += cxxtools
 MAKE_COMMON_ARGS_cxxtools=-j1
