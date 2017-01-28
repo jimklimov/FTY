@@ -420,13 +420,20 @@ $(BUILD_OBJ_DIR)/%/.memchecked: $(BUILD_OBJ_DIR)/%/.built
 # NOTE: The use of $(@F) in the rules assumes submodules are not nested
 #       otherwise text conversions are needed to chomp until first slash
 clean-obj/%:
-	$(RMDIR) $(BUILD_OBJ_DIR)/$(@F)
+	if [ "$(BUILD_OBJ_DIR)" != "$(ORIGIN_SRC_DIR)" ]; then\
+	    chmod -R u+w $(BUILD_OBJ_DIR)/$(@F) || true; \
+	    $(RMDIR) $(BUILD_OBJ_DIR)/$(@F); \
+	fi
 
 clean-src/gsl clean-src/libcidr:
-	$(RMDIR) $(BUILD_OBJ_DIR)/$(@F)
+	if [ "$(BUILD_OBJ_DIR)" != "$(ORIGIN_SRC_DIR)" ]; then\
+	    chmod -R u+w $(BUILD_OBJ_DIR)/$(@F) || true; \
+	    $(RMDIR) $(BUILD_OBJ_DIR)/$(@F); \
+	fi
 
 clean-src/%:
 	@if [ "$(BUILD_SRC_DIR)" != "$(ORIGIN_SRC_DIR)" ]; then \
+	    chmod -R u+w $(BUILD_SRC_DIR)/$(@F) || true; \
 	    $(RMDIR) $(BUILD_SRC_DIR)/$(@F); \
 	else \
 	    echo "  NOOP    Generally $@ has nothing to do for now"; \
