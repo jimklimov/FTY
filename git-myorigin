@@ -49,6 +49,8 @@ change_upstream() (
     git branch -a
 )
 
+[ "$#" = 0 ] && echo "$0: argument(s) required - one or more submodule directory name" >&2 && exit 1
+
 while [ -n "$1" ]; do
     change_upstream "$1"
     echo ""
