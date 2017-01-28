@@ -321,11 +321,12 @@ $(BUILD_OBJ_DIR)/czmq/.configured: install/libzmq
 COMPONENTS_FTY += malamute
 $(BUILD_OBJ_DIR)/malamute/.configured: install/czmq
 
-#COMPONENTS_FTY += nut
+COMPONENTS_FTY += nut
 CONFIG_OPTS_nut = --without-doc
 CONFIG_OPTS_nut += --with-dev
 CONFIG_OPTS_nut += --with-dmf
 CONFIG_OPTS_nut += --with-libltdl
+CONFIG_OPTS_nut += --with-augeas-lenses-dir="$(DESTDIR)$(PREFIX)/share/augeas/lenses/dist"
 
 COMPONENTS_FTY += fty-proto
 $(BUILD_OBJ_DIR)/fty-proto/.configured: install/malamute
@@ -339,8 +340,7 @@ COMPONENTS_FTY += fty-rest
 $(BUILD_OBJ_DIR)/fty-rest/.configured: install/malamute install/tntdb install/tntnet install/fty-proto install/fty-core
 
 COMPONENTS_FTY += fty-nut
-$(BUILD_OBJ_DIR)/fty-nut/.configured: install/fty-proto install/libcidr install/cxxtools
-# install/nut
+$(BUILD_OBJ_DIR)/fty-nut/.configured: install/fty-proto install/libcidr install/cxxtools install/nut
 
 COMPONENTS_FTY += fty-asset
 $(BUILD_OBJ_DIR)/fty-asset/.configured: install/tntdb install/cxxtools install/libmagic
