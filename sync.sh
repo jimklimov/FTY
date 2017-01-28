@@ -19,6 +19,7 @@ git pull --all
 # git submodule init --recursive && \
 # git submodule sync --recursive && \
 git submodule init && \
+git submodule foreach "git pull --all" && \
 git submodule update --recursive --remote --merge && \
 git status -s
 
