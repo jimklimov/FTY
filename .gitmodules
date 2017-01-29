@@ -84,3 +84,6 @@
 	path = nut
 	url = https://github.com/42ity/nut
 	branch = FTY
+[submodule "fty-example"]
+	path = fty-example
+	url = https://github.com/42ity/fty-example
