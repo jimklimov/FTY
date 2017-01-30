@@ -39,8 +39,8 @@ $CI_TIME git pull --all
 # git submodule init --recursive && \
 # git submodule sync --recursive && \
 $CI_TIME git submodule init && \
-$CI_TIME git submodule foreach "git pull --all" && \
 $CI_TIME git submodule update --recursive --remote --merge && \
+$CI_TIME git submodule foreach "git pull --all" && \
 $CI_TIME git status -s
 
 [ x"${DO_BUMP-}" = xno ] || \
