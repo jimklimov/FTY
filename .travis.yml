@@ -68,6 +68,7 @@ addons:
     - uuid-dev
     - libsasl2-2
     - libsasl2-dev
+    - sasl2-bin
     - apport
     - libmysqlclient-dev
 #    - libsodium-dev
