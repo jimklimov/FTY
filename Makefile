@@ -27,6 +27,8 @@ install: install-fty
 uninstall: install-all
 clean: clean-all
 check: check-all
+dist: dist-all
+distclean: distclean-all
 distcheck: distcheck-all
 valgrind: memcheck
 memcheck: memcheck-all
@@ -173,6 +175,16 @@ define distcheck_sub
 	    $(MAKE) DESTDIR="$(DESTDIR)" $(MAKE_COMMON_ARGS_$(1)) $(MAKE_INSTALL_ARGS_$(1)) distcheck && \
 	  $(TOUCH) "$(BUILD_OBJ_DIR)/$(1)/".distchecked || \
 	  { $(TOUCH) "$(BUILD_OBJ_DIR)/$(1)/".distcheck-failed ; exit 1; } \
+	)
+endef
+
+define dist_sub
+	( $(MKDIR) "$(BUILD_OBJ_DIR)/$(1)/$(BUILD_SUB_DIR_$(1))" $(DESTDIR) $(INSTDIR) && \
+	  cd "$(BUILD_OBJ_DIR)/$(1)/$(BUILD_SUB_DIR_$(1))" && \
+	    CCACHE_BASEDIR="$(ORIGIN_SRC_DIR)/$(1)" \
+	    $(MAKE) DESTDIR="$(DESTDIR)" $(MAKE_COMMON_ARGS_$(1)) $(MAKE_INSTALL_ARGS_$(1)) dist && \
+	  $(TOUCH) "$(BUILD_OBJ_DIR)/$(1)/".disted || \
+	  { $(TOUCH) "$(BUILD_OBJ_DIR)/$(1)/".dist-failed ; exit 1; } \
 	)
 endef
 
@@ -405,6 +417,9 @@ $(BUILD_OBJ_DIR)/%/.configured: $(BUILD_OBJ_DIR)/%/.autogened
 $(BUILD_OBJ_DIR)/%/.built: $(BUILD_OBJ_DIR)/%/.configured
 	$(call build_sub,$(notdir $(@D)))
 
+$(BUILD_OBJ_DIR)/%/.disted: $(BUILD_OBJ_DIR)/%/.configured
+	$(call dist_sub,$(notdir $(@D)))
+
 # Technically, build and install may pursue different targets
 # so maybe this should depend on just .configured
 $(BUILD_OBJ_DIR)/%/.installed: $(BUILD_OBJ_DIR)/%/.built
@@ -447,6 +462,8 @@ clean/%:
 	$(MAKE) clean-obj/$(@F)
 	$(MAKE) clean-src/$(@F)
 
+distclean/%: clean/%
+
 prep/%: $(BUILD_OBJ_DIR)/%/.prepped
 	@true
 
@@ -466,6 +483,9 @@ check/%: $(BUILD_OBJ_DIR)/%/.checked
 	@true
 
 distcheck/%: $(BUILD_OBJ_DIR)/%/.distchecked
+	@true
+
+dist/%: $(BUILD_OBJ_DIR)/%/.disted
 	@true
 
 valgrind/%: memcheck/%
