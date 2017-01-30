@@ -240,6 +240,7 @@ CONFIG_OPTS += CFLAGS="$(CFLAGS)"
 CONFIG_OPTS += CXXFLAGS="$(CXXFLAGS)"
 CONFIG_OPTS += CPPFLAGS="$(CPPFLAGS)"
 CONFIG_OPTS += PKG_CONFIG_PATH="$(DESTDIR)$(PREFIX)/lib/pkgconfig"
+CONFIG_OPTS += --with-pkgconfdir="$(DESTDIR)$(PREFIX)/lib/pkgconfig"
 CONFIG_OPTS += --with-docs=no
 CONFIG_OPTS += --with-systemdtmpfilesdir="$(DESTDIR)$(PREFIX)/lib/tmpfiles.d"
 CONFIG_OPTS += --with-systemdsystempresetdir="$(DESTDIR)$(PREFIX)/lib/systemd/system-preset"
