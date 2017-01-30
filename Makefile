@@ -318,7 +318,10 @@ $(BUILD_OBJ_DIR)/tntnet/.configured: install/cxxtools
 
 COMPONENTS_FTY += libmagic
 
+COMPONENTS_FTY += libsodium
+
 COMPONENTS_FTY += libzmq
+$(BUILD_OBJ_DIR)/libzmq/.configured: install/libsodium
 
 COMPONENTS_FTY += czmq
 # Make sure the workspace is (based on) branch "v3.0.2"
@@ -331,7 +334,7 @@ $(BUILD_OBJ_DIR)/czmq/.autogened: $(BUILD_OBJ_DIR)/czmq/.prepped
 $(BUILD_OBJ_DIR)/czmq/.configured: install/libzmq
 
 COMPONENTS_FTY += malamute
-$(BUILD_OBJ_DIR)/malamute/.configured: install/czmq
+$(BUILD_OBJ_DIR)/malamute/.configured: install/czmq install/libsodium
 
 COMPONENTS_FTY += nut
 CONFIG_OPTS_nut = --without-doc
@@ -341,7 +344,7 @@ CONFIG_OPTS_nut += --with-libltdl
 CONFIG_OPTS_nut += --with-augeas-lenses-dir="$(DESTDIR)$(PREFIX)/share/augeas/lenses/dist"
 
 COMPONENTS_FTY += fty-proto
-$(BUILD_OBJ_DIR)/fty-proto/.configured: install/malamute
+$(BUILD_OBJ_DIR)/fty-proto/.configured: install/malamute install/libsodium
 # install/cxxtools
 
 # Note: more and more core is a collection of scripts, so should need less deps

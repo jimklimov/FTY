@@ -87,3 +87,7 @@
 [submodule "fty-example"]
 	path = fty-example
 	url = https://github.com/42ity/fty-example
+[submodule "libsodium"]
+	path = libsodium
+	url = https://github.com/jedisct1/libsodium.git
+	branch = stable

@@ -66,13 +66,14 @@ addons:
     - aspell
     - aspell-en
     - uuid-dev
-    - libsodium-dev
     - libsasl2-2
     - libsasl2-dev
     - apport
     - libmysqlclient-dev
+#    - libsodium-dev
 #        - libsqlite3-dev
 #        - libpq-dev
+# libmariadbclient-dev libmariadbd-dev ?
 
 env:
   global:
