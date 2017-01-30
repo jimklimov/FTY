@@ -30,6 +30,7 @@ addons:
   apt:
     packages: &deps_fty_overall
     - git
+    - valgrind
     - ccache
     - libcppunit-dev
     - libcppunit-subunit-dev
@@ -82,19 +83,7 @@ env:
     - BUILD_TYPE=default-tgt:install-all
     - BUILD_TYPE=default-tgt:check
     - BUILD_TYPE=default-tgt:distcheck
-
-# Builds with customized setups
-matrix:
-  - env: BUILD_TYPE=default-tgt:memcheck
-    os: linux
-    sudo: false
-    services:
-        - docker
-    addons:
-      apt:
-        packages:
-        - *deps_driverlibs
-        - valgrind
+    - BUILD_TYPE=default-tgt:memcheck
 
 before_install:
 - DO_BUMP=no ./sync.sh
