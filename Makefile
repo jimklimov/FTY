@@ -349,10 +349,10 @@ $(BUILD_OBJ_DIR)/fty-proto/.configured: install/malamute install/libsodium
 
 # Note: more and more core is a collection of scripts, so should need less deps
 COMPONENTS_FTY += fty-core
-$(BUILD_OBJ_DIR)/fty-proto/.configured: install/malamute install/tntdb install/tntnet
+$(BUILD_OBJ_DIR)/fty-proto/.configured: install/malamute install/tntdb install/tntnet install/libcidr
 
 COMPONENTS_FTY += fty-rest
-$(BUILD_OBJ_DIR)/fty-rest/.configured: install/malamute install/tntdb install/tntnet install/fty-proto install/fty-core
+$(BUILD_OBJ_DIR)/fty-rest/.configured: install/malamute install/tntdb install/tntnet install/fty-proto install/fty-core install/libcidr
 
 COMPONENTS_FTY += fty-nut
 $(BUILD_OBJ_DIR)/fty-nut/.configured: install/fty-proto install/libcidr install/cxxtools install/nut
