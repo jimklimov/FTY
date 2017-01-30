@@ -27,6 +27,8 @@ install: install-fty
 uninstall: install-all
 clean: clean-all
 check: check-all
+dist: dist-all
+distclean: distclean-all
 distcheck: distcheck-all
 valgrind: memcheck
 memcheck: memcheck-all
@@ -176,6 +178,16 @@ define distcheck_sub
 	)
 endef
 
+define dist_sub
+	( $(MKDIR) "$(BUILD_OBJ_DIR)/$(1)/$(BUILD_SUB_DIR_$(1))" $(DESTDIR) $(INSTDIR) && \
+	  cd "$(BUILD_OBJ_DIR)/$(1)/$(BUILD_SUB_DIR_$(1))" && \
+	    CCACHE_BASEDIR="$(ORIGIN_SRC_DIR)/$(1)" \
+	    $(MAKE) DESTDIR="$(DESTDIR)" $(MAKE_COMMON_ARGS_$(1)) $(MAKE_INSTALL_ARGS_$(1)) dist && \
+	  $(TOUCH) "$(BUILD_OBJ_DIR)/$(1)/".disted || \
+	  { $(TOUCH) "$(BUILD_OBJ_DIR)/$(1)/".dist-failed ; exit 1; } \
+	)
+endef
+
 # This assumes that the Makefile is present in submodule's build-dir
 define memcheck_sub
 	( $(MKDIR) "$(BUILD_OBJ_DIR)/$(1)/$(BUILD_SUB_DIR_$(1))" $(DESTDIR) $(INSTDIR) && \
@@ -306,7 +318,10 @@ $(BUILD_OBJ_DIR)/tntnet/.configured: install/cxxtools
 
 COMPONENTS_FTY += libmagic
 
+COMPONENTS_FTY += libsodium
+
 COMPONENTS_FTY += libzmq
+$(BUILD_OBJ_DIR)/libzmq/.configured: install/libsodium
 
 COMPONENTS_FTY += czmq
 # Make sure the workspace is (based on) branch "v3.0.2"
@@ -319,7 +334,7 @@ $(BUILD_OBJ_DIR)/czmq/.autogened: $(BUILD_OBJ_DIR)/czmq/.prepped
 $(BUILD_OBJ_DIR)/czmq/.configured: install/libzmq
 
 COMPONENTS_FTY += malamute
-$(BUILD_OBJ_DIR)/malamute/.configured: install/czmq
+$(BUILD_OBJ_DIR)/malamute/.configured: install/czmq install/libsodium
 
 COMPONENTS_FTY += nut
 CONFIG_OPTS_nut = --without-doc
@@ -329,15 +344,15 @@ CONFIG_OPTS_nut += --with-libltdl
 CONFIG_OPTS_nut += --with-augeas-lenses-dir="$(DESTDIR)$(PREFIX)/share/augeas/lenses/dist"
 
 COMPONENTS_FTY += fty-proto
-$(BUILD_OBJ_DIR)/fty-proto/.configured: install/malamute
+$(BUILD_OBJ_DIR)/fty-proto/.configured: install/malamute install/libsodium
 # install/cxxtools
 
 # Note: more and more core is a collection of scripts, so should need less deps
 COMPONENTS_FTY += fty-core
-$(BUILD_OBJ_DIR)/fty-proto/.configured: install/malamute install/tntdb install/tntnet
+$(BUILD_OBJ_DIR)/fty-proto/.configured: install/malamute install/tntdb install/tntnet install/libcidr
 
 COMPONENTS_FTY += fty-rest
-$(BUILD_OBJ_DIR)/fty-rest/.configured: install/malamute install/tntdb install/tntnet install/fty-proto install/fty-core
+$(BUILD_OBJ_DIR)/fty-rest/.configured: install/malamute install/tntdb install/tntnet install/fty-proto install/fty-core install/libcidr
 
 COMPONENTS_FTY += fty-nut
 $(BUILD_OBJ_DIR)/fty-nut/.configured: install/fty-proto install/libcidr install/cxxtools install/nut
@@ -378,6 +393,10 @@ $(BUILD_OBJ_DIR)/fty-outage/.configured: install/fty-proto
 COMPONENTS_FTY += fty-sensor-env
 $(BUILD_OBJ_DIR)/fty-sensor-env/.configured: install/fty-proto
 
+# Not built by default... but if we do - it's covered
+#COMPONENTS_FTY += fty-example
+$(BUILD_OBJ_DIR)/fty-example/.configured: install/fty-proto install/cxxtools
+
 COMPONENTS_ALL += $(COMPONENTS_FTY)
 
 ############################# Common route ##################################
@@ -400,6 +419,9 @@ $(BUILD_OBJ_DIR)/%/.configured: $(BUILD_OBJ_DIR)/%/.autogened
 
 $(BUILD_OBJ_DIR)/%/.built: $(BUILD_OBJ_DIR)/%/.configured
 	$(call build_sub,$(notdir $(@D)))
+
+$(BUILD_OBJ_DIR)/%/.disted: $(BUILD_OBJ_DIR)/%/.configured
+	$(call dist_sub,$(notdir $(@D)))
 
 # Technically, build and install may pursue different targets
 # so maybe this should depend on just .configured
@@ -443,6 +465,8 @@ clean/%:
 	$(MAKE) clean-obj/$(@F)
 	$(MAKE) clean-src/$(@F)
 
+distclean/%: clean/%
+
 prep/%: $(BUILD_OBJ_DIR)/%/.prepped
 	@true
 
@@ -462,6 +486,9 @@ check/%: $(BUILD_OBJ_DIR)/%/.checked
 	@true
 
 distcheck/%: $(BUILD_OBJ_DIR)/%/.distchecked
+	@true
+
+dist/%: $(BUILD_OBJ_DIR)/%/.disted
 	@true
 
 valgrind/%: memcheck/%

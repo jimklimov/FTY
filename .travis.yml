@@ -1,0 +1,98 @@
+# Travis CI script
+################################################################################
+# This file is based on a template used by zproject, but isn't auto-generated. #
+################################################################################
+
+language:
+- c
+- python
+
+python:
+- '2.7'
+
+cache:
+- ccache
+
+os:
+- linux
+
+sudo: false
+
+services:
+- docker
+
+# Common required packages for all common scenarios
+# Note that YAML lists may be named with & and referenced with * characters;
+# but without such links, every list is complete and unique (meaning that
+# matrix special cases define their own settings, not append to common ones).
+# See https://github.com/travis-ci/travis-ci/issues/3505
+addons:
+  apt:
+    packages: &deps_fty_overall
+    - git
+    - valgrind
+    - ccache
+    - libcppunit-dev
+    - libcppunit-subunit-dev
+    - libneon27
+    - libneon27-dev
+    - libltdl7
+    - libltdl-dev
+    - libi2c-dev
+    - lua5.1
+    - liblua5.1-0-dev
+    - libsnmp-dev
+    - libfreeipmi-dev
+    - libipmimonitoring-dev
+    - libusb-dev
+    - linux-libc-dev
+    - libpowerman0-dev
+    - libavahi-common-dev
+    - libavahi-core-dev
+    - libavahi-client-dev
+    - libgd2-xpm-dev
+    - libpng-dev
+    - libjpeg-dev
+    - libfreetype6-dev
+    - libxpm-dev
+    - libxml2-utils
+    - asciidoc
+    - xsltproc
+    - xmlto
+    - dblatex
+    - docbook-xsl
+    - docbook-xsl-ns
+    - source-highlight
+    - aspell
+    - aspell-en
+    - uuid-dev
+    - libsasl2-2
+    - libsasl2-dev
+    - apport
+    - libmysqlclient-dev
+#    - libsodium-dev
+#        - libsqlite3-dev
+#        - libpq-dev
+# libmariadbclient-dev libmariadbd-dev ?
+
+env:
+  global:
+    - CI_TIME=true
+    - CI_TRACE=false
+  matrix:
+    - BUILD_TYPE=default-tgt:all
+    - BUILD_TYPE=default-tgt:install-all
+    - BUILD_TYPE=default-tgt:check
+    - BUILD_TYPE=default-tgt:dist
+    - BUILD_TYPE=default-tgt:distcheck
+    - BUILD_TYPE=default-tgt:memcheck
+
+before_install:
+- DO_BUMP=no ./sync.sh
+- if [ $TRAVIS_OS_NAME == "osx" ] ; then brew update; brew install binutils asciidoc docbook-xsl ; XML_CATALOG_FILES=/usr/local/etc/xml/catalog ; export XML_CATALOG_FILES ; fi
+
+install:
+- pip install pycparser
+
+# Hand off to generated script for each BUILD_TYPE
+script: ./ci_build.sh
