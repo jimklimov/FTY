@@ -343,6 +343,10 @@ CONFIG_OPTS_nut += --with-dev
 CONFIG_OPTS_nut += --with-dmf
 CONFIG_OPTS_nut += --with-libltdl
 CONFIG_OPTS_nut += --with-augeas-lenses-dir="$(DESTDIR)$(PREFIX)/share/augeas/lenses/dist"
+#CONFIG_OPTS_nut += --sysconfdir="$(DESTDIR)$(PREFIX_ETCDIR)/nut"
+CONFIG_OPTS_nut += --with-udev-dir="$(DESTDIR)$(PREFIX_ETCDIR)/udev"
+CONFIG_OPTS_nut += --with-devd-dir="$(DESTDIR)$(PREFIX_ETCDIR)/devd"
+CONFIG_OPTS_nut += --with-hotplug-dir="$(DESTDIR)$(PREFIX_ETCDIR)/hotplug"
 
 COMPONENTS_FTY += fty-proto
 $(BUILD_OBJ_DIR)/fty-proto/.configured: install/malamute install/libsodium
