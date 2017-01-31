@@ -95,5 +95,8 @@ before_install:
 install:
 - pip install pycparser
 
+before_script:
+- ./.travis.fixsasl
+
 # Hand off to generated script for each BUILD_TYPE
 script: ./ci_build.sh
