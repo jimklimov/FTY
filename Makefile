@@ -300,6 +300,8 @@ $(BUILD_OBJ_DIR)/zproject/.checked $(BUILD_OBJ_DIR)/zproject/.distchecked $(BUIL
 
 COMPONENTS_FTY += cxxtools
 MAKE_COMMON_ARGS_cxxtools=-j1
+$(BUILD_OBJ_DIR)/cxxtools/.memchecked: $(BUILD_OBJ_DIR)/cxxtools/.built
+	@$(call echo_noop,$@)
 
 # This requires dev packages (or equivalent) of mysql/mariadb
 # Make sure the workspace is (based on) branch "1.3"
@@ -309,6 +311,8 @@ BUILD_SUB_DIR_tntdb=tntdb/
 CONFIG_OPTS_tntdb = --without-postgresql
 CONFIG_OPTS_tntdb += --without-sqlite
 $(BUILD_OBJ_DIR)/tntdb/.configured: install/cxxtools
+$(BUILD_OBJ_DIR)/tntdb/.memchecked: $(BUILD_OBJ_DIR)/tntdb/.built
+	@$(call echo_noop,$@)
 
 ### We do not link to this(???) - just use at runtime
 # Make sure the workspace is (based on) branch "2.2"
@@ -316,6 +320,8 @@ COMPONENTS_FTY += tntnet
 CONFIG_OPTS_tntnet = --with-sdk
 CONFIG_OPTS_tntnet += --without-demos
 $(BUILD_OBJ_DIR)/tntnet/.configured: install/cxxtools
+$(BUILD_OBJ_DIR)/tntnet/.memchecked: $(BUILD_OBJ_DIR)/tntnet/.built
+	@$(call echo_noop,$@)
 
 COMPONENTS_FTY += libmagic
 
