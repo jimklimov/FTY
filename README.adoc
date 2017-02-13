@@ -104,3 +104,4 @@ case, change to the subdirectory of the component in question and run the
 For some more inspiration on workflow with submodules, refer to e.g.:
 
 * https://brooklyn.apache.org/developers/code/git-more.html
+* http://stackoverflow.com/a/18799234/4715872
