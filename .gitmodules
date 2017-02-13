@@ -91,3 +91,9 @@
 	path = libsodium
 	url = https://github.com/jedisct1/libsodium.git
 	branch = stable
+[submodule "fty-metric-snmp"]
+	path = fty-metric-snmp
+	url = https://github.com/thalman/fty-metric-snmp
+[submodule "fty-alert-flexible"]
+	path = fty-alert-flexible
+	url = https://github.com/thalman/fty-alert-flexible
