@@ -407,10 +407,14 @@ $(BUILD_OBJ_DIR)/fty-outage/.configured: install/fty-proto
 COMPONENTS_FTY += fty-sensor-env
 $(BUILD_OBJ_DIR)/fty-sensor-env/.configured: install/fty-proto
 
-COMPONENTS_FTY += fty-metric-snmp
+### Note: The following components are experimental recent additions,
+### and in their current state they break FTY builds (and they do not
+### yet do anything useful). So while this Makefile supports a basic
+### config for them, it does not count them as part of the team yet.
+#COMPONENTS_FTY += fty-metric-snmp
 $(BUILD_OBJ_DIR)/fty-metric-snmp/.configured: install/fty-proto
 
-COMPONENTS_FTY += fty-alert-flexible
+#COMPONENTS_FTY += fty-alert-flexible
 $(BUILD_OBJ_DIR)/fty-alert-flexible/.configured: install/fty-proto
 
 # Not built by default... but if we do - it's covered
