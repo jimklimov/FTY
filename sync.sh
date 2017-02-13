@@ -36,10 +36,15 @@ $CI_TIME git pull --all
 # NOTE: sync is toxic to established workspaces, as it "resyncs the URL" and
 # so overwrites locally defined "origin" URL (e.g. pointing to a developers'
 # fork) back to the upstream project URL. For daily usage, "update" suffices.
+# The "init" is a no-op if things are already set up.
+# The next line causes submodules to track the branch they are set up to use
+# via .gitmodules file, or the "master" one. Note that each "submodule update"
+# checks out a specified SHA1 and stops tracking any specific branch.
 # git submodule init --recursive && \
 # git submodule sync --recursive && \
 $CI_TIME git submodule init && \
 $CI_TIME git submodule update --recursive --remote --merge && \
+$CI_TIME git submodule foreach -q --recursive 'git checkout $(git config -f $toplevel/.gitmodules submodule.$name.branch || echo master)' && \
 $CI_TIME git submodule foreach "git pull --all" && \
 $CI_TIME git status -s
 
