@@ -331,6 +331,9 @@ COMPONENTS_FTY += libzmq
 $(BUILD_OBJ_DIR)/libzmq/.configured: install/libsodium
 
 COMPONENTS_FTY += czmq
+CONFIG_OPTS_czmq = CFLAGS="$(CFLAGS) -Wno-deprecated-declarations"
+CONFIG_OPTS_czmq += CXXFLAGS="$(CXXFLAGS) -Wno-deprecated-declarations"
+CONFIG_OPTS_czmq += CPPFLAGS="$(CPPFLAGS) -Wno-deprecated-declarations"
 # Make sure the workspace is (based on) branch "v3.0.2"
 # That version of autogen.sh requires a "libtool" while debian has only "libtoolize", so fall back
 $(BUILD_OBJ_DIR)/czmq/.autogened: $(BUILD_OBJ_DIR)/czmq/.prepped
