@@ -300,6 +300,8 @@ $(BUILD_OBJ_DIR)/zproject/.checked $(BUILD_OBJ_DIR)/zproject/.distchecked $(BUIL
 
 COMPONENTS_FTY += cxxtools
 MAKE_COMMON_ARGS_cxxtools=-j1
+$(BUILD_OBJ_DIR)/cxxtools/.memchecked: $(BUILD_OBJ_DIR)/cxxtools/.built
+	@$(call echo_noop,$@)
 
 # This requires dev packages (or equivalent) of mysql/mariadb
 # Make sure the workspace is (based on) branch "1.3"
@@ -309,6 +311,8 @@ BUILD_SUB_DIR_tntdb=tntdb/
 CONFIG_OPTS_tntdb = --without-postgresql
 CONFIG_OPTS_tntdb += --without-sqlite
 $(BUILD_OBJ_DIR)/tntdb/.configured: install/cxxtools
+$(BUILD_OBJ_DIR)/tntdb/.memchecked: $(BUILD_OBJ_DIR)/tntdb/.built
+	@$(call echo_noop,$@)
 
 ### We do not link to this(???) - just use at runtime
 # Make sure the workspace is (based on) branch "2.2"
@@ -316,6 +320,8 @@ COMPONENTS_FTY += tntnet
 CONFIG_OPTS_tntnet = --with-sdk
 CONFIG_OPTS_tntnet += --without-demos
 $(BUILD_OBJ_DIR)/tntnet/.configured: install/cxxtools
+$(BUILD_OBJ_DIR)/tntnet/.memchecked: $(BUILD_OBJ_DIR)/tntnet/.built
+	@$(call echo_noop,$@)
 
 COMPONENTS_FTY += libmagic
 
@@ -398,9 +404,15 @@ $(BUILD_OBJ_DIR)/fty-outage/.configured: install/fty-proto
 COMPONENTS_FTY += fty-sensor-env
 $(BUILD_OBJ_DIR)/fty-sensor-env/.configured: install/fty-proto
 
+COMPONENTS_FTY += fty-metric-snmp
+$(BUILD_OBJ_DIR)/fty-metric-snmp/.configured: install/fty-proto
+
+COMPONENTS_FTY += fty-alert-flexible
+$(BUILD_OBJ_DIR)/fty-alert-flexible/.configured: install/fty-proto
+
 # Not built by default... but if we do - it's covered
-#COMPONENTS_FTY += fty-example
-$(BUILD_OBJ_DIR)/fty-example/.configured: install/fty-proto install/cxxtools
+COMPONENTS_FTY += fty-example
+$(BUILD_OBJ_DIR)/fty-example/.configured: install/fty-proto
 
 COMPONENTS_ALL += $(COMPONENTS_FTY)
 
