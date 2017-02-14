@@ -167,7 +167,7 @@ endef
 # This assumes that the Makefile is present in submodule's build-dir
 # Unfortunately, one may have to be careful about passing CONFIG_OPTS
 # values with spaces
-#	    DISTCHECK_CONFIG_OPTS="$(CONFIG_OPTS) $(CONFIG_OPTS_$(1))"
+#	    DISTCHECK_CONFIGURE_FLAGS="$(CONFIG_OPTS) $(CONFIG_OPTS_$(1))"
 define distcheck_sub
 	( $(MKDIR) "$(BUILD_OBJ_DIR)/$(1)/$(BUILD_SUB_DIR_$(1))" $(DESTDIR) $(INSTDIR) && \
 	  cd "$(BUILD_OBJ_DIR)/$(1)/$(BUILD_SUB_DIR_$(1))" && \
