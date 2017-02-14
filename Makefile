@@ -257,7 +257,7 @@ COMPONENTS_ALL += gsl
 BUILD_SUB_DIR_gsl=src/
 MAKE_COMMON_ARGS_gsl=DESTDIR="$(DESTDIR)$(PREFIX)/local"
 
-$(BUILD_OBJ_DIR)/gsl/.prepped $(BUILD_OBJ_DIR)/libcidr/.prepped:
+$(BUILD_OBJ_DIR)/gsl/.prepped $(BUILD_OBJ_DIR)/libcidr/.prepped $(BUILD_OBJ_DIR)/cxxtools/.prepped:
 	$(call clone_ln,$(ORIGIN_SRC_DIR)/$(notdir $(@D)),$(BUILD_OBJ_DIR)/$(notdir $(@D)))
 	$(TOUCH) $@
 
