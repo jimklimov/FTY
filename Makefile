@@ -533,6 +533,14 @@ rebuild/%:
 	$(MAKE) clean/$(@F)
 	$(MAKE) $(BUILD_OBJ_DIR)/$(@F)/.built
 
+recheck/%:
+	$(MAKE) clean/$(@F)
+	$(MAKE) $(BUILD_OBJ_DIR)/$(@F)/.checked
+
+redistcheck/%:
+	$(MAKE) clean/$(@F)
+	$(MAKE) $(BUILD_OBJ_DIR)/$(@F)/.distchecked
+
 reinstall/%:
 	$(MAKE) clean/$(@F)
 	$(MAKE) $(BUILD_OBJ_DIR)/$(@F)/.installed
