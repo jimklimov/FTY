@@ -352,7 +352,7 @@ COMPONENTS_FTY += malamute
 $(BUILD_OBJ_DIR)/malamute/.configured: install/czmq install/libsodium
 
 COMPONENTS_FTY += nut
-CONFIG_OPTS_nut = --without-doc
+CONFIG_OPTS_nut = --with-doc=skip
 CONFIG_OPTS_nut += --with-dev
 CONFIG_OPTS_nut += --with-dmf
 CONFIG_OPTS_nut += --with-libltdl
