@@ -87,6 +87,7 @@ env:
     - BUILD_TYPE=default-tgt:dist
     - BUILD_TYPE=default-tgt:distcheck
     - BUILD_TYPE=default-tgt:memcheck
+    - BUILD_TYPE=default-tgt:experimental
 
 before_install:
 - DO_BUMP=no ./sync.sh

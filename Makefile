@@ -33,6 +33,9 @@ distcheck: distcheck-all
 valgrind: memcheck
 memcheck: memcheck-all
 
+experimental: build-fty-experimental
+all-experimental: build-fty-experimental
+
 BUILD_OS ?= $(shell uname -s)
 BUILD_ARCH ?= $(shell uname -m)
 ARCH=$(BUILD_ARCH)
@@ -90,6 +93,10 @@ LN_S=ln -s -f -r
 COMPONENTS_ALL =
 # "FTY" are components in "fty-*" submodules and the dependencies they pull
 COMPONENTS_FTY =
+# "FTY_EXPERIMENTAL" are components in "fty-*" submodules which are not yet
+# mainstream (e.g. added recently and builds are expected to fail) and the
+# dependencies they pull
+COMPONENTS_FTY_EXPERIMENTAL =
 
 # Dependencies on touch-files are calculated by caller
 # If the *_sub is called - it must do its work
@@ -412,22 +419,22 @@ $(BUILD_OBJ_DIR)/fty-outage/.configured: install/fty-proto
 COMPONENTS_FTY += fty-sensor-env
 $(BUILD_OBJ_DIR)/fty-sensor-env/.configured: install/fty-proto
 
+COMPONENTS_FTY += fty-example
+$(BUILD_OBJ_DIR)/fty-example/.configured: install/fty-proto
+
 ### Note: The following components are experimental recent additions,
 ### and in their current state they break FTY builds (and they do not
 ### yet do anything useful). So while this Makefile supports a basic
 ### config for them, it does not count them as part of the team yet.
-#COMPONENTS_FTY += fty-metric-snmp
+### Not built by default... but if we do - it's covered
+COMPONENTS_FTY_EXPERIMENTAL += fty-metric-snmp
 $(BUILD_OBJ_DIR)/fty-metric-snmp/.configured: install/fty-proto
 
-#COMPONENTS_FTY += fty-alert-flexible
+COMPONENTS_FTY_EXPERIMENTAL += fty-alert-flexible
 $(BUILD_OBJ_DIR)/fty-alert-flexible/.configured: install/fty-proto
 
-#COMPONENTS_FTY += fty-info
+COMPONENTS_FTY_EXPERIMENTAL += fty-info
 $(BUILD_OBJ_DIR)/fty-info/.configured: install/fty-proto
-
-# Not built by default... but if we do - it's covered
-COMPONENTS_FTY += fty-example
-$(BUILD_OBJ_DIR)/fty-example/.configured: install/fty-proto
 
 COMPONENTS_ALL += $(COMPONENTS_FTY)
 
@@ -576,6 +583,10 @@ rebuild-fty:
 	$(MAKE) $(addprefix clean/,$(COMPONENTS_FTY))
 	$(MAKE) $(addprefix build/,$(COMPONENTS_FTY))
 
+rebuild-fty-experimental:
+	$(MAKE) $(addprefix clean/,$(COMPONENTS_FTY_EXPERIMENTAL))
+	$(MAKE) $(addprefix build/,$(COMPONENTS_FTY_EXPERIMENTAL))
+
 reinstall-all:
 	$(MAKE) $(addprefix clean/,$(COMPONENTS_ALL))
 	$(MAKE) $(addprefix install/,$(COMPONENTS_ALL))
@@ -584,8 +595,15 @@ reinstall-fty:
 	$(MAKE) $(addprefix clean/,$(COMPONENTS_FTY))
 	$(MAKE) $(addprefix install/,$(COMPONENTS_FTY))
 
+reinstall-fty-experimental:
+	$(MAKE) $(addprefix clean/,$(COMPONENTS_FTY_EXPERIMENTAL))
+	$(MAKE) $(addprefix install/,$(COMPONENTS_FTY_EXPERIMENTAL))
+
 %-all: $(addprefix %/,$(COMPONENTS_ALL))
 	@echo "COMPLETED $@ : made '$^'"
 
 %-fty: $(addprefix %/,$(COMPONENTS_FTY))
+	@echo "COMPLETED $@ : made '$^'"
+
+%-fty-experimental: $(addprefix %/,$(COMPONENTS_FTY_EXPERIMENTAL))
 	@echo "COMPLETED $@ : made '$^'"
