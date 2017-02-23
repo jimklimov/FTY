@@ -422,6 +422,9 @@ $(BUILD_OBJ_DIR)/fty-metric-snmp/.configured: install/fty-proto
 #COMPONENTS_FTY += fty-alert-flexible
 $(BUILD_OBJ_DIR)/fty-alert-flexible/.configured: install/fty-proto
 
+#COMPONENTS_FTY += fty-info
+$(BUILD_OBJ_DIR)/fty-info/.configured: install/fty-proto
+
 # Not built by default... but if we do - it's covered
 COMPONENTS_FTY += fty-example
 $(BUILD_OBJ_DIR)/fty-example/.configured: install/fty-proto
