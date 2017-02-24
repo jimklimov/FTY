@@ -388,7 +388,7 @@ COMPONENTS_FTY += fty-nut
 $(BUILD_OBJ_DIR)/fty-nut/.configured: install/fty-proto install/libcidr install/cxxtools install/nut
 
 COMPONENTS_FTY += fty-asset
-$(BUILD_OBJ_DIR)/fty-asset/.configured: install/tntdb install/cxxtools install/libmagic
+$(BUILD_OBJ_DIR)/fty-asset/.configured: install/fty-proto install/tntdb install/cxxtools install/libmagic
 
 COMPONENTS_FTY += fty-metric-tpower
 $(BUILD_OBJ_DIR)/fty-metric-tpower/.configured: install/fty-proto install/tntdb install/cxxtools
