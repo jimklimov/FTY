@@ -336,6 +336,8 @@ $(BUILD_OBJ_DIR)/tntnet/.memchecked: $(BUILD_OBJ_DIR)/tntnet/.built
 	@$(call echo_noop,$@)
 
 COMPONENTS_FTY += libmagic
+$(BUILD_OBJ_DIR)/libmagic/.memchecked: $(BUILD_OBJ_DIR)/libmagic/.built
+	@$(call echo_noop,$@)
 
 COMPONENTS_FTY += libsodium
 
