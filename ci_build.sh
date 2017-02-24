@@ -44,7 +44,7 @@ default|"default-tgt:"*)
     echo "`date`: Starting the sequential build attempt for singular target $BUILD_TGT..."
 
     ( echo "`date`: Starting the quiet parallel build attempt..."; \
-      $CI_TIME make VERBOSE=0 V=0 -k -j8 "$BUILD_TGT"; ) || \
+      $CI_TIME make VERBOSE=0 V=0 -k -j4 "$BUILD_TGT"; ) || \
     ( echo "==================== PARALLEL ATTEMPT FAILED ($?) =========="; \
       echo "`date`: Starting the sequential build attempt..."; \
       $CI_TIME make VERBOSE=1 "$BUILD_TGT" )
