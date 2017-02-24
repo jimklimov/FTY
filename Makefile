@@ -345,6 +345,9 @@ $(BUILD_OBJ_DIR)/libsodium/.memchecked: $(BUILD_OBJ_DIR)/libsodium/.built
 
 COMPONENTS_FTY += libzmq
 $(BUILD_OBJ_DIR)/libzmq/.configured: install/libsodium
+# TODO: It was called "make check-valgrind-memcheck" back then
+$(BUILD_OBJ_DIR)/libzmq/.memchecked: $(BUILD_OBJ_DIR)/libzmq/.built
+	@$(call echo_noop,$@)
 
 COMPONENTS_FTY += czmq
 CONFIG_OPTS_czmq = CFLAGS="$(CFLAGS) -Wno-deprecated-declarations"
