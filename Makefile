@@ -288,6 +288,9 @@ $(BUILD_OBJ_DIR)/gsl/.installed: BUILD_SRC_DIR=$(BUILD_OBJ_DIR)
 
 ### Rinse and repeat for libcidr, but there's less to customize
 COMPONENTS_FTY += libcidr
+# With the weird build system that libcidr uses, we'd better hide from it
+# that it is in a sub-make - or it goes crazy trying to communicate back
+MAKE_COMMON_ARGS_libcidr = MAKELEVEL="" MAKEFLAGS="" -j1
 $(BUILD_OBJ_DIR)/libcidr/.autogened: $(BUILD_OBJ_DIR)/libcidr/.prepped
 	@$(call echo_noop,$@)
 
