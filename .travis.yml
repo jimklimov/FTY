@@ -100,4 +100,6 @@ before_script:
 - ./.travis.fixsasl
 
 # Hand off to generated script for each BUILD_TYPE
-script: ./ci_build.sh
+# Note there are many components to test, it takes time...
+# and some tests just sleep and resume slowly, so Travis gets worried.
+script: travis_wait 30 ./ci_build.sh
