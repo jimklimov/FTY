@@ -340,6 +340,8 @@ $(BUILD_OBJ_DIR)/libmagic/.memchecked: $(BUILD_OBJ_DIR)/libmagic/.built
 	@$(call echo_noop,$@)
 
 COMPONENTS_FTY += libsodium
+$(BUILD_OBJ_DIR)/libsodium/.memchecked: $(BUILD_OBJ_DIR)/libsodium/.built
+	@$(call echo_noop,$@)
 
 COMPONENTS_FTY += libzmq
 $(BUILD_OBJ_DIR)/libzmq/.configured: install/libsodium
