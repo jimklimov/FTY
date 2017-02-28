@@ -339,11 +339,18 @@ $(BUILD_OBJ_DIR)/tntnet/.memchecked: $(BUILD_OBJ_DIR)/tntnet/.built
 	@$(call echo_noop,$@)
 
 COMPONENTS_FTY += libmagic
+$(BUILD_OBJ_DIR)/libmagic/.memchecked: $(BUILD_OBJ_DIR)/libmagic/.built
+	@$(call echo_noop,$@)
 
 COMPONENTS_FTY += libsodium
+$(BUILD_OBJ_DIR)/libsodium/.memchecked: $(BUILD_OBJ_DIR)/libsodium/.built
+	@$(call echo_noop,$@)
 
 COMPONENTS_FTY += libzmq
 $(BUILD_OBJ_DIR)/libzmq/.configured: install/libsodium
+# TODO: It was called "make check-valgrind-memcheck" back then
+$(BUILD_OBJ_DIR)/libzmq/.memchecked: $(BUILD_OBJ_DIR)/libzmq/.built
+	@$(call echo_noop,$@)
 
 COMPONENTS_FTY += czmq
 CONFIG_OPTS_czmq = CFLAGS="$(CFLAGS) -Wno-deprecated-declarations"
@@ -379,6 +386,8 @@ $(BUILD_OBJ_DIR)/fty-proto/.configured: install/malamute install/libsodium
 # Note: more and more core is a collection of scripts, so should need less deps
 COMPONENTS_FTY += fty-core
 $(BUILD_OBJ_DIR)/fty-proto/.configured: install/malamute install/tntdb install/tntnet install/libcidr
+$(BUILD_OBJ_DIR)/fty-core/.memchecked: $(BUILD_OBJ_DIR)/fty-core/.built
+	@$(call echo_noop,$@)
 
 COMPONENTS_FTY += fty-rest
 $(BUILD_OBJ_DIR)/fty-rest/.configured: install/malamute install/tntdb install/tntnet install/fty-proto install/fty-core install/libcidr
@@ -387,7 +396,7 @@ COMPONENTS_FTY += fty-nut
 $(BUILD_OBJ_DIR)/fty-nut/.configured: install/fty-proto install/libcidr install/cxxtools install/nut
 
 COMPONENTS_FTY += fty-asset
-$(BUILD_OBJ_DIR)/fty-asset/.configured: install/tntdb install/cxxtools install/libmagic
+$(BUILD_OBJ_DIR)/fty-asset/.configured: install/fty-proto install/tntdb install/cxxtools install/libmagic
 
 COMPONENTS_FTY += fty-metric-tpower
 $(BUILD_OBJ_DIR)/fty-metric-tpower/.configured: install/fty-proto install/tntdb install/cxxtools
