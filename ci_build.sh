@@ -47,7 +47,7 @@ default|"default-tgt:"*)
       case "$BUILD_TYPE" in
         default-tgt:*check*)
             echo "`date`: First fully build and install some components that are picky to sub-make during checks..."
-            $CI_TIME make VERBOSE=0 V=0 -j1 install/libcidr || exit
+            $CI_TIME make VERBOSE=0 V=0 -j1 install/libcidr install/libzmq install/czmq || exit
             echo "`date`: Proceed with general build..."
             ;;
       esac
