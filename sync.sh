@@ -59,6 +59,6 @@ git status -s | while read STATUS OBJNAME ; do
 done
 
 if [ x"${DO_BUMP-}" = xyes ]; then
-    echo "Adding changed objects to git commit..."
+    echo "Adding changed objects to git commit (pre-set envvar DO_BUMP=no to avoid this)..."
     $CI_TIME git commit -a -m 'Updated references to git submodule HEADs at '"`date -u`"
 fi
