@@ -243,13 +243,16 @@ CPPFLAGS += -I$(DESTDIR)$(PREFIX)/include
 CXXFLAGS += -I$(DESTDIR)$(PREFIX)/include
 LDFLAGS += -L$(DESTDIR)$(PREFIX)/lib
 
+PKG_CONFIG_PATH ?= "$(DESTDIR)$(PREFIX)/lib/pkgconfig:/usr/lib/x86_64-linux-gnu/pkgconfig:/usr/lib/arm-linux-gnueabihf/pkgconfig:/usr/lib/pkgconfig:/lib/pkgconfig"
+export PKG_CONFIG_PATH
+
 CONFIG_OPTS  = --prefix="$(PREFIX)"
 CONFIG_OPTS += --sysconfdir="$(DESTDIR)$(PREFIX_ETCDIR)"
 CONFIG_OPTS += LDFLAGS="$(LDFLAGS)"
 CONFIG_OPTS += CFLAGS="$(CFLAGS)"
 CONFIG_OPTS += CXXFLAGS="$(CXXFLAGS)"
 CONFIG_OPTS += CPPFLAGS="$(CPPFLAGS)"
-CONFIG_OPTS += PKG_CONFIG_PATH="$(DESTDIR)$(PREFIX)/lib/pkgconfig:/usr/lib/x86_64-linux-gnu/pkgconfig:/usr/lib/arm-linux-gnueabihf/pkgconfig:/usr/lib/pkgconfig:/lib/pkgconfig"
+CONFIG_OPTS += PKG_CONFIG_PATH="$(PKG_CONFIG_PATH)"
 CONFIG_OPTS += --with-pkgconfdir="$(DESTDIR)$(PREFIX)/lib/pkgconfig"
 CONFIG_OPTS += --with-docs=no --without-docs
 CONFIG_OPTS += --with-systemdtmpfilesdir="$(DESTDIR)$(PREFIX)/lib/tmpfiles.d"
