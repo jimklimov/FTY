@@ -43,10 +43,17 @@ default|"default-tgt:"*)
 
     echo "`date`: Starting the sequential build attempt for singular target $BUILD_TGT..."
 
-    ( echo "`date`: Starting the quiet parallel build attempt..."; \
+    ( echo "`date`: Starting the quiet parallel build attempt..."
+      case "$BUILD_TYPE" in
+        default-tgt:*check*)
+            echo "`date`: First fully build and install some components that are picky to sub-make during checks..."
+            $CI_TIME make VERBOSE=0 V=0 -j1 install/libcidr || exit
+            echo "`date`: Proceed with general build..."
+            ;;
+      esac
       $CI_TIME make VERBOSE=0 V=0 -k -j4 "$BUILD_TGT"; ) || \
-    ( echo "==================== PARALLEL ATTEMPT FAILED ($?) =========="; \
-      echo "`date`: Starting the sequential build attempt..."; \
+    ( echo "==================== PARALLEL ATTEMPT FAILED ($?) =========="
+      echo "`date`: Starting the sequential build attempt..."
       $CI_TIME make VERBOSE=1 "$BUILD_TGT" )
 
     echo "=== Are GitIgnores good after 'make $BUILD_TGT'? (should have no output below)"
