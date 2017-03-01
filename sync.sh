@@ -48,15 +48,22 @@ $CI_TIME git submodule foreach -q --recursive 'git checkout $(git config -f $top
 $CI_TIME git submodule foreach "git pull --all" && \
 $CI_TIME git status -s
 
-[ x"${DO_BUMP-}" = xno ] || \
-git status -s | while read STATUS OBJNAME ; do
+if [ x"${DO_BUMP-}" = xno ] ; then
+    git status -s
+    echo "Skip Adding changed objects to git commit (envvar DO_BUMP=no was pre-set)"
+else
     DO_BUMP=no
-    if [ -n "$OBJNAME" ]; then
-        case "$STATUS" in
-            M) DO_BUMP=yes ; break ;;
-        esac
-    fi
-done
+    # Let shell cut off indentations and other whitespace
+    git status -s | ( while read STATUS OBJNAME ; do
+        if [ -n "$OBJNAME" ]; then
+            case "$STATUS" in
+                M) exit 0 ;;
+            esac
+        fi
+      done
+      exit 1
+    ) && DO_BUMP=yes
+fi
 
 if [ x"${DO_BUMP-}" = xyes ]; then
     echo "Adding changed objects to git commit (pre-set envvar DO_BUMP=no to avoid this)..."
