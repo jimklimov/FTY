@@ -57,7 +57,7 @@ default|"default-tgt:"*)
       $CI_TIME make VERBOSE=1 "$BUILD_TGT" )
 
     echo "=== Are GitIgnores good after 'make $BUILD_TGT'? (should have no output below)"
-    git status -s || true
+    git status -s || git status || true
     echo "==="
     if [ "$HAVE_CCACHE" = yes ]; then
         echo "CCache stats after build:"
