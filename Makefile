@@ -565,10 +565,9 @@ assume/%:
 	@$(MKDIR) $(BUILD_OBJ_DIR)/$(@F)
 	@$(TOUCH) $(BUILD_OBJ_DIR)/$(@F)/.installed
 
-nowarn/*: CFLAGS="$(CFLAGS) -Werror=all"
-nowarn/%: rebuild/%
+nowarn/%:
 	$(MAKE) clean/$(@F)
-	$(MAKE) $(BUILD_OBJ_DIR)/$(@F)/.built
+	$(MAKE) CFLAGS="$(CFLAGS) -Wall -Werror" CPPFLAGS="$(CPPFLAGS) -Wall -Werror" CXXFLAGS="$(CXXFLAGS) -Wall -Werror" $(BUILD_OBJ_DIR)/$(@F)/.built
 
 rebuild/%:
 	$(MAKE) clean/$(@F)
