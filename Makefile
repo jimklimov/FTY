@@ -460,6 +460,7 @@ COMPONENTS_ALL += $(COMPONENTS_FTY)
 # This is no-op for most of our components
 # TODO1: replicate the source directory via symlinks to mangle with autogen etc
 # TODO2: somehow depend on timestamps of ALL source files and/or git metadata
+
 # A dummy recipe line MUST follow the dependency definition for both the
 # dependency and common OR custom (above) ruleset to fire. But this MUST be not
 # an actionable rule, which will otherwise build and fulfill gmake's desires.
