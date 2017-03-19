@@ -102,7 +102,8 @@ COMPONENTS_FTY_EXPERIMENTAL =
 # If the *_sub is called - it must do its work
 # Tell GMake to keep any secondary files such as:
 # */.prepped */.autogened */.configured */.built */.installed
-.SECONDARY:
+#.SECONDARY:
+.PRECIOUS: %/.prep-cloneln-ed %/.prepped %/.autogened %/.configured %/.built %/.installed %/.checked %/.distchecked %/.disted %/.memchecked
 
 # TODO : add a mode to check that a workspace has changed (dev work, git
 # checked out another branch, etc.) to trigger rebuilds of a project.
@@ -221,7 +222,8 @@ endef
 # and populating with (relative) symlinks to original data.
 # For safety, use absolute paths...
 define clone_ln
-	( $(MKDIR) "$(2)" && SRC="`cd "$(1)" && pwd`" && DST="`cd "$(2)" && pwd`" && \
+	( $(RMDIR) "$(2)" && $(MKDIR) "$(2)" && \
+	  SRC="`cd "$(1)" && pwd`" && DST="`cd "$(2)" && pwd`" && \
 	  cd "$$SRC" && \
 	    find . -type d -exec $(MKDIR) "$$DST"/'{}' \; && \
 	    find . \! -type d -exec $(LN_S) "$$SRC"/'{}' "$$DST"/'{}' \; \
@@ -263,7 +265,7 @@ CONFIG_OPTS += --quiet
 CONFIG_OPTS += --enable-drafts=no
 
 # Catch empty expansions
-$(BUILD_OBJ_DIR)//.prepped $(BUILD_OBJ_DIR)//.autogened $(BUILD_OBJ_DIR)//.configured $(BUILD_OBJ_DIR)//.built $(BUILD_OBJ_DIR)//.installed:
+$(BUILD_OBJ_DIR)//.prep-cloneln-ed $(BUILD_OBJ_DIR)//.prepped $(BUILD_OBJ_DIR)//.autogened $(BUILD_OBJ_DIR)//.configured $(BUILD_OBJ_DIR)//.built $(BUILD_OBJ_DIR)//.installed $(BUILD_OBJ_DIR)//.checked $(BUILD_OBJ_DIR)//.distchecked $(BUILD_OBJ_DIR)//.disted $(BUILD_OBJ_DIR)//.memchecked:
 	@echo "Error in recipe expansion, can not build $@ : component part is empty" ; exit 1
 
 ########################### GSL and LIBCIDR ###############################
@@ -272,9 +274,12 @@ COMPONENTS_ALL += gsl
 BUILD_SUB_DIR_gsl=src/
 MAKE_COMMON_ARGS_gsl=DESTDIR="$(DESTDIR)$(PREFIX)/local"
 
-$(BUILD_OBJ_DIR)/gsl/.prepped $(BUILD_OBJ_DIR)/libcidr/.prepped $(BUILD_OBJ_DIR)/cxxtools/.prepped:
+$(BUILD_OBJ_DIR)/%/.prep-cloneln-ed: $(abs_srcdir)/.git/modules/%/HEAD
 	$(call clone_ln,$(ORIGIN_SRC_DIR)/$(notdir $(@D)),$(BUILD_OBJ_DIR)/$(notdir $(@D)))
 	$(TOUCH) $@
+
+$(BUILD_OBJ_DIR)/gsl/.prepped: $(BUILD_OBJ_DIR)/gsl/.prep-cloneln-ed
+	@true
 
 # These are no-ops for GSL:
 $(BUILD_OBJ_DIR)/gsl/.autogened: $(BUILD_OBJ_DIR)/gsl/.prepped
@@ -294,6 +299,10 @@ COMPONENTS_FTY += libcidr
 # With the weird build system that libcidr uses, we'd better hide from it
 # that it is in a sub-make - or it goes crazy trying to communicate back
 MAKE_COMMON_ARGS_libcidr = MAKELEVEL="" MAKEFLAGS="" -j1
+
+$(BUILD_OBJ_DIR)/libcidr/.prepped: $(BUILD_OBJ_DIR)/libcidr/.prep-cloneln-ed
+	@true
+
 $(BUILD_OBJ_DIR)/libcidr/.autogened: $(BUILD_OBJ_DIR)/libcidr/.prepped
 	@$(call echo_noop,$@)
 
@@ -318,6 +327,10 @@ $(BUILD_OBJ_DIR)/zproject/.checked $(BUILD_OBJ_DIR)/zproject/.distchecked $(BUIL
 
 COMPONENTS_FTY += cxxtools
 MAKE_COMMON_ARGS_cxxtools=-j1
+
+$(BUILD_OBJ_DIR)/cxxtools/.prepped: $(BUILD_OBJ_DIR)/cxxtools/.prep-cloneln-ed
+	@true
+
 $(BUILD_OBJ_DIR)/cxxtools/.memchecked: $(BUILD_OBJ_DIR)/cxxtools/.built
 	@$(call echo_noop,$@)
 
@@ -461,13 +474,7 @@ COMPONENTS_ALL += $(COMPONENTS_FTY)
 # TODO1: replicate the source directory via symlinks to mangle with autogen etc
 # TODO2: somehow depend on timestamps of ALL source files and/or git metadata
 
-# A dummy recipe line MUST follow the dependency definition for both the
-# dependency and common OR custom (above) ruleset to fire. But this MUST be not
-# an actionable rule, which will otherwise build and fulfill gmake's desires.
-$(BUILD_OBJ_DIR)/%/.prepped: $(abs_srcdir)/.git/modules/%/FETCH_HEAD
-#	@echo "  PREP  $< -> $@"
-
-$(BUILD_OBJ_DIR)/%/.prepped:
+$(BUILD_OBJ_DIR)/%/.prepped: $(abs_srcdir)/.git/modules/%/HEAD
 	@$(MKDIR) $(@D)
 	@$(call echo_noop,$@)
 
@@ -507,7 +514,7 @@ clean-obj/%:
 	    $(RMDIR) $(BUILD_OBJ_DIR)/$(@F); \
 	fi
 
-clean-src/gsl clean-src/libcidr:
+clean-src/gsl clean-src/libcidr clean-src/cxxtools:
 	if [ "$(BUILD_OBJ_DIR)" != "$(ORIGIN_SRC_DIR)" ]; then\
 	    chmod -R u+w $(BUILD_OBJ_DIR)/$(@F) || true; \
 	    $(RMDIR) $(BUILD_OBJ_DIR)/$(@F); \
