@@ -460,7 +460,12 @@ COMPONENTS_ALL += $(COMPONENTS_FTY)
 # This is no-op for most of our components
 # TODO1: replicate the source directory via symlinks to mangle with autogen etc
 # TODO2: somehow depend on timestamps of ALL source files and/or git metadata
-$(BUILD_OBJ_DIR)/%/.prepped: .git/modules/%/.git/FETCH_HEAD
+# A dummy recipe line MUST follow the dependency definition for both the
+# dependency and common OR custom (above) ruleset to fire. But this MUST be not
+# an actionable rule, which will otherwise build and fulfill gmake's desires.
+$(BUILD_OBJ_DIR)/%/.prepped: $(abs_srcdir)/.git/modules/%/FETCH_HEAD
+#	@echo "  PREP  $< -> $@"
+
 $(BUILD_OBJ_DIR)/%/.prepped:
 	@$(MKDIR) $(@D)
 	@$(call echo_noop,$@)
@@ -576,7 +581,7 @@ regenerate/%: install/zproject
 
 ### Resync current checkout to upstream/master
 git-resync/%:
-	( BASEBRANCH="`git config -f $(abs_srcdir).gitmodules submodule.$(@F).branch`" || BASEBRANCH="" ; \
+	( BASEBRANCH="`git config -f $(abs_srcdir)/.gitmodules submodule.$(@F).branch`" || BASEBRANCH="" ; \
 	  test -n "$$BASEBRANCH" || BASEBRANCH=master ; \
 	  BASEREPO="upstream" ; \
 	  cd "$(abs_srcdir)/$(@F)" && \
