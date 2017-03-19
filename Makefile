@@ -520,11 +520,9 @@ clean-src/%:
 	    echo "  NOOP    Generally $@ has nothing to do for now"; \
 	fi
 
-clean/%:
+distclean/% clean/%:
 	$(MAKE) clean-obj/$(@F)
 	$(MAKE) clean-src/$(@F)
-
-distclean/%: clean/%
 
 prep/%: $(BUILD_OBJ_DIR)/%/.prepped
 	@true
