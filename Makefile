@@ -320,7 +320,7 @@ $(BUILD_OBJ_DIR)/libcidr/.checked $(BUILD_OBJ_DIR)/libcidr/.distchecked $(BUILD_
 # earliest stage a build pipeline might have.
 
 COMPONENTS_ALL += zproject
-$(BUILD_OBJ_DIR)/zproject/.autogened: install/gsl
+$(BUILD_OBJ_DIR)/zproject/.autogened: $(BUILD_OBJ_DIR)/gsl/.installed
 
 $(BUILD_OBJ_DIR)/zproject/.checked $(BUILD_OBJ_DIR)/zproject/.distchecked $(BUILD_OBJ_DIR)/zproject/.memchecked: $(BUILD_OBJ_DIR)/zproject/.built
 	@$(call echo_noop,$@)
@@ -341,7 +341,7 @@ MAKE_COMMON_ARGS_tntdb=-j1
 BUILD_SUB_DIR_tntdb=tntdb/
 CONFIG_OPTS_tntdb = --without-postgresql
 CONFIG_OPTS_tntdb += --without-sqlite
-$(BUILD_OBJ_DIR)/tntdb/.configured: install/cxxtools
+$(BUILD_OBJ_DIR)/tntdb/.configured: $(BUILD_OBJ_DIR)/cxxtools/.installed
 $(BUILD_OBJ_DIR)/tntdb/.memchecked: $(BUILD_OBJ_DIR)/tntdb/.built
 	@$(call echo_noop,$@)
 
@@ -350,7 +350,7 @@ $(BUILD_OBJ_DIR)/tntdb/.memchecked: $(BUILD_OBJ_DIR)/tntdb/.built
 COMPONENTS_FTY += tntnet
 CONFIG_OPTS_tntnet = --with-sdk
 CONFIG_OPTS_tntnet += --without-demos
-$(BUILD_OBJ_DIR)/tntnet/.configured: install/cxxtools
+$(BUILD_OBJ_DIR)/tntnet/.configured: $(BUILD_OBJ_DIR)/cxxtools/.installed
 $(BUILD_OBJ_DIR)/tntnet/.memchecked: $(BUILD_OBJ_DIR)/tntnet/.built
 	@$(call echo_noop,$@)
 
@@ -363,7 +363,7 @@ $(BUILD_OBJ_DIR)/libsodium/.memchecked: $(BUILD_OBJ_DIR)/libsodium/.built
 	@$(call echo_noop,$@)
 
 COMPONENTS_FTY += libzmq
-$(BUILD_OBJ_DIR)/libzmq/.configured: install/libsodium
+$(BUILD_OBJ_DIR)/libzmq/.configured: $(BUILD_OBJ_DIR)/libsodium/.installed
 # TODO: It was called "make check-valgrind-memcheck" back then
 $(BUILD_OBJ_DIR)/libzmq/.memchecked: $(BUILD_OBJ_DIR)/libzmq/.built
 	@$(call echo_noop,$@)
@@ -379,10 +379,10 @@ $(BUILD_OBJ_DIR)/czmq/.autogened: $(BUILD_OBJ_DIR)/czmq/.prepped
 	 ( cd "$(BUILD_SRC_DIR)/$(notdir $(@D))/$(BUILD_SUB_DIR_$(notdir $(@D)))" && autoreconf -fiv )
 	$(TOUCH) $@
 
-$(BUILD_OBJ_DIR)/czmq/.configured: install/libzmq
+$(BUILD_OBJ_DIR)/czmq/.configured: $(BUILD_OBJ_DIR)/libzmq/.installed
 
 COMPONENTS_FTY += malamute
-$(BUILD_OBJ_DIR)/malamute/.configured: install/czmq install/libsodium
+$(BUILD_OBJ_DIR)/malamute/.configured: $(BUILD_OBJ_DIR)/czmq/.installed $(BUILD_OBJ_DIR)/libsodium/.installed
 
 COMPONENTS_FTY += nut
 CONFIG_OPTS_nut = --with-doc=skip
@@ -396,59 +396,59 @@ CONFIG_OPTS_nut += --with-devd-dir="$(DESTDIR)$(PREFIX_ETCDIR)/devd"
 CONFIG_OPTS_nut += --with-hotplug-dir="$(DESTDIR)$(PREFIX_ETCDIR)/hotplug"
 
 COMPONENTS_FTY += fty-proto
-$(BUILD_OBJ_DIR)/fty-proto/.configured: install/malamute install/libsodium
-# install/cxxtools
+$(BUILD_OBJ_DIR)/fty-proto/.configured: $(BUILD_OBJ_DIR)/malamute/.installed $(BUILD_OBJ_DIR)/libsodium/.installed
+# $(BUILD_OBJ_DIR)/cxxtools/.installed
 
 # Note: more and more core is a collection of scripts, so should need less deps
 COMPONENTS_FTY += fty-core
-$(BUILD_OBJ_DIR)/fty-proto/.configured: install/malamute install/tntdb install/tntnet install/libcidr
+$(BUILD_OBJ_DIR)/fty-proto/.configured: $(BUILD_OBJ_DIR)/malamute/.installed $(BUILD_OBJ_DIR)/tntdb/.installed $(BUILD_OBJ_DIR)/tntnet/.installed $(BUILD_OBJ_DIR)/libcidr/.installed
 $(BUILD_OBJ_DIR)/fty-core/.memchecked: $(BUILD_OBJ_DIR)/fty-core/.built
 	@$(call echo_noop,$@)
 
 COMPONENTS_FTY += fty-rest
-$(BUILD_OBJ_DIR)/fty-rest/.configured: install/malamute install/tntdb install/tntnet install/fty-proto install/fty-core install/libcidr install/libmagic
+$(BUILD_OBJ_DIR)/fty-rest/.configured: $(BUILD_OBJ_DIR)/malamute/.installed $(BUILD_OBJ_DIR)/tntdb/.installed $(BUILD_OBJ_DIR)/tntnet/.installed $(BUILD_OBJ_DIR)/fty-proto/.installed $(BUILD_OBJ_DIR)/fty-core/.installed $(BUILD_OBJ_DIR)/libcidr/.installed $(BUILD_OBJ_DIR)/libmagic/.installed
 
 COMPONENTS_FTY += fty-nut
-$(BUILD_OBJ_DIR)/fty-nut/.configured: install/fty-proto install/libcidr install/cxxtools install/nut
+$(BUILD_OBJ_DIR)/fty-nut/.configured: $(BUILD_OBJ_DIR)/fty-proto/.installed $(BUILD_OBJ_DIR)/libcidr/.installed $(BUILD_OBJ_DIR)/cxxtools/.installed $(BUILD_OBJ_DIR)/nut/.installed
 
 COMPONENTS_FTY += fty-asset
-$(BUILD_OBJ_DIR)/fty-asset/.configured: install/fty-proto install/tntdb install/cxxtools install/libmagic
+$(BUILD_OBJ_DIR)/fty-asset/.configured: $(BUILD_OBJ_DIR)/fty-proto/.installed $(BUILD_OBJ_DIR)/tntdb/.installed $(BUILD_OBJ_DIR)/cxxtools/.installed $(BUILD_OBJ_DIR)/libmagic/.installed
 
 COMPONENTS_FTY += fty-metric-tpower
-$(BUILD_OBJ_DIR)/fty-metric-tpower/.configured: install/fty-proto install/tntdb install/cxxtools
+$(BUILD_OBJ_DIR)/fty-metric-tpower/.configured: $(BUILD_OBJ_DIR)/fty-proto/.installed $(BUILD_OBJ_DIR)/tntdb/.installed $(BUILD_OBJ_DIR)/cxxtools/.installed
 
 COMPONENTS_FTY += fty-metric-store
-$(BUILD_OBJ_DIR)/fty-metric-store/.configured: install/fty-proto install/tntdb install/cxxtools
+$(BUILD_OBJ_DIR)/fty-metric-store/.configured: $(BUILD_OBJ_DIR)/fty-proto/.installed $(BUILD_OBJ_DIR)/tntdb/.installed $(BUILD_OBJ_DIR)/cxxtools/.installed
 
 COMPONENTS_FTY += fty-metric-composite
-$(BUILD_OBJ_DIR)/fty-metric-composite/.configured: install/fty-proto install/cxxtools
+$(BUILD_OBJ_DIR)/fty-metric-composite/.configured: $(BUILD_OBJ_DIR)/fty-proto/.installed $(BUILD_OBJ_DIR)/cxxtools/.installed
 
 COMPONENTS_FTY += fty-email
-$(BUILD_OBJ_DIR)/fty-email/.configured: install/fty-proto install/cxxtools install/libmagic
+$(BUILD_OBJ_DIR)/fty-email/.configured: $(BUILD_OBJ_DIR)/fty-proto/.installed $(BUILD_OBJ_DIR)/cxxtools/.installed $(BUILD_OBJ_DIR)/libmagic/.installed
 
 COMPONENTS_FTY += fty-alert-engine
-$(BUILD_OBJ_DIR)/fty-alert-engine/.configured: install/fty-proto install/cxxtools
+$(BUILD_OBJ_DIR)/fty-alert-engine/.configured: $(BUILD_OBJ_DIR)/fty-proto/.installed $(BUILD_OBJ_DIR)/cxxtools/.installed
 
 COMPONENTS_FTY += fty-alert-list
-$(BUILD_OBJ_DIR)/fty-alert-list/.configured: install/fty-proto
+$(BUILD_OBJ_DIR)/fty-alert-list/.configured: $(BUILD_OBJ_DIR)/fty-proto/.installed
 
 COMPONENTS_FTY += fty-kpi-power-uptime
-$(BUILD_OBJ_DIR)/fty-kpi-power-uptime/.configured: install/fty-proto
+$(BUILD_OBJ_DIR)/fty-kpi-power-uptime/.configured: $(BUILD_OBJ_DIR)/fty-proto/.installed
 
 COMPONENTS_FTY += fty-metric-cache
-$(BUILD_OBJ_DIR)/fty-metric-cache/.configured: install/fty-proto
+$(BUILD_OBJ_DIR)/fty-metric-cache/.configured: $(BUILD_OBJ_DIR)/fty-proto/.installed
 
 COMPONENTS_FTY += fty-metric-compute
-$(BUILD_OBJ_DIR)/fty-metric-compute/.configured: install/fty-proto
+$(BUILD_OBJ_DIR)/fty-metric-compute/.configured: $(BUILD_OBJ_DIR)/fty-proto/.installed
 
 COMPONENTS_FTY += fty-outage
-$(BUILD_OBJ_DIR)/fty-outage/.configured: install/fty-proto
+$(BUILD_OBJ_DIR)/fty-outage/.configured: $(BUILD_OBJ_DIR)/fty-proto/.installed
 
 COMPONENTS_FTY += fty-sensor-env
-$(BUILD_OBJ_DIR)/fty-sensor-env/.configured: install/fty-proto
+$(BUILD_OBJ_DIR)/fty-sensor-env/.configured: $(BUILD_OBJ_DIR)/fty-proto/.installed
 
 COMPONENTS_FTY += fty-example
-$(BUILD_OBJ_DIR)/fty-example/.configured: install/fty-proto
+$(BUILD_OBJ_DIR)/fty-example/.configured: $(BUILD_OBJ_DIR)/fty-proto/.installed
 
 ### Note: The following components are experimental recent additions,
 ### and in their current state they break FTY builds (and they do not
@@ -456,13 +456,13 @@ $(BUILD_OBJ_DIR)/fty-example/.configured: install/fty-proto
 ### config for them, it does not count them as part of the team yet.
 ### Not built by default... but if we do - it's covered
 COMPONENTS_FTY_EXPERIMENTAL += fty-metric-snmp
-$(BUILD_OBJ_DIR)/fty-metric-snmp/.configured: install/fty-proto
+$(BUILD_OBJ_DIR)/fty-metric-snmp/.configured: $(BUILD_OBJ_DIR)/fty-proto/.installed
 
 COMPONENTS_FTY_EXPERIMENTAL += fty-alert-flexible
-$(BUILD_OBJ_DIR)/fty-alert-flexible/.configured: install/fty-proto
+$(BUILD_OBJ_DIR)/fty-alert-flexible/.configured: $(BUILD_OBJ_DIR)/fty-proto/.installed
 
 COMPONENTS_FTY_EXPERIMENTAL += fty-info
-$(BUILD_OBJ_DIR)/fty-info/.configured: install/fty-proto
+$(BUILD_OBJ_DIR)/fty-info/.configured: $(BUILD_OBJ_DIR)/fty-proto/.installed
 
 COMPONENTS_ALL += $(COMPONENTS_FTY)
 
@@ -587,7 +587,7 @@ reinstall/%:
 	$(MAKE) $(BUILD_OBJ_DIR)/$(@F)/.installed
 
 ### Use currently developed zproject to regenerate a project
-regenerate/%: install/zproject
+regenerate/%: $(BUILD_OBJ_DIR)/zproject/.installed
 	( cd "$(abs_srcdir)/$(@F)" && gsl project.xml && ./autogen.sh && git difftool -y )
 
 ### Resync current checkout to upstream/master
