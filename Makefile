@@ -460,7 +460,7 @@ COMPONENTS_ALL += $(COMPONENTS_FTY)
 # This is no-op for most of our components
 # TODO1: replicate the source directory via symlinks to mangle with autogen etc
 # TODO2: somehow depend on timestamps of ALL source files and/or git metadata
-$(BUILD_OBJ_DIR)/%/.prepped: .git/modules/%/.git/FETCH_HEAD
+$(BUILD_OBJ_DIR)/%/.prepped: .git/modules/%/FETCH_HEAD
 $(BUILD_OBJ_DIR)/%/.prepped:
 	@$(MKDIR) $(@D)
 	@$(call echo_noop,$@)
