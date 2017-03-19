@@ -279,7 +279,7 @@ $(BUILD_OBJ_DIR)/%/.prep-cloneln-ed: $(abs_srcdir)/.git/modules/%/HEAD
 	$(TOUCH) $@
 
 $(BUILD_OBJ_DIR)/gsl/.prepped: $(BUILD_OBJ_DIR)/gsl/.prep-cloneln-ed
-	@true
+	@$(TOUCH) $@
 
 # These are no-ops for GSL:
 $(BUILD_OBJ_DIR)/gsl/.autogened: $(BUILD_OBJ_DIR)/gsl/.prepped
@@ -301,7 +301,7 @@ COMPONENTS_FTY += libcidr
 MAKE_COMMON_ARGS_libcidr = MAKELEVEL="" MAKEFLAGS="" -j1
 
 $(BUILD_OBJ_DIR)/libcidr/.prepped: $(BUILD_OBJ_DIR)/libcidr/.prep-cloneln-ed
-	@true
+	@$(TOUCH) $@
 
 $(BUILD_OBJ_DIR)/libcidr/.autogened: $(BUILD_OBJ_DIR)/libcidr/.prepped
 	@$(call echo_noop,$@)
@@ -329,7 +329,7 @@ COMPONENTS_FTY += cxxtools
 MAKE_COMMON_ARGS_cxxtools=-j1
 
 $(BUILD_OBJ_DIR)/cxxtools/.prepped: $(BUILD_OBJ_DIR)/cxxtools/.prep-cloneln-ed
-	@true
+	@$(TOUCH) $@
 
 $(BUILD_OBJ_DIR)/cxxtools/.memchecked: $(BUILD_OBJ_DIR)/cxxtools/.built
 	@$(call echo_noop,$@)
