@@ -558,8 +558,7 @@ distcheck/%: $(BUILD_OBJ_DIR)/%/.distchecked
 dist/%: $(BUILD_OBJ_DIR)/%/.disted
 	@true
 
-valgrind/%: memcheck/%
-memcheck/%: $(BUILD_OBJ_DIR)/%/.memchecked
+valgrind/% memcheck/%: $(BUILD_OBJ_DIR)/%/.memchecked
 	@true
 
 assume/%:
