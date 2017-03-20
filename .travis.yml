@@ -10,8 +10,29 @@ language:
 python:
 - '2.7'
 
+# Cache the previous build areas, to reuse them if respective components
+# (or their dependencies) did not change since last build. The Makefile
+# should detect if some git HEAD marker file became newer and would then
+# rebuild and reinstall the component (and those who depend on it).
 cache:
-- ccache
+  pip: true
+  ccache: true
+  directories:
+    - ${HOME}/fty-*/
+    - ${HOME}/cxxtools/
+    - ${HOME}/czmq/
+    - ${HOME}/gsl/
+    - ${HOME}/libcidr/
+    - ${HOME}/libmagic/
+    - ${HOME}/libsodium/
+    - ${HOME}/libzmq/
+    - ${HOME}/malamute/
+    - ${HOME}/nut/
+    - ${HOME}/tntdb/
+    - ${HOME}/tntnet/
+    - ${HOME}/zproject/
+    - ${HOME}/.build/
+    - ${HOME}/.install/
 
 os:
 - linux
