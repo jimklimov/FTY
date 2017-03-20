@@ -102,8 +102,9 @@ COMPONENTS_FTY_EXPERIMENTAL =
 # If the *_sub is called - it must do its work
 # Tell GMake to keep any secondary files such as:
 # */.prepped */.autogened */.configured */.built */.installed
-#.SECONDARY:
-.PRECIOUS: %/.prep-cloneln-ed %/.prepped %/.autogened %/.configured %/.built %/.installed %/.checked %/.distchecked %/.disted %/.memchecked
+# NOTE/TODO: Get this to work with explicit list of patterns to filenames
+.SECONDARY:
+#.PRECIOUS: %/.prep-cloneln-ed %/.prepped %/.autogened %/.configured %/.built %/.installed %/.checked %/.distchecked %/.disted %/.memchecked
 
 # TODO : add a mode to check that a workspace has changed (dev work, git
 # checked out another branch, etc.) to trigger rebuilds of a project.
