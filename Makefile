@@ -464,7 +464,7 @@ COMPONENTS_FTY_EXPERIMENTAL += fty-alert-flexible
 $(BUILD_OBJ_DIR)/fty-alert-flexible/.configured: $(BUILD_OBJ_DIR)/fty-proto/.installed
 
 COMPONENTS_FTY_EXPERIMENTAL += fty-info
-$(BUILD_OBJ_DIR)/fty-info/.configured: $(BUILD_OBJ_DIR)/fty-proto/.installed
+$(BUILD_OBJ_DIR)/fty-info/.configured: $(BUILD_OBJ_DIR)/fty-proto/.installed $(BUILD_OBJ_DIR)/cxxtools/.installed $(BUILD_OBJ_DIR)/tntdb/.installed
 
 COMPONENTS_ALL += $(COMPONENTS_FTY)
 
