@@ -85,8 +85,16 @@ MKDIR=/bin/mkdir -p
 RMDIR=/bin/rm -rf
 RMFILE=/bin/rm -f
 TOUCH=/bin/touch
+FIND=find
+LN=ln
+LN_S=$(GNU_LN) -s -f
 # GNU ln with relative support
-LN_S=ln -s -f -r
+GNU_LN=$(LN)
+LN_S_R=$(GNU_LN) -s -f -r
+CC=gcc
+CXX=g++
+export CC
+export CXX
 
 # "ALL" are the components tracked by this makefile, even if not required
 # for an FTY build (e.g. gsl and zproject are not an always used codepath)
@@ -227,8 +235,8 @@ define clone_ln
 	( $(RMDIR) "$(2)" && $(MKDIR) "$(2)" && \
 	  SRC="`cd "$(1)" && pwd`" && DST="`cd "$(2)" && pwd`" && \
 	  cd "$$SRC" && \
-	    find . -type d -exec $(MKDIR) "$$DST"/'{}' \; && \
-	    find . \! -type d -exec $(LN_S) "$$SRC"/'{}' "$$DST"/'{}' \; \
+	    $(FIND) . -type d -exec $(MKDIR) "$$DST"/'{}' \; && \
+	    $(FIND) . \! -type d -exec $(LN_S_R) "$$SRC"/'{}' "$$DST"/'{}' \; \
 	)
 endef
 
