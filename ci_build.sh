@@ -44,13 +44,13 @@ default|"default-tgt:"*)
     echo "`date`: Starting the sequential build attempt for singular target $BUILD_TGT..."
 
     ( echo "`date`: Starting the quiet parallel build attempt..."
-      case "$BUILD_TYPE" in
-        default-tgt:*check*)
-            echo "`date`: First fully build and install some components that are picky to sub-make during checks..."
-            $CI_TIME make VERBOSE=0 V=0 -j1 install/libcidr install/libzmq install/czmq install/tntdb || exit
-            echo "`date`: Proceed with general build..."
-            ;;
-      esac
+#      case "$BUILD_TYPE" in
+#        default-tgt:*check*)
+#            echo "`date`: First fully build and install some components that are picky to sub-make during checks..."
+#            $CI_TIME make VERBOSE=0 V=0 -j1 install/libcidr install/libzmq install/czmq install/tntdb || exit
+#            echo "`date`: Proceed with general build..."
+#            ;;
+#      esac
       $CI_TIME make VERBOSE=0 V=0 -k -j4 "$BUILD_TGT" &
       minutes=0
       limit=30
