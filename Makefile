@@ -665,3 +665,11 @@ reinstall-fty-experimental:
 
 %-fty-experimental: $(addprefix %/,$(COMPONENTS_FTY_EXPERIMENTAL))
 	@echo "COMPLETED $@ : made '$^'"
+
+# Speak BSDisch?
+emerge: git-resync-auto-all
+	@echo "COMPLETED $@ : made '$^'"
+
+world:
+	$(MAKE) emerge
+	$(MAKE) install-all install-fty-experimental
