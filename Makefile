@@ -96,6 +96,11 @@ CXX=g++
 export CC
 export CXX
 
+# optional overrides of config above, etc.
+sinclude Makefile-local.mk
+sinclude Makefile-local-$(BUILD_OS).mk
+sinclude Makefile-local-$(BUILD_OS)-$(BUILD_ARCH).mk
+
 # "ALL" are the components tracked by this makefile, even if not required
 # for an FTY build (e.g. gsl and zproject are not an always used codepath)
 COMPONENTS_ALL =
