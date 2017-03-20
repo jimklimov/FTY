@@ -584,6 +584,7 @@ redistcheck/%:
 	$(MAKE) $(BUILD_OBJ_DIR)/$(@F)/.distchecked
 
 reinstall/%:
+	$(MAKE) uninstall/$(@F)
 	$(MAKE) clean/$(@F)
 	$(MAKE) $(BUILD_OBJ_DIR)/$(@F)/.installed
 
