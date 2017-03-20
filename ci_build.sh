@@ -51,10 +51,38 @@ default|"default-tgt:"*)
             echo "`date`: Proceed with general build..."
             ;;
       esac
-      $CI_TIME make VERBOSE=0 V=0 -k -j4 "$BUILD_TGT"; ) || \
+      $CI_TIME make VERBOSE=0 V=0 -k -j4 "$BUILD_TGT" &
+      minutes=0
+      limit=30
+      while kill -0 $! >/dev/null 2>&1 ; do
+        printf ' \b' # Hidden print to keep the logs ticking
+        if [ "$minutes" == "$limit" ]; then
+            echo "`date`: Parallel build timed out over $limit minutes" >&2
+            exit 1
+        fi
+        minutes="$(expr $minutes + 1)"
+        sleep 60
+      done
+      wait $!
+    ) || \
     ( echo "==================== PARALLEL ATTEMPT FAILED ($?) =========="
       echo "`date`: Starting the sequential build attempt..."
-      $CI_TIME make VERBOSE=1 "$BUILD_TGT" )
+      # Avoiding travis_wait() and build timeouts during tests
+      # thanks to comments in Travis-CI issue #4190
+      $CI_TIME make VERBOSE=1 "$BUILD_TGT" &
+      minutes=0
+      limit=30
+      while kill -0 $! >/dev/null 2>&1 ; do
+        printf ' \b' # Hidden print to keep the logs ticking
+        if [ "$minutes" == "$limit" ]; then
+            echo "`date`: Sequential build timed out over $limit minutes" >&2
+            exit 1
+        fi
+        minutes="$(expr $minutes + 1)"
+        sleep 60
+      done
+      wait $!
+    )
 
     echo "=== Are GitIgnores good after 'make $BUILD_TGT'? (should have no output below)"
     git status -s || git status || true
