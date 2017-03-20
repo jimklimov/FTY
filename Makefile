@@ -593,14 +593,25 @@ regenerate/%: $(BUILD_OBJ_DIR)/zproject/.installed
 	( cd "$(abs_srcdir)/$(@F)" && gsl project.xml && ./autogen.sh && git difftool -y )
 
 ### Resync current checkout to upstream/master
-git-resync/%:
-	( BASEBRANCH="`git config -f $(abs_srcdir)/.gitmodules submodule.$(@F).branch`" || BASEBRANCH="" ; \
+### The "auto" mode is intended for rebuilds, so it quietly
+### follows the configured default branch. Simple "git-resync"
+### stays in developer's current branch and merges it with
+### changes trickling down from upstream default branch.
+git-resync/% git-resync-auto/%:
+	@( BASEBRANCH="`git config -f $(abs_srcdir)/.gitmodules submodule.$(@F).branch`" || BASEBRANCH="" ; \
 	  test -n "$$BASEBRANCH" || BASEBRANCH=master ; \
-	  BASEREPO="upstream" ; \
 	  cd "$(abs_srcdir)/$(@F)" && \
+	    { git remote -v | grep upstream && BASEREPO="upstream" || BASEREPO="origin" ; } && \
+	    case "$@" in \
+	      *git-resync-auto/*) git checkout -f "$$BASEBRANCH" ;; \
+	      *) true ;; \
+	    esac && \
 	    git pull --all && \
 	    git merge "$$BASEREPO/$$BASEBRANCH" && \
-	    git rebase -i "$$BASEREPO/$$BASEBRANCH" \
+	    case "$@" in \
+	      *git-resync-auto/*) true ;; \
+	      *) git rebase -i "$$BASEREPO/$$BASEBRANCH" ;; \
+	    esac; \
 	)
 
 # Note this one would trigger a (re)build run
