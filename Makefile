@@ -477,7 +477,8 @@ COMPONENTS_ALL += $(COMPONENTS_FTY)
 
 $(BUILD_OBJ_DIR)/%/.prepped: $(abs_srcdir)/.git/modules/%/HEAD
 	@$(MKDIR) $(@D)
-	@$(call echo_noop,$@)
+	@$(TOUCH) $@
+#	@$(call echo_noop,$@)
 
 $(BUILD_OBJ_DIR)/%/.autogened: $(BUILD_OBJ_DIR)/%/.prepped
 	$(call autogen_sub,$(notdir $(@D)))
