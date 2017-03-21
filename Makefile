@@ -97,6 +97,7 @@ GNU_LN=$(LN)
 LN_S_R=$(GNU_LN) -s -f -r
 # GNU Make required (overridable via includes below)
 GMAKE=make
+MAKE=$(GMAKE)
 CC=gcc
 CXX=g++
 export CC
@@ -184,7 +185,7 @@ define build_sub
 	    xclone*|*)      CCACHE_BASEDIR="$(BUILD_SRC_DIR)/$(1)" ;; \
 	  esac && \
 	  export CCACHE_BASEDIR && \
-	  $(GMAKE) $(MAKE_COMMON_ARGS_$(1)) $(MAKE_ALL_ARGS_$(1)) all && \
+	  $(MAKE) $(MAKE_COMMON_ARGS_$(1)) $(MAKE_ALL_ARGS_$(1)) all && \
 	  $(TOUCH) "$(BUILD_OBJ_DIR)/$(1)/".built || \
 	  { $(TOUCH) "$(BUILD_OBJ_DIR)/$(1)/".build-failed ; exit 1; } \
 	)
@@ -200,7 +201,7 @@ define install_sub
 	    xclone*|*)      CCACHE_BASEDIR="$(BUILD_SRC_DIR)/$(1)" ;; \
 	  esac && \
 	  export CCACHE_BASEDIR && \
-	  $(GMAKE) DESTDIR="$(DESTDIR)" \
+	  $(MAKE) DESTDIR="$(DESTDIR)" \
 	    $(MAKE_COMMON_ARGS_$(1)) $(MAKE_INSTALL_ARGS_$(1)) install && \
 	  $(TOUCH) "$(BUILD_OBJ_DIR)/$(1)/".installed || \
 	  { $(TOUCH) "$(BUILD_OBJ_DIR)/$(1)/".install-failed ; exit 1; } \
@@ -217,7 +218,7 @@ define check_sub
 	    xclone*|*)      CCACHE_BASEDIR="$(BUILD_SRC_DIR)/$(1)" ;; \
 	  esac && \
 	  export CCACHE_BASEDIR && \
-	  $(GMAKE) DESTDIR="$(DESTDIR)" \
+	  $(MAKE) DESTDIR="$(DESTDIR)" \
 	    $(MAKE_COMMON_ARGS_$(1)) $(MAKE_INSTALL_ARGS_$(1)) check && \
 	  $(TOUCH) "$(BUILD_OBJ_DIR)/$(1)/".checked || \
 	  { $(TOUCH) "$(BUILD_OBJ_DIR)/$(1)/".check-failed ; exit 1; } \
@@ -238,7 +239,7 @@ define distcheck_sub
 	    xclone*|*)      CCACHE_BASEDIR="$(BUILD_SRC_DIR)/$(1)" ;; \
 	  esac && \
 	  export CCACHE_BASEDIR && \
-	  $(GMAKE) DESTDIR="$(DESTDIR)" $(MAKE_COMMON_ARGS_$(1)) $(MAKE_INSTALL_ARGS_$(1)) \
+	  $(MAKE) DESTDIR="$(DESTDIR)" $(MAKE_COMMON_ARGS_$(1)) $(MAKE_INSTALL_ARGS_$(1)) \
 	    DISTCHECK_CONFIGURE_FLAGS='$(CONFIG_OPTS) $(CONFIG_OPTS_$(1))' \
 	    distcheck && \
 	  $(TOUCH) "$(BUILD_OBJ_DIR)/$(1)/".distchecked || \
@@ -255,7 +256,7 @@ define dist_sub
 	    xclone*|*)      CCACHE_BASEDIR="$(BUILD_SRC_DIR)/$(1)" ;; \
 	  esac && \
 	  export CCACHE_BASEDIR && \
-	  $(GMAKE) DESTDIR="$(DESTDIR)" $(MAKE_COMMON_ARGS_$(1)) $(MAKE_INSTALL_ARGS_$(1)) \
+	  $(MAKE) DESTDIR="$(DESTDIR)" $(MAKE_COMMON_ARGS_$(1)) $(MAKE_INSTALL_ARGS_$(1)) \
 	    dist && \
 	  $(TOUCH) "$(BUILD_OBJ_DIR)/$(1)/".disted || \
 	  { $(TOUCH) "$(BUILD_OBJ_DIR)/$(1)/".dist-failed ; exit 1; } \
@@ -272,7 +273,7 @@ define memcheck_sub
 	    xclone*|*)      CCACHE_BASEDIR="$(BUILD_SRC_DIR)/$(1)" ;; \
 	  esac && \
 	  export CCACHE_BASEDIR && \
-	  $(GMAKE) DESTDIR="$(DESTDIR)" $(MAKE_COMMON_ARGS_$(1)) $(MAKE_INSTALL_ARGS_$(1)) \
+	  $(MAKE) DESTDIR="$(DESTDIR)" $(MAKE_COMMON_ARGS_$(1)) $(MAKE_INSTALL_ARGS_$(1)) \
 	    memcheck && \
 	  $(TOUCH) "$(BUILD_OBJ_DIR)/$(1)/".memchecked || \
 	  { $(TOUCH) "$(BUILD_OBJ_DIR)/$(1)/".memcheck-failed ; exit 1; } \
@@ -289,7 +290,7 @@ define uninstall_sub
 	    xclone*|*)      CCACHE_BASEDIR="$(BUILD_SRC_DIR)/$(1)" ;; \
 	  esac && \
 	  export CCACHE_BASEDIR && \
-	  $(GMAKE) DESTDIR="$(DESTDIR)" $(MAKE_COMMON_ARGS_$(1)) $(MAKE_INSTALL_ARGS_$(1)) \
+	  $(MAKE) DESTDIR="$(DESTDIR)" $(MAKE_COMMON_ARGS_$(1)) $(MAKE_INSTALL_ARGS_$(1)) \
 	    uninstall \
 	)
 endef
@@ -650,8 +651,8 @@ clean-src/%:
 	 fi
 
 distclean/% clean/%:
-	$(GMAKE) clean-obj/$(@F)
-	$(GMAKE) clean-src/$(@F)
+	$(MAKE) clean-obj/$(@F)
+	$(MAKE) clean-src/$(@F)
 
 prep/%: $(BUILD_OBJ_DIR)/%/.prepped
 	@true
@@ -686,25 +687,25 @@ assume/%:
 	@$(TOUCH) $(BUILD_OBJ_DIR)/$(@F)/.installed
 
 nowarn/%:
-	$(GMAKE) clean/$(@F)
-	$(GMAKE) CFLAGS="$(CFLAGS) -Wall -Werror" CPPFLAGS="$(CPPFLAGS) -Wall -Werror" CXXFLAGS="$(CXXFLAGS) -Wall -Werror" $(BUILD_OBJ_DIR)/$(@F)/.built
+	$(MAKE) clean/$(@F)
+	$(MAKE) CFLAGS="$(CFLAGS) -Wall -Werror" CPPFLAGS="$(CPPFLAGS) -Wall -Werror" CXXFLAGS="$(CXXFLAGS) -Wall -Werror" $(BUILD_OBJ_DIR)/$(@F)/.built
 
 rebuild/%:
-	$(GMAKE) clean/$(@F)
-	$(GMAKE) $(BUILD_OBJ_DIR)/$(@F)/.built
+	$(MAKE) clean/$(@F)
+	$(MAKE) $(BUILD_OBJ_DIR)/$(@F)/.built
 
 recheck/%:
-	$(GMAKE) clean/$(@F)
-	$(GMAKE) $(BUILD_OBJ_DIR)/$(@F)/.checked
+	$(MAKE) clean/$(@F)
+	$(MAKE) $(BUILD_OBJ_DIR)/$(@F)/.checked
 
 redistcheck/%:
-	$(GMAKE) clean/$(@F)
-	$(GMAKE) $(BUILD_OBJ_DIR)/$(@F)/.distchecked
+	$(MAKE) clean/$(@F)
+	$(MAKE) $(BUILD_OBJ_DIR)/$(@F)/.distchecked
 
 reinstall/%:
-	$(GMAKE) uninstall/$(@F)
-	$(GMAKE) clean/$(@F)
-	$(GMAKE) $(BUILD_OBJ_DIR)/$(@F)/.installed
+	if test -f $(BUILD_OBJ_DIR)/$(@F)/.installed ; then $(MAKE) uninstall/$(@F) ; fi
+	$(MAKE) clean/$(@F)
+	$(MAKE) $(BUILD_OBJ_DIR)/$(@F)/.installed
 
 ### Use currently developed zproject to regenerate a project
 regenerate/%: $(BUILD_OBJ_DIR)/zproject/.installed
@@ -738,28 +739,28 @@ uninstall/%: $(BUILD_OBJ_DIR)/%/.configured
 
 # Rule-them-all rules! e.g. build-all install-all uninstall-all clean-all
 rebuild-all:
-	$(GMAKE) $(addprefix clean/,$(COMPONENTS_ALL))
-	$(GMAKE) $(addprefix build/,$(COMPONENTS_ALL))
+	$(MAKE) $(addprefix clean/,$(COMPONENTS_ALL))
+	$(MAKE) $(addprefix build/,$(COMPONENTS_ALL))
 
 rebuild-fty:
-	$(GMAKE) $(addprefix clean/,$(COMPONENTS_FTY))
-	$(GMAKE) $(addprefix build/,$(COMPONENTS_FTY))
+	$(MAKE) $(addprefix clean/,$(COMPONENTS_FTY))
+	$(MAKE) $(addprefix build/,$(COMPONENTS_FTY))
 
 rebuild-fty-experimental:
-	$(GMAKE) $(addprefix clean/,$(COMPONENTS_FTY_EXPERIMENTAL))
-	$(GMAKE) $(addprefix build/,$(COMPONENTS_FTY_EXPERIMENTAL))
+	$(MAKE) $(addprefix clean/,$(COMPONENTS_FTY_EXPERIMENTAL))
+	$(MAKE) $(addprefix build/,$(COMPONENTS_FTY_EXPERIMENTAL))
 
 reinstall-all:
-	$(GMAKE) $(addprefix clean/,$(COMPONENTS_ALL))
-	$(GMAKE) $(addprefix install/,$(COMPONENTS_ALL))
+	$(MAKE) $(addprefix clean/,$(COMPONENTS_ALL))
+	$(MAKE) $(addprefix install/,$(COMPONENTS_ALL))
 
 reinstall-fty:
-	$(GMAKE) $(addprefix clean/,$(COMPONENTS_FTY))
-	$(GMAKE) $(addprefix install/,$(COMPONENTS_FTY))
+	$(MAKE) $(addprefix clean/,$(COMPONENTS_FTY))
+	$(MAKE) $(addprefix install/,$(COMPONENTS_FTY))
 
 reinstall-fty-experimental:
-	$(GMAKE) $(addprefix clean/,$(COMPONENTS_FTY_EXPERIMENTAL))
-	$(GMAKE) $(addprefix install/,$(COMPONENTS_FTY_EXPERIMENTAL))
+	$(MAKE) $(addprefix clean/,$(COMPONENTS_FTY_EXPERIMENTAL))
+	$(MAKE) $(addprefix install/,$(COMPONENTS_FTY_EXPERIMENTAL))
 
 %-all: $(addprefix %/,$(COMPONENTS_ALL))
 	@echo "COMPLETED $@ : made '$^'"
@@ -781,5 +782,5 @@ emerge: git-resync-auto-all
 	@echo "COMPLETED $@ : made '$^'"
 
 world:
-	$(GMAKE) emerge
-	$(GMAKE) install-all install-fty-experimental
+	$(MAKE) emerge
+	$(MAKE) install-all install-fty-experimental
