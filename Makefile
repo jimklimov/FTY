@@ -290,8 +290,10 @@ BUILD_SUB_DIR_gsl=src/
 MAKE_COMMON_ARGS_gsl=DESTDIR="$(DESTDIR)$(PREFIX)/local"
 
 $(BUILD_OBJ_DIR)/%/.prep-cloneln-ed: $(abs_srcdir)/.git/modules/%/HEAD
-	$(call clone_ln,$(ORIGIN_SRC_DIR)/$(notdir $(@D)),$(BUILD_OBJ_DIR)/$(notdir $(@D)))
-	$(TOUCH) $@
+	@if test ! -s "$@" || ! diff "$@" "$<" > /dev/null 2>&1 ; then \
+	 $(call clone_ln,$(ORIGIN_SRC_DIR)/$(notdir $(@D)),$(BUILD_OBJ_DIR)/$(notdir $(@D))) ; \
+	 fi
+	@cat $< > $@
 
 $(BUILD_OBJ_DIR)/gsl/.prepped: $(BUILD_OBJ_DIR)/gsl/.prep-cloneln-ed
 	@$(TOUCH) $@
@@ -491,9 +493,12 @@ COMPONENTS_ALL += $(COMPONENTS_FTY)
 
 $(BUILD_OBJ_DIR)/%/.prepped: $(abs_srcdir)/.git/modules/%/HEAD
 	@$(MKDIR) $(@D)
-	@if [ -f "$(@D)/.installed" ] || [ -f "$(@D)/.install-failed" ] ; then \
-	 $(call uninstall_sub,$(notdir $(@D))) ; else true ; fi
-	@$(TOUCH) $@
+	@if test ! -s "$@" || ! diff "$@" "$<" > /dev/null 2>&1 ; then \
+	  if [ -f "$(@D)/.installed" ] || [ -f "$(@D)/.install-failed" ] ; then \
+	    $(call uninstall_sub,$(notdir $(@D))) ; else true ; \
+	  fi; \
+	 fi
+	@cat $< > $@
 
 $(BUILD_OBJ_DIR)/%/.autogened: $(BUILD_OBJ_DIR)/%/.prepped
 	$(call autogen_sub,$(notdir $(@D)))
