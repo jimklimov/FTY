@@ -702,7 +702,7 @@ redistcheck/%:
 	$(GMAKE) $(BUILD_OBJ_DIR)/$(@F)/.distchecked
 
 reinstall/%:
-	$(GMAKE) uninstall/$(@F)
+	if test -f $(BUILD_OBJ_DIR)/$(@F)/.installed ; then $(GMAKE) uninstall/$(@F) ; fi
 	$(GMAKE) clean/$(@F)
 	$(GMAKE) $(BUILD_OBJ_DIR)/$(@F)/.installed
 
