@@ -132,7 +132,7 @@ COMPONENTS_FTY_EXPERIMENTAL =
 # Note: per http://lists.busybox.net/pipermail/buildroot/2013-May/072556.html
 # the autogen, autoreconf and equivalents mangle the source tree
 define autogen_sub
-	( $(MKDIR) "$(BUILD_OBJ_DIR)/$(1)/$(BUILD_SUB_DIR_$(1))" && \
+	( ( $(MKDIR) "$(BUILD_OBJ_DIR)/$(1)/$(BUILD_SUB_DIR_$(1))" && \
 	  case "x$(PREP_TYPE_$(1))" in \
 	    xnone) \
 	        cd "$(ORIGIN_SRC_DIR)/$(1)/$(BUILD_SUB_DIR_$(1))" || exit ;; \
@@ -149,7 +149,7 @@ define autogen_sub
 	        autoreconf -fiv || exit ; \
 	      fi ) && \
 	  $(TOUCH) "$(BUILD_OBJ_DIR)/$(1)"/.autogened && \
-	  $(RMFILE) "$(BUILD_OBJ_DIR)/$(1)"/.autogen-failed || \
+	  $(RMFILE) "$(BUILD_OBJ_DIR)/$(1)"/.autogen-failed ) || \
 	  { $(TOUCH) "$(BUILD_OBJ_DIR)/$(1)"/.autogen-failed ; exit 1; } \
 	)
 endef
@@ -161,7 +161,7 @@ endef
 # while for different "make" rules afterwards the working directory is always
 # under BUILD_OBJ_DIR.
 define configure_sub
-	( $(MKDIR) "$(BUILD_OBJ_DIR)/$(1)/$(BUILD_SUB_DIR_$(1))" && \
+	( ( $(MKDIR) "$(BUILD_OBJ_DIR)/$(1)/$(BUILD_SUB_DIR_$(1))" && \
 	  cd "$(BUILD_OBJ_DIR)/$(1)/$(BUILD_SUB_DIR_$(1))" && \
 	  case "x$(PREP_TYPE_$(1))" in \
 	    xnone)     CCACHE_BASEDIR="$(ORIGIN_SRC_DIR)/$(1)" \
@@ -175,7 +175,7 @@ define configure_sub
 	                    $(CONFIG_OPTS) $(CONFIG_OPTS_$(1)) || exit ;; \
 	  esac && \
 	  $(TOUCH) "$(BUILD_OBJ_DIR)/$(1)/".configured && \
-	  $(RMFILE) "$(BUILD_OBJ_DIR)/$(1)"/.configure-failed || \
+	  $(RMFILE) "$(BUILD_OBJ_DIR)/$(1)"/.configure-failed ) || \
 	  { $(TOUCH) "$(BUILD_OBJ_DIR)/$(1)/".configure-failed ; exit 1; } \
 	)
 endef
