@@ -114,7 +114,7 @@ COMPONENTS_FTY_EXPERIMENTAL =
 # */.prepped */.autogened */.configured */.built */.installed
 # NOTE/TODO: Get this to work with explicit list of patterns to filenames
 .SECONDARY:
-#.PRECIOUS: %/.prep-cloneln-ed %/.prepped %/.autogened %/.configured %/.built %/.installed %/.checked %/.distchecked %/.disted %/.memchecked
+#.PRECIOUS: %/.prepped %/.autogened %/.configured %/.built %/.installed %/.checked %/.distchecked %/.disted %/.memchecked
 
 # TODO : add a mode to check that a workspace has changed (dev work, git
 # checked out another branch, etc.) to trigger rebuilds of a project.
@@ -282,7 +282,7 @@ sinclude Makefile-local-$(BUILD_OS).mk
 sinclude Makefile-local-$(BUILD_OS)-$(BUILD_ARCH).mk
 
 # Catch empty expansions
-$(BUILD_OBJ_DIR)//.prep-cloneln-ed $(BUILD_OBJ_DIR)//.prepped $(BUILD_OBJ_DIR)//.autogened $(BUILD_OBJ_DIR)//.configured $(BUILD_OBJ_DIR)//.built $(BUILD_OBJ_DIR)//.installed $(BUILD_OBJ_DIR)//.checked $(BUILD_OBJ_DIR)//.distchecked $(BUILD_OBJ_DIR)//.disted $(BUILD_OBJ_DIR)//.memchecked:
+$(BUILD_OBJ_DIR)//.prepped $(BUILD_OBJ_DIR)//.autogened $(BUILD_OBJ_DIR)//.configured $(BUILD_OBJ_DIR)//.built $(BUILD_OBJ_DIR)//.installed $(BUILD_OBJ_DIR)//.checked $(BUILD_OBJ_DIR)//.distchecked $(BUILD_OBJ_DIR)//.disted $(BUILD_OBJ_DIR)//.memchecked:
 	@echo "Error in recipe expansion, can not build $@ : component part is empty" ; exit 1
 
 ########################### GSL and LIBCIDR ###############################
@@ -290,15 +290,7 @@ $(BUILD_OBJ_DIR)//.prep-cloneln-ed $(BUILD_OBJ_DIR)//.prepped $(BUILD_OBJ_DIR)//
 COMPONENTS_ALL += gsl
 BUILD_SUB_DIR_gsl=src/
 MAKE_COMMON_ARGS_gsl=DESTDIR="$(DESTDIR)$(PREFIX)/local"
-
-$(BUILD_OBJ_DIR)/%/.prep-cloneln-ed: $(abs_srcdir)/.git/modules/%/HEAD
-	@if test ! -s "$@" || ! diff "$@" "$<" > /dev/null 2>&1 ; then \
-	 $(call clone_ln,$(ORIGIN_SRC_DIR)/$(notdir $(@D)),$(BUILD_OBJ_DIR)/$(notdir $(@D))) ; \
-	 fi
-	@cat $< > $@
-
-$(BUILD_OBJ_DIR)/gsl/.prepped: $(BUILD_OBJ_DIR)/gsl/.prep-cloneln-ed
-	@$(TOUCH) $@
+PREP_TYPE_gsl = cloneln
 
 # These are no-ops for GSL:
 $(BUILD_OBJ_DIR)/gsl/.autogened: $(BUILD_OBJ_DIR)/gsl/.prepped
@@ -318,9 +310,7 @@ COMPONENTS_FTY += libcidr
 # With the weird build system that libcidr uses, we'd better hide from it
 # that it is in a sub-make - or it goes crazy trying to communicate back
 MAKE_COMMON_ARGS_libcidr = MAKELEVEL="" MAKEFLAGS="" -j1
-
-$(BUILD_OBJ_DIR)/libcidr/.prepped: $(BUILD_OBJ_DIR)/libcidr/.prep-cloneln-ed
-	@$(TOUCH) $@
+PREP_TYPE_libcidr = cloneln
 
 $(BUILD_OBJ_DIR)/libcidr/.autogened: $(BUILD_OBJ_DIR)/libcidr/.prepped
 	@$(call echo_noop,$@)
@@ -346,9 +336,7 @@ $(BUILD_OBJ_DIR)/zproject/.checked $(BUILD_OBJ_DIR)/zproject/.distchecked $(BUIL
 
 COMPONENTS_FTY += cxxtools
 MAKE_COMMON_ARGS_cxxtools=-j1
-
-$(BUILD_OBJ_DIR)/cxxtools/.prepped: $(BUILD_OBJ_DIR)/cxxtools/.prep-cloneln-ed
-	@$(TOUCH) $@
+PREP_TYPE_cxxtools = cloneln
 
 $(BUILD_OBJ_DIR)/cxxtools/.memchecked: $(BUILD_OBJ_DIR)/cxxtools/.built
 	@$(call echo_noop,$@)
@@ -489,18 +477,39 @@ COMPONENTS_ALL += $(COMPONENTS_FTY)
 # The prep step handles preparation of source directory (unpack, patch etc.)
 # At a later stage this cound "git clone" a workspace for host-arch build
 
-# This is no-op for most of our components
-# TODO1: replicate the source directory via symlinks to mangle with autogen etc
-# TODO2: somehow depend on timestamps of ALL source files and/or git metadata
+# So far prepping is no-op for most of our components
+# Note that these rules fire if the git HEAD file is "newer" (by timestamp)
+# than the last prep. This does not necessarily mean that rebuild should be
+# done (e.g. the stashed build area might be older than a git checkout of
+# the same commit hash), so we verify that the commit-id also differs or
+# is missing in the prep flag-file, and only then uninstall the old build,
+# if any, and reprep the working area. If the .prepped and HEAD file contents
+# are the same, try to touch HEAD's timestamp back to the (older) .prepped
+# file so the rule does not cause rebuilds in case you e.g. switched from
+# one (built) branch to another and then back again - effectively causing
+# no changes to codebase in workspace. Conversely, the rule does not fire
+# and none of the recipe logic is executed if the HEAD file is initially
+# not-newer than the .prepped timestamp.
 
 $(BUILD_OBJ_DIR)/%/.prepped: $(abs_srcdir)/.git/modules/%/HEAD
-	@$(MKDIR) $(@D)
+	@$(MKDIR) "$(@D)"
 	@if test ! -s "$@" || ! diff "$@" "$<" > /dev/null 2>&1 ; then \
-	  if [ -f "$(@D)/.installed" ] || [ -f "$(@D)/.install-failed" ] ; then \
+	  if test -f "$(@D)/.installed" || test -f "$(@D)/.install-failed" ; then \
+	    echo "UNINSTALL old build of $(notdir $(@D)) while prepping anew..." ; \
 	    $(call uninstall_sub,$(notdir $(@D))) ; else true ; \
 	  fi; \
 	 fi
-	@cat $< > $@
+	@$(RMFILE) "$(@D)"/.*-failed
+	@if test "x$(PREP_TYPE_$(notdir $(@D)))" = x"cloneln" ; then \
+	    echo "CLONE sources of $(notdir $(@D)) as symlinks while prepping anew..." ; \
+	    $(call clone_ln,$(ORIGIN_SRC_DIR)/$(notdir $(@D)),$(BUILD_OBJ_DIR)/$(notdir $(@D))) ; \
+	 fi
+	@if test -s "$@" && test -s "$<" && diff "$@" "$<" > /dev/null 2>&1 ; then \
+	    echo "ROLLBACK TIMESTAMP of $< to that of existing $@ because this commit is already prepped" ; \
+	    $(TOUCH) -r "$@" "$<" || true ; \
+	 else \
+	    cat "$<" > "$@" ; \
+	 fi
 
 $(BUILD_OBJ_DIR)/%/.autogened: $(BUILD_OBJ_DIR)/%/.prepped
 	$(call autogen_sub,$(notdir $(@D)))
