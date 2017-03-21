@@ -89,6 +89,7 @@ RMDIR=/bin/rm -rf
 RMFILE=/bin/rm -f
 TOUCH=/bin/touch
 FIND=find
+GPATCH=patch
 LN=ln
 LN_S=$(GNU_LN) -s -f
 # GNU ln with relative support
@@ -560,6 +561,8 @@ COMPONENTS_ALL += $(COMPONENTS_FTY)
 # no changes to codebase in workspace. Conversely, the rule does not fire
 # and none of the recipe logic is executed if the FETCH_HEAD file is
 # initially not-newer than the .prepped timestamp.
+# Also support optional patching of sources while prepping (e.g. for
+# alternate OSes with their non-SCMed tweaks).
 
 $(BUILD_OBJ_DIR)/%/.prepped: $(abs_srcdir)/.git/modules/%/FETCH_HEAD
 	@$(MKDIR) "$(@D)"
@@ -580,6 +583,17 @@ $(BUILD_OBJ_DIR)/%/.prepped: $(abs_srcdir)/.git/modules/%/FETCH_HEAD
 	    echo "CLONE sources of $(notdir $(@D)) as symlinks under common BUILD_SRC_DIR while prepping..." ; \
 	    $(call clone_ln,$(ORIGIN_SRC_DIR)/$(notdir $(@D)),$(BUILD_SRC_DIR)/$(notdir $(@D))) ;; \
 	 esac
+	@if test -n "$(PATCH_LIST_$(notdir $(@D)))" ; then \
+	    case "x$(PREP_TYPE_$(notdir $(@D)))" in \
+	     xnone) echo "SKIP PATCHING sources for $(notdir $(@D))..." ; exit 0 ;; \
+	     xcloneln-obj) cd $(BUILD_OBJ_DIR)/$(notdir $(@D)) || exit ;; \
+	     xclone*|*)    cd $(BUILD_SRC_DIR)/$(notdir $(@D)) || exit ;; \
+	    esac && \
+	    for P in $(PATCH_LIST_$(notdir $(@D))) ; do \
+	        echo "PATCH sources in `pwd` with $$P" ; \
+	        $(GPATCH) -t < "$$P" || exit ; \
+	    done ; \
+	 fi
 	@if test -s "$@" && test -s "$<" && diff "$@" "$<" > /dev/null 2>&1 ; then \
 	    echo "ROLLBACK TIMESTAMP of $< to that of existing $@ because this commit is already prepped" ; \
 	    $(TOUCH) -r "$@" "$<" || true ; \
