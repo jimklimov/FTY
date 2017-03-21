@@ -24,8 +24,8 @@
 #.PHONY: all install clean
 all: build-fty
 install: install-fty
-uninstall: install-all
-clean: clean-all
+uninstall: uninstall-all uninstall-experimental
+clean: clean-all clean-experimental
 check: check-all
 dist: dist-all
 distclean: distclean-all
