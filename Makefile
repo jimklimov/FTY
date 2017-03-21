@@ -712,7 +712,7 @@ redistcheck/%:
 	$(MAKE) $(BUILD_OBJ_DIR)/$(@F)/.distchecked
 
 reinstall/%:
-	if test -f $(BUILD_OBJ_DIR)/$(@F)/.installed ; then $(MAKE) uninstall/$(@F) ; fi
+	if test -f $(BUILD_OBJ_DIR)/$(@F)/.installed ; then $(call uninstall_sub,$(@F)) ; fi
 	$(MAKE) clean/$(@F)
 	$(MAKE) $(BUILD_OBJ_DIR)/$(@F)/.installed
 
