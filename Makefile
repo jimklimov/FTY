@@ -770,6 +770,12 @@ reinstall-fty-experimental:
 %-fty-experimental: $(addprefix %/,$(COMPONENTS_FTY_EXPERIMENTAL))
 	@echo "COMPLETED $@ : made '$^'"
 
+wipe mrproper:
+	$(RMDIR) $(BUILD_SRC_DIR) $(BUILD_OBJ_DIR)
+	case "$(INSTDIR)" in \
+	    $(abs_builddir)/.install/*)  $(RMDIR) $(INSTDIR) ;; \
+	esac
+
 # Speak BSDisch?
 emerge: git-resync-auto-all
 	@echo "COMPLETED $@ : made '$^'"
