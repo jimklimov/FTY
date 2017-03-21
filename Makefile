@@ -375,7 +375,7 @@ $(BUILD_OBJ_DIR)/gsl/.checked $(BUILD_OBJ_DIR)/gsl/.distchecked $(BUILD_OBJ_DIR)
 COMPONENTS_FTY += libcidr
 # With the weird build system that libcidr uses, we'd better hide from it
 # that it is in a sub-make - or it goes crazy trying to communicate back
-MAKE_COMMON_ARGS_libcidr = MAKELEVEL="" MAKEFLAGS="" -j1
+MAKE_COMMON_ARGS_libcidr ?= MAKELEVEL="" MAKEFLAGS="" -j1
 PREP_TYPE_libcidr = cloneln-obj
 
 $(BUILD_OBJ_DIR)/libcidr/.autogened: $(BUILD_OBJ_DIR)/libcidr/.prepped
