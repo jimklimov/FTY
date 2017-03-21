@@ -162,7 +162,7 @@ define configure_sub
 	    xnone)     CCACHE_BASEDIR="$(ORIGIN_SRC_DIR)/$(1)" \
 	                "$(ORIGIN_SRC_DIR)/$(1)/$(BUILD_SUB_DIR_$(1))/configure" \
 	                    $(CONFIG_OPTS) $(CONFIG_OPTS_$(1)) || exit ;; \
-	    xclone-obj) CCACHE_BASEDIR="$(BUILD_OBJ_DIR)/$(1)" \
+	    xcloneln-obj) CCACHE_BASEDIR="$(BUILD_OBJ_DIR)/$(1)" \
 	                "$(BUILD_OBJ_DIR)/$(1)/$(BUILD_SUB_DIR_$(1))/configure" \
 	                    $(CONFIG_OPTS) $(CONFIG_OPTS_$(1)) || exit ;; \
 	    xclone*|*) CCACHE_BASEDIR="$(BUILD_SRC_DIR)/$(1)" \
