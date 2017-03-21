@@ -565,7 +565,7 @@ COMPONENTS_ALL += $(COMPONENTS_FTY)
 # Also support optional patching of sources while prepping (e.g. for
 # alternate OSes with their non-SCMed tweaks).
 
-$(BUILD_OBJ_DIR)/%/.prepped: $(abs_srcdir)/.git/modules/%/FETCH_HEAD
+$(BUILD_OBJ_DIR)/%/.prepped: $(abs_srcdir)/.git/modules/%/FETCH_HEAD $(abs_srcdir)/.git/modules/%/index
 	@$(MKDIR) "$(@D)"
 	@if test ! -s "$@" || ! diff "$@" "$<" > /dev/null 2>&1 ; then \
 	  if test -f "$(@D)/.installed" || test -f "$(@D)/.install-failed" ; then \
