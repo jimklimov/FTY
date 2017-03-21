@@ -478,20 +478,24 @@ COMPONENTS_ALL += $(COMPONENTS_FTY)
 # At a later stage this cound "git clone" a workspace for host-arch build
 
 # So far prepping is no-op for most of our components
-# Note that these rules fire if the git HEAD file is "newer" (by timestamp)
-# than the last prep. This does not necessarily mean that rebuild should be
-# done (e.g. the stashed build area might be older than a git checkout of
-# the same commit hash), so we verify that the commit-id also differs or
+# Note that these rules fire if the git FETCH_HEAD file is "newer"
+# (ccording to filesystem timestamp) than the last .prepper flag-file.
+# This does not necessarily mean that rebuild should be done (e.g. the
+# stashed build area might be older than a git checkout of the workspace
+# with same commit hash), so we verify that the commit-id also differs or
 # is missing in the prep flag-file, and only then uninstall the old build,
-# if any, and reprep the working area. If the .prepped and HEAD file contents
-# are the same, try to touch HEAD's timestamp back to the (older) .prepped
+# if any, and reprep the working area. If the .prepped and FETCH_HEAD file
+# contents are the same (and note that FETCH_HEAD is a list of the tracked
+# branches' last known HEAD commits - not necessarily just the one current
+# branch, though this case is likely on persistent/stashed automated build
+# checkouts), try to touch FETCH_HEAD's timestamp back to (older) .prepped
 # file so the rule does not cause rebuilds in case you e.g. switched from
 # one (built) branch to another and then back again - effectively causing
 # no changes to codebase in workspace. Conversely, the rule does not fire
-# and none of the recipe logic is executed if the HEAD file is initially
-# not-newer than the .prepped timestamp.
+# and none of the recipe logic is executed if the FETCH_HEAD file is
+# initially not-newer than the .prepped timestamp.
 
-$(BUILD_OBJ_DIR)/%/.prepped: $(abs_srcdir)/.git/modules/%/HEAD
+$(BUILD_OBJ_DIR)/%/.prepped: $(abs_srcdir)/.git/modules/%/FETCH_HEAD
 	@$(MKDIR) "$(@D)"
 	@if test ! -s "$@" || ! diff "$@" "$<" > /dev/null 2>&1 ; then \
 	  if test -f "$(@D)/.installed" || test -f "$(@D)/.install-failed" ; then \
