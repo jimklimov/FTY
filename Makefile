@@ -145,7 +145,8 @@ define autogen_sub
 	      else \
 	        autoreconf -fiv || exit ; \
 	      fi ) && \
-	  $(TOUCH) "$(BUILD_OBJ_DIR)/$(1)"/.autogened || \
+	  $(TOUCH) "$(BUILD_OBJ_DIR)/$(1)"/.autogened && \
+	  $(RMFILE) "$(BUILD_OBJ_DIR)/$(1)"/.autogen-failed || \
 	  { $(TOUCH) "$(BUILD_OBJ_DIR)/$(1)"/.autogen-failed ; exit 1; } \
 	)
 endef
@@ -170,7 +171,8 @@ define configure_sub
 	                "$(BUILD_SRC_DIR)/$(1)/$(BUILD_SUB_DIR_$(1))/configure" \
 	                    $(CONFIG_OPTS) $(CONFIG_OPTS_$(1)) || exit ;; \
 	  esac && \
-	  $(TOUCH) "$(BUILD_OBJ_DIR)/$(1)/".configured || \
+	  $(TOUCH) "$(BUILD_OBJ_DIR)/$(1)/".configured && \
+	  $(RMFILE) "$(BUILD_OBJ_DIR)/$(1)"/.configure-failed || \
 	  { $(TOUCH) "$(BUILD_OBJ_DIR)/$(1)/".configure-failed ; exit 1; } \
 	)
 endef
@@ -186,7 +188,8 @@ define build_sub
 	  esac && \
 	  export CCACHE_BASEDIR && \
 	  $(MAKE) $(MAKE_COMMON_ARGS_$(1)) $(MAKE_ALL_ARGS_$(1)) all && \
-	  $(TOUCH) "$(BUILD_OBJ_DIR)/$(1)/".built || \
+	  $(TOUCH) "$(BUILD_OBJ_DIR)/$(1)/".built && \
+	  $(RMFILE) "$(BUILD_OBJ_DIR)/$(1)"/.build-failed || \
 	  { $(TOUCH) "$(BUILD_OBJ_DIR)/$(1)/".build-failed ; exit 1; } \
 	)
 endef
@@ -203,7 +206,8 @@ define install_sub
 	  export CCACHE_BASEDIR && \
 	  $(MAKE) DESTDIR="$(DESTDIR)" \
 	    $(MAKE_COMMON_ARGS_$(1)) $(MAKE_INSTALL_ARGS_$(1)) install && \
-	  $(TOUCH) "$(BUILD_OBJ_DIR)/$(1)/".installed || \
+	  $(TOUCH) "$(BUILD_OBJ_DIR)/$(1)/".installed && \
+	  $(RMFILE) "$(BUILD_OBJ_DIR)/$(1)"/.install-failed || \
 	  { $(TOUCH) "$(BUILD_OBJ_DIR)/$(1)/".install-failed ; exit 1; } \
 	)
 endef
@@ -220,7 +224,8 @@ define check_sub
 	  export CCACHE_BASEDIR && \
 	  $(MAKE) DESTDIR="$(DESTDIR)" \
 	    $(MAKE_COMMON_ARGS_$(1)) $(MAKE_INSTALL_ARGS_$(1)) check && \
-	  $(TOUCH) "$(BUILD_OBJ_DIR)/$(1)/".checked || \
+	  $(TOUCH) "$(BUILD_OBJ_DIR)/$(1)/".checked && \
+	  $(RMFILE) "$(BUILD_OBJ_DIR)/$(1)"/.check-failed || \
 	  { $(TOUCH) "$(BUILD_OBJ_DIR)/$(1)/".check-failed ; exit 1; } \
 	)
 endef
@@ -242,7 +247,8 @@ define distcheck_sub
 	  $(MAKE) DESTDIR="$(DESTDIR)" $(MAKE_COMMON_ARGS_$(1)) $(MAKE_INSTALL_ARGS_$(1)) \
 	    DISTCHECK_CONFIGURE_FLAGS='$(CONFIG_OPTS) $(CONFIG_OPTS_$(1))' \
 	    distcheck && \
-	  $(TOUCH) "$(BUILD_OBJ_DIR)/$(1)/".distchecked || \
+	  $(TOUCH) "$(BUILD_OBJ_DIR)/$(1)/".distchecked && \
+	  $(RMFILE) "$(BUILD_OBJ_DIR)/$(1)"/.distcheck-failed || \
 	  { $(TOUCH) "$(BUILD_OBJ_DIR)/$(1)/".distcheck-failed ; exit 1; } \
 	)
 endef
@@ -258,7 +264,8 @@ define dist_sub
 	  export CCACHE_BASEDIR && \
 	  $(MAKE) DESTDIR="$(DESTDIR)" $(MAKE_COMMON_ARGS_$(1)) $(MAKE_INSTALL_ARGS_$(1)) \
 	    dist && \
-	  $(TOUCH) "$(BUILD_OBJ_DIR)/$(1)/".disted || \
+	  $(TOUCH) "$(BUILD_OBJ_DIR)/$(1)/".disted && \
+	  $(RMFILE) "$(BUILD_OBJ_DIR)/$(1)"/.dist-failed || \
 	  { $(TOUCH) "$(BUILD_OBJ_DIR)/$(1)/".dist-failed ; exit 1; } \
 	)
 endef
@@ -275,7 +282,8 @@ define memcheck_sub
 	  export CCACHE_BASEDIR && \
 	  $(MAKE) DESTDIR="$(DESTDIR)" $(MAKE_COMMON_ARGS_$(1)) $(MAKE_INSTALL_ARGS_$(1)) \
 	    memcheck && \
-	  $(TOUCH) "$(BUILD_OBJ_DIR)/$(1)/".memchecked || \
+	  $(TOUCH) "$(BUILD_OBJ_DIR)/$(1)/".memchecked && \
+	  $(RMFILE) "$(BUILD_OBJ_DIR)/$(1)"/.memcheck-failed || \
 	  { $(TOUCH) "$(BUILD_OBJ_DIR)/$(1)/".memcheck-failed ; exit 1; } \
 	)
 endef
@@ -291,7 +299,8 @@ define uninstall_sub
 	  esac && \
 	  export CCACHE_BASEDIR && \
 	  $(MAKE) DESTDIR="$(DESTDIR)" $(MAKE_COMMON_ARGS_$(1)) $(MAKE_INSTALL_ARGS_$(1)) \
-	    uninstall \
+	    uninstall && \
+	  $(RMFILE) "$(BUILD_OBJ_DIR)/$(1)"/.installed "$(BUILD_OBJ_DIR)/$(1)"/.install-failed \
 	)
 endef
 
