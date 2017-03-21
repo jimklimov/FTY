@@ -87,6 +87,9 @@ export DESTDIR
 MKDIR=/bin/mkdir -p
 RMDIR=/bin/rm -rf
 RMFILE=/bin/rm -f
+RM=$(RMFILE)
+MV=/bin/mv -f
+CP=/bin/cp -pf
 TOUCH=/bin/touch
 FIND=find
 GPATCH=patch
@@ -593,6 +596,14 @@ $(BUILD_OBJ_DIR)/%/.prepped: $(abs_srcdir)/.git/modules/%/FETCH_HEAD $(abs_srcdi
 	    echo "CLONE sources of $(notdir $(@D)) as symlinks under common BUILD_SRC_DIR while prepping..." ; \
 	    $(call clone_ln,$(ORIGIN_SRC_DIR)/$(notdir $(@D)),$(BUILD_SRC_DIR)/$(notdir $(@D))) ;; \
 	 esac
+	@if test -n "$(PREP_ACTION_BEFORE_PATCHING_$(notdir $(@D)))" ; then \
+	    case "x$(PREP_TYPE_$(notdir $(@D)))" in \
+	     xnone) echo "SKIP PREP_ACTION_BEFORE_PATCHING sources for $(notdir $(@D))..." ; exit 0 ;; \
+	     xcloneln-obj) cd $(BUILD_OBJ_DIR)/$(notdir $(@D)) || exit ;; \
+	     xclone*|*)    cd $(BUILD_SRC_DIR)/$(notdir $(@D)) || exit ;; \
+	    esac && \
+	    ( true ; $(PREP_ACTION_BEFORE_PATCHING_$(notdir $(@D))) ) ; \
+	 fi
 	@if test -n "$(PATCH_LIST_$(notdir $(@D)))" ; then \
 	    case "x$(PREP_TYPE_$(notdir $(@D)))" in \
 	     xnone) echo "SKIP PATCHING sources for $(notdir $(@D))..." ; exit 0 ;; \
@@ -601,7 +612,7 @@ $(BUILD_OBJ_DIR)/%/.prepped: $(abs_srcdir)/.git/modules/%/FETCH_HEAD $(abs_srcdi
 	    esac && \
 	    for P in $(PATCH_LIST_$(notdir $(@D))) ; do \
 	        echo "PATCH sources in `pwd` with $$P" ; \
-	        $(GPATCH) -t < "$$P" || exit ; \
+	        $(GPATCH) $(PATCH_OPTS_$(notdir $(@D))) --merge --forward --batch < "$$P" || exit ; \
 	    done ; \
 	 fi
 	@if test -s "$@" && test -s "$<" && diff "$@" "$<" > /dev/null 2>&1 ; then \
