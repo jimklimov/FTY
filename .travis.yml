@@ -18,19 +18,6 @@ cache:
   pip: true
   ccache: true
   directories:
-    - ${HOME}/fty-*/
-    - ${HOME}/cxxtools/
-    - ${HOME}/czmq/
-    - ${HOME}/gsl/
-    - ${HOME}/libcidr/
-    - ${HOME}/libmagic/
-    - ${HOME}/libsodium/
-    - ${HOME}/libzmq/
-    - ${HOME}/malamute/
-    - ${HOME}/nut/
-    - ${HOME}/tntdb/
-    - ${HOME}/tntnet/
-    - ${HOME}/zproject/
     - ${HOME}/.build/
     - ${HOME}/.install/
 
