@@ -47,19 +47,22 @@ export ARCH
 abs_srcdir:=$(strip $(shell dirname $(realpath $(lastword $(MAKEFILE_LIST)))))
 abs_builddir:=$(shell pwd)
 
-# Subdirectory where builds happen (with a sub-dir per component where
-# object files and other products are created)
-BUILD_OBJ_DIR ?= $(abs_builddir)/.build/$(BUILD_OS)-$(BUILD_ARCH)
-
-# This is the directory under which components' checked-out sources live.
-# Initially this is directly where submodules are checked out into, but
-# later this can become e.g. a wipable local git clone of those submodules
-# to support the multi-host builds from same source checkout (autoreconf
-# changes the source tree and so depends on tools available on the host).
-BUILD_SRC_DIR ?= $(abs_srcdir)
 # This is where real original sources reside (e.g. where to copy from,
-# if it comes to that)
+# if it comes to that), directly where submodules are checked out into.
 ORIGIN_SRC_DIR ?= $(abs_srcdir)
+
+# This is the directory under which a clone of components' checked-out
+# sources live, as a a wipable local git clone of those submodules to
+# support the multi-host builds from same source checkout (autoreconf
+# changes the source tree and so depends on tools available on the host).
+BUILD_SRC_DIR ?= $(abs_builddir)/.srcclone/$(BUILD_OS)-$(BUILD_ARCH)
+
+# Subdirectory where out-of-tree builds happen (with a sub-dir per
+# component where object files and other products are created). For a
+# few components this is effectively used as their BUILD_SRC_DIR too
+# (e.g. those that are not managed by autotools and so do not easily
+# support out-of-tree builds).
+BUILD_OBJ_DIR ?= $(abs_builddir)/.build/$(BUILD_OS)-$(BUILD_ARCH)
 
 # Root dir where tools are installed into (using their default paths inside)
 # We also do use some of those tools (e.g. GSL) during further builds.
@@ -125,7 +128,14 @@ COMPONENTS_FTY_EXPERIMENTAL =
 # the autogen, autoreconf and equivalents mangle the source tree
 define autogen_sub
 	( $(MKDIR) "$(BUILD_OBJ_DIR)/$(1)/$(BUILD_SUB_DIR_$(1))" && \
-	  cd "$(BUILD_SRC_DIR)/$(1)/$(BUILD_SUB_DIR_$(1))" && \
+	  case "x$(PREP_TYPE_$(1))" in \
+	    xnone) \
+	        cd "$(ORIGIN_SRC_DIR)/$(1)/$(BUILD_SUB_DIR_$(1))" || exit ;; \
+	    xcloneln-obj) \
+	        cd "$(BUILD_OBJ_DIR)/$(1)/$(BUILD_SUB_DIR_$(1))" || exit ;; \
+	    xcloneln|*) \
+	        cd "$(BUILD_SRC_DIR)/$(1)/$(BUILD_SUB_DIR_$(1))" || exit ;; \
+	  esac && \
 	    ( if [ -x ./autogen.sh ]; then \
 	        ./autogen.sh  || exit ; \
 	      elif [ -x ./buildconf ]; then \
@@ -140,11 +150,24 @@ endef
 
 # Note: this requires that "configure" has already been created in the sources
 # If custom "CONFIG_OPTS_$(1)" were defined, they are appended to configuration
+# Note that depending on this component's PREP_TYPE (or lack thereof) there is
+# a different possible location for the generated configure script and sources,
+# while for different "make" rules afterwards the working directory is always
+# under BUILD_OBJ_DIR.
 define configure_sub
 	( $(MKDIR) "$(BUILD_OBJ_DIR)/$(1)/$(BUILD_SUB_DIR_$(1))" && \
 	  cd "$(BUILD_OBJ_DIR)/$(1)/$(BUILD_SUB_DIR_$(1))" && \
-	    CCACHE_BASEDIR="$(ORIGIN_SRC_DIR)/$(1)" \
-	    "$(BUILD_SRC_DIR)/$(1)/$(BUILD_SUB_DIR_$(1))/configure" $(CONFIG_OPTS) $(CONFIG_OPTS_$(1)) && \
+	  case "x$(PREP_TYPE_$(1))" in \
+	    xnone)     CCACHE_BASEDIR="$(ORIGIN_SRC_DIR)/$(1)" \
+	                "$(ORIGIN_SRC_DIR)/$(1)/$(BUILD_SUB_DIR_$(1))/configure" \
+	                    $(CONFIG_OPTS) $(CONFIG_OPTS_$(1)) || exit ;; \
+	    xclone-obj) CCACHE_BASEDIR="$(BUILD_OBJ_DIR)/$(1)" \
+	                "$(BUILD_OBJ_DIR)/$(1)/$(BUILD_SUB_DIR_$(1))/configure" \
+	                    $(CONFIG_OPTS) $(CONFIG_OPTS_$(1)) || exit ;; \
+	    xclone*|*) CCACHE_BASEDIR="$(BUILD_SRC_DIR)/$(1)" \
+	                "$(BUILD_SRC_DIR)/$(1)/$(BUILD_SUB_DIR_$(1))/configure" \
+	                    $(CONFIG_OPTS) $(CONFIG_OPTS_$(1)) || exit ;; \
+	  esac && \
 	  $(TOUCH) "$(BUILD_OBJ_DIR)/$(1)/".configured || \
 	  { $(TOUCH) "$(BUILD_OBJ_DIR)/$(1)/".configure-failed ; exit 1; } \
 	)
@@ -154,8 +177,13 @@ endef
 define build_sub
 	( $(MKDIR) "$(BUILD_OBJ_DIR)/$(1)/$(BUILD_SUB_DIR_$(1))" && \
 	  cd "$(BUILD_OBJ_DIR)/$(1)/$(BUILD_SUB_DIR_$(1))" && \
-	    CCACHE_BASEDIR="$(ORIGIN_SRC_DIR)/$(1)" \
-	    $(GMAKE) $(MAKE_COMMON_ARGS_$(1)) $(MAKE_ALL_ARGS_$(1)) all && \
+	  case "x$(PREP_TYPE_$(1))" in \
+	    xnone)          CCACHE_BASEDIR="$(ORIGIN_SRC_DIR)/$(1)" ;; \
+	    xcloneln-obj)   CCACHE_BASEDIR="$(BUILD_OBJ_DIR)/$(1)" ;; \
+	    xclone*|*)      CCACHE_BASEDIR="$(BUILD_SRC_DIR)/$(1)" ;; \
+	  esac && \
+	  export CCACHE_BASEDIR && \
+	  $(GMAKE) $(MAKE_COMMON_ARGS_$(1)) $(MAKE_ALL_ARGS_$(1)) all && \
 	  $(TOUCH) "$(BUILD_OBJ_DIR)/$(1)/".built || \
 	  { $(TOUCH) "$(BUILD_OBJ_DIR)/$(1)/".build-failed ; exit 1; } \
 	)
@@ -165,8 +193,14 @@ endef
 define install_sub
 	( $(MKDIR) "$(BUILD_OBJ_DIR)/$(1)/$(BUILD_SUB_DIR_$(1))" $(DESTDIR) $(INSTDIR) && \
 	  cd "$(BUILD_OBJ_DIR)/$(1)/$(BUILD_SUB_DIR_$(1))" && \
-	    CCACHE_BASEDIR="$(ORIGIN_SRC_DIR)/$(1)" \
-	    $(GMAKE) DESTDIR="$(DESTDIR)" $(MAKE_COMMON_ARGS_$(1)) $(MAKE_INSTALL_ARGS_$(1)) install && \
+	  case "x$(PREP_TYPE_$(1))" in \
+	    xnone)          CCACHE_BASEDIR="$(ORIGIN_SRC_DIR)/$(1)" ;; \
+	    xcloneln-obj)   CCACHE_BASEDIR="$(BUILD_OBJ_DIR)/$(1)" ;; \
+	    xclone*|*)      CCACHE_BASEDIR="$(BUILD_SRC_DIR)/$(1)" ;; \
+	  esac && \
+	  export CCACHE_BASEDIR && \
+	  $(GMAKE) DESTDIR="$(DESTDIR)" \
+	    $(MAKE_COMMON_ARGS_$(1)) $(MAKE_INSTALL_ARGS_$(1)) install && \
 	  $(TOUCH) "$(BUILD_OBJ_DIR)/$(1)/".installed || \
 	  { $(TOUCH) "$(BUILD_OBJ_DIR)/$(1)/".install-failed ; exit 1; } \
 	)
@@ -176,8 +210,14 @@ endef
 define check_sub
 	( $(MKDIR) "$(BUILD_OBJ_DIR)/$(1)/$(BUILD_SUB_DIR_$(1))" $(DESTDIR) $(INSTDIR) && \
 	  cd "$(BUILD_OBJ_DIR)/$(1)/$(BUILD_SUB_DIR_$(1))" && \
-	    CCACHE_BASEDIR="$(ORIGIN_SRC_DIR)/$(1)" \
-	    $(GMAKE) DESTDIR="$(DESTDIR)" $(MAKE_COMMON_ARGS_$(1)) $(MAKE_INSTALL_ARGS_$(1)) check && \
+	  case "x$(PREP_TYPE_$(1))" in \
+	    xnone)          CCACHE_BASEDIR="$(ORIGIN_SRC_DIR)/$(1)" ;; \
+	    xcloneln-obj)   CCACHE_BASEDIR="$(BUILD_OBJ_DIR)/$(1)" ;; \
+	    xclone*|*)      CCACHE_BASEDIR="$(BUILD_SRC_DIR)/$(1)" ;; \
+	  esac && \
+	  export CCACHE_BASEDIR && \
+	  $(GMAKE) DESTDIR="$(DESTDIR)" \
+	    $(MAKE_COMMON_ARGS_$(1)) $(MAKE_INSTALL_ARGS_$(1)) check && \
 	  $(TOUCH) "$(BUILD_OBJ_DIR)/$(1)/".checked || \
 	  { $(TOUCH) "$(BUILD_OBJ_DIR)/$(1)/".check-failed ; exit 1; } \
 	)
@@ -191,10 +231,15 @@ endef
 define distcheck_sub
 	( $(MKDIR) "$(BUILD_OBJ_DIR)/$(1)/$(BUILD_SUB_DIR_$(1))" $(DESTDIR) $(INSTDIR) && \
 	  cd "$(BUILD_OBJ_DIR)/$(1)/$(BUILD_SUB_DIR_$(1))" && \
-	    CCACHE_BASEDIR="$(ORIGIN_SRC_DIR)/$(1)" \
-	    $(GMAKE) DESTDIR="$(DESTDIR)" $(MAKE_COMMON_ARGS_$(1)) $(MAKE_INSTALL_ARGS_$(1)) \
-		DISTCHECK_CONFIGURE_FLAGS='$(CONFIG_OPTS) $(CONFIG_OPTS_$(1))' \
-		distcheck && \
+	  case "x$(PREP_TYPE_$(1))" in \
+	    xnone)          CCACHE_BASEDIR="$(ORIGIN_SRC_DIR)/$(1)" ;; \
+	    xcloneln-obj)   CCACHE_BASEDIR="$(BUILD_OBJ_DIR)/$(1)" ;; \
+	    xclone*|*)      CCACHE_BASEDIR="$(BUILD_SRC_DIR)/$(1)" ;; \
+	  esac && \
+	  export CCACHE_BASEDIR && \
+	  $(GMAKE) DESTDIR="$(DESTDIR)" $(MAKE_COMMON_ARGS_$(1)) $(MAKE_INSTALL_ARGS_$(1)) \
+	    DISTCHECK_CONFIGURE_FLAGS='$(CONFIG_OPTS) $(CONFIG_OPTS_$(1))' \
+	    distcheck && \
 	  $(TOUCH) "$(BUILD_OBJ_DIR)/$(1)/".distchecked || \
 	  { $(TOUCH) "$(BUILD_OBJ_DIR)/$(1)/".distcheck-failed ; exit 1; } \
 	)
@@ -203,8 +248,14 @@ endef
 define dist_sub
 	( $(MKDIR) "$(BUILD_OBJ_DIR)/$(1)/$(BUILD_SUB_DIR_$(1))" $(DESTDIR) $(INSTDIR) && \
 	  cd "$(BUILD_OBJ_DIR)/$(1)/$(BUILD_SUB_DIR_$(1))" && \
-	    CCACHE_BASEDIR="$(ORIGIN_SRC_DIR)/$(1)" \
-	    $(GMAKE) DESTDIR="$(DESTDIR)" $(MAKE_COMMON_ARGS_$(1)) $(MAKE_INSTALL_ARGS_$(1)) dist && \
+	  case "x$(PREP_TYPE_$(1))" in \
+	    xnone)          CCACHE_BASEDIR="$(ORIGIN_SRC_DIR)/$(1)" ;; \
+	    xcloneln-obj)   CCACHE_BASEDIR="$(BUILD_OBJ_DIR)/$(1)" ;; \
+	    xclone*|*)      CCACHE_BASEDIR="$(BUILD_SRC_DIR)/$(1)" ;; \
+	  esac && \
+	  export CCACHE_BASEDIR && \
+	  $(GMAKE) DESTDIR="$(DESTDIR)" $(MAKE_COMMON_ARGS_$(1)) $(MAKE_INSTALL_ARGS_$(1)) \
+	    dist && \
 	  $(TOUCH) "$(BUILD_OBJ_DIR)/$(1)/".disted || \
 	  { $(TOUCH) "$(BUILD_OBJ_DIR)/$(1)/".dist-failed ; exit 1; } \
 	)
@@ -214,8 +265,14 @@ endef
 define memcheck_sub
 	( $(MKDIR) "$(BUILD_OBJ_DIR)/$(1)/$(BUILD_SUB_DIR_$(1))" $(DESTDIR) $(INSTDIR) && \
 	  cd "$(BUILD_OBJ_DIR)/$(1)/$(BUILD_SUB_DIR_$(1))" && \
-	    CCACHE_BASEDIR="$(ORIGIN_SRC_DIR)/$(1)" \
-	    $(GMAKE) DESTDIR="$(DESTDIR)" $(MAKE_COMMON_ARGS_$(1)) $(MAKE_INSTALL_ARGS_$(1)) memcheck && \
+	  case "x$(PREP_TYPE_$(1))" in \
+	    xnone)          CCACHE_BASEDIR="$(ORIGIN_SRC_DIR)/$(1)" ;; \
+	    xcloneln-obj)   CCACHE_BASEDIR="$(BUILD_OBJ_DIR)/$(1)" ;; \
+	    xclone*|*)      CCACHE_BASEDIR="$(BUILD_SRC_DIR)/$(1)" ;; \
+	  esac && \
+	  export CCACHE_BASEDIR && \
+	  $(GMAKE) DESTDIR="$(DESTDIR)" $(MAKE_COMMON_ARGS_$(1)) $(MAKE_INSTALL_ARGS_$(1)) \
+	    memcheck && \
 	  $(TOUCH) "$(BUILD_OBJ_DIR)/$(1)/".memchecked || \
 	  { $(TOUCH) "$(BUILD_OBJ_DIR)/$(1)/".memcheck-failed ; exit 1; } \
 	)
@@ -225,8 +282,14 @@ define uninstall_sub
 	( $(MKDIR) "$(BUILD_OBJ_DIR)/$(1)/$(BUILD_SUB_DIR_$(1))" $(DESTDIR) $(INSTDIR) && \
 	  $(RMFILE) "$(BUILD_OBJ_DIR)/$(1)/".installed "$(BUILD_OBJ_DIR)/$(1)/".install-failed && \
 	  cd "$(BUILD_OBJ_DIR)/$(1)/$(BUILD_SUB_DIR_$(1))" && \
-	    CCACHE_BASEDIR="$(ORIGIN_SRC_DIR)/$(1)" \
-	    $(GMAKE) DESTDIR="$(DESTDIR)" $(MAKE_COMMON_ARGS_$(1)) $(MAKE_INSTALL_ARGS_$(1)) uninstall \
+	  case "x$(PREP_TYPE_$(1))" in \
+	    xnone)          CCACHE_BASEDIR="$(ORIGIN_SRC_DIR)/$(1)" ;; \
+	    xcloneln-obj)   CCACHE_BASEDIR="$(BUILD_OBJ_DIR)/$(1)" ;; \
+	    xclone*|*)      CCACHE_BASEDIR="$(BUILD_SRC_DIR)/$(1)" ;; \
+	  esac && \
+	  export CCACHE_BASEDIR && \
+	  $(GMAKE) DESTDIR="$(DESTDIR)" $(MAKE_COMMON_ARGS_$(1)) $(MAKE_INSTALL_ARGS_$(1)) \
+	    uninstall \
 	)
 endef
 
@@ -234,7 +297,8 @@ endef
 # and populating with (relative) symlinks to original data.
 # For safety, use absolute paths...
 define clone_ln
-	( $(RMDIR) "$(2)" && $(MKDIR) "$(2)" && \
+	( if test x"$(1)" = x"$(2)" ; then exit ; fi && \
+	  $(RMDIR) "$(2)" && $(MKDIR) "$(2)" && \
 	  SRC="`cd "$(1)" && pwd`" && DST="`cd "$(2)" && pwd`" && \
 	  cd "$$SRC" && \
 	    $(FIND) . -type d -exec $(MKDIR) "$$DST"/'{}' \; && \
@@ -290,7 +354,7 @@ $(BUILD_OBJ_DIR)//.prepped $(BUILD_OBJ_DIR)//.autogened $(BUILD_OBJ_DIR)//.confi
 COMPONENTS_ALL += gsl
 BUILD_SUB_DIR_gsl=src/
 MAKE_COMMON_ARGS_gsl=DESTDIR="$(DESTDIR)$(PREFIX)/local"
-PREP_TYPE_gsl = cloneln
+PREP_TYPE_gsl = cloneln-obj
 
 # These are no-ops for GSL:
 $(BUILD_OBJ_DIR)/gsl/.autogened: $(BUILD_OBJ_DIR)/gsl/.prepped
@@ -302,21 +366,21 @@ $(BUILD_OBJ_DIR)/gsl/.configured: $(BUILD_OBJ_DIR)/gsl/.autogened
 $(BUILD_OBJ_DIR)/gsl/.checked $(BUILD_OBJ_DIR)/gsl/.distchecked $(BUILD_OBJ_DIR)/gsl/.memchecked $(BUILD_OBJ_DIR)/gsl/.disted: $(BUILD_OBJ_DIR)/gsl/.built
 	@$(call echo_noop,$@)
 
-$(BUILD_OBJ_DIR)/gsl/.built: BUILD_SRC_DIR=$(BUILD_OBJ_DIR)
-$(BUILD_OBJ_DIR)/gsl/.installed: BUILD_SRC_DIR=$(BUILD_OBJ_DIR)
+#$(BUILD_OBJ_DIR)/gsl/.built: BUILD_SRC_DIR=$(BUILD_OBJ_DIR)
+#$(BUILD_OBJ_DIR)/gsl/.installed: BUILD_SRC_DIR=$(BUILD_OBJ_DIR)
 
 ### Rinse and repeat for libcidr, but there's less to customize
 COMPONENTS_FTY += libcidr
 # With the weird build system that libcidr uses, we'd better hide from it
 # that it is in a sub-make - or it goes crazy trying to communicate back
 MAKE_COMMON_ARGS_libcidr = MAKELEVEL="" MAKEFLAGS="" -j1
-PREP_TYPE_libcidr = cloneln
+PREP_TYPE_libcidr = cloneln-obj
 
 $(BUILD_OBJ_DIR)/libcidr/.autogened: $(BUILD_OBJ_DIR)/libcidr/.prepped
 	@$(call echo_noop,$@)
 
-$(BUILD_OBJ_DIR)/libcidr/.built: BUILD_SRC_DIR=$(BUILD_OBJ_DIR)
-$(BUILD_OBJ_DIR)/libcidr/.installed: BUILD_SRC_DIR=$(BUILD_OBJ_DIR)
+#$(BUILD_OBJ_DIR)/libcidr/.built: BUILD_SRC_DIR=$(BUILD_OBJ_DIR)
+#$(BUILD_OBJ_DIR)/libcidr/.installed: BUILD_SRC_DIR=$(BUILD_OBJ_DIR)
 
 $(BUILD_OBJ_DIR)/libcidr/.checked $(BUILD_OBJ_DIR)/libcidr/.distchecked $(BUILD_OBJ_DIR)/libcidr/.memchecked $(BUILD_OBJ_DIR)/libcidr/.disted: $(BUILD_OBJ_DIR)/libcidr/.built
 	@$(call echo_noop,$@)
@@ -336,7 +400,7 @@ $(BUILD_OBJ_DIR)/zproject/.checked $(BUILD_OBJ_DIR)/zproject/.distchecked $(BUIL
 
 COMPONENTS_FTY += cxxtools
 MAKE_COMMON_ARGS_cxxtools=-j1
-PREP_TYPE_cxxtools = cloneln
+PREP_TYPE_cxxtools = cloneln-obj
 
 $(BUILD_OBJ_DIR)/cxxtools/.memchecked: $(BUILD_OBJ_DIR)/cxxtools/.built
 	@$(call echo_noop,$@)
@@ -380,10 +444,12 @@ CONFIG_OPTS_czmq ?= CFLAGS="$(CFLAGS) -Wno-deprecated-declarations"
 CONFIG_OPTS_czmq += CXXFLAGS="$(CXXFLAGS) -Wno-deprecated-declarations"
 CONFIG_OPTS_czmq += CPPFLAGS="$(CPPFLAGS) -Wno-deprecated-declarations"
 # Make sure the workspace is (based on) branch "v3.0.2" at this time
-# That version of autogen.sh requires a "libtool" while debian has only "libtoolize", so fall back
+# That version of czmq autogen.sh requires a "libtool" while debian has
+# only "libtoolize", so fall back if needed.
 $(BUILD_OBJ_DIR)/czmq/.autogened: $(BUILD_OBJ_DIR)/czmq/.prepped
 	$(call autogen_sub,$(notdir $(@D))) || \
-	 ( cd "$(BUILD_SRC_DIR)/$(notdir $(@D))/$(BUILD_SUB_DIR_$(notdir $(@D)))" && autoreconf -fiv )
+	 ( cd "$(BUILD_SRC_DIR)/$(notdir $(@D))/$(BUILD_SUB_DIR_$(notdir $(@D)))" \
+	   && autoreconf -fiv )
 	$(TOUCH) $@
 
 $(BUILD_OBJ_DIR)/czmq/.configured: $(BUILD_OBJ_DIR)/libzmq/.installed
@@ -504,10 +570,16 @@ $(BUILD_OBJ_DIR)/%/.prepped: $(abs_srcdir)/.git/modules/%/FETCH_HEAD
 	  fi; \
 	 fi
 	@$(RMFILE) "$(@D)"/.*-failed
-	@if test "x$(PREP_TYPE_$(notdir $(@D)))" = x"cloneln" ; then \
-	    echo "CLONE sources of $(notdir $(@D)) as symlinks while prepping anew..." ; \
-	    $(call clone_ln,$(ORIGIN_SRC_DIR)/$(notdir $(@D)),$(BUILD_OBJ_DIR)/$(notdir $(@D))) ; \
-	 fi
+	@case "x$(PREP_TYPE_$(notdir $(@D)))" in \
+	 xnone) \
+	    echo "Nothing special to prep for $(notdir $(@D))..." ;; \
+	 xcloneln-obj) \
+	    echo "CLONE sources of $(notdir $(@D)) as symlinks under BUILD_OBJ_DIR while prepping..." ; \
+	    $(call clone_ln,$(ORIGIN_SRC_DIR)/$(notdir $(@D)),$(BUILD_OBJ_DIR)/$(notdir $(@D))) ;; \
+	 xcloneln|*) \
+	    echo "CLONE sources of $(notdir $(@D)) as symlinks under common BUILD_SRC_DIR while prepping..." ; \
+	    $(call clone_ln,$(ORIGIN_SRC_DIR)/$(notdir $(@D)),$(BUILD_SRC_DIR)/$(notdir $(@D))) ;; \
+	 esac
 	@if test -s "$@" && test -s "$<" && diff "$@" "$<" > /dev/null 2>&1 ; then \
 	    echo "ROLLBACK TIMESTAMP of $< to that of existing $@ because this commit is already prepped" ; \
 	    $(TOUCH) -r "$@" "$<" || true ; \
@@ -546,24 +618,22 @@ $(BUILD_OBJ_DIR)/%/.memchecked: $(BUILD_OBJ_DIR)/%/.built
 # NOTE: The use of $(@F) in the rules assumes submodules are not nested
 #       otherwise text conversions are needed to chomp until first slash
 clean-obj/%:
-	if [ "$(BUILD_OBJ_DIR)" != "$(ORIGIN_SRC_DIR)" ]; then\
+	@if test -d "$(BUILD_OBJ_DIR)" && \
+	   test x"$(BUILD_OBJ_DIR)" != x"$(ORIGIN_SRC_DIR)" ; then\
 	    chmod -R u+w $(BUILD_OBJ_DIR)/$(@F) || true; \
 	    $(RMDIR) $(BUILD_OBJ_DIR)/$(@F); \
-	fi
-
-clean-src/gsl clean-src/libcidr clean-src/cxxtools:
-	if [ "$(BUILD_OBJ_DIR)" != "$(ORIGIN_SRC_DIR)" ]; then\
-	    chmod -R u+w $(BUILD_OBJ_DIR)/$(@F) || true; \
-	    $(RMDIR) $(BUILD_OBJ_DIR)/$(@F); \
-	fi
+	 else \
+	    echo "  NOOP    Generally $@ has nothing to do for now"; \
+	 fi
 
 clean-src/%:
-	@if [ "$(BUILD_SRC_DIR)" != "$(ORIGIN_SRC_DIR)" ]; then \
+	@if test -d "$(BUILD_SRC_DIR)" && \
+	   test x"$(BUILD_SRC_DIR)" != x"$(ORIGIN_SRC_DIR)" ; then\
 	    chmod -R u+w $(BUILD_SRC_DIR)/$(@F) || true; \
 	    $(RMDIR) $(BUILD_SRC_DIR)/$(@F); \
-	else \
+	 else \
 	    echo "  NOOP    Generally $@ has nothing to do for now"; \
-	fi
+	 fi
 
 distclean/% clean/%:
 	$(GMAKE) clean-obj/$(@F)
