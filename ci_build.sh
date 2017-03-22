@@ -41,6 +41,11 @@ default|"default-tgt:"*)
             BUILD_TGT="`echo "$BUILD_TYPE" | sed 's,^default-tgt:,,'`" ;;
     esac
 
+    if [ x"$CI_WIPE_FIRST" = xyes ]; then
+        echo "`date`: First wiping stashed workspace directories..."
+        $CI_TIME make wipe
+    fi
+
     echo "`date`: Starting the sequential build attempt for singular target $BUILD_TGT..."
 
     ( echo "`date`: Starting the quiet parallel build attempt..."
