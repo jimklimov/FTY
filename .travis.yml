@@ -18,9 +18,9 @@ cache:
   pip: true
   ccache: true
   directories:
-    - ${HOME}/*/*/.srcclone/
-    - ${HOME}/*/*/.build/
-    - ${HOME}/*/*/.install/
+    - ${HOME}/*/*/*/.srcclone/
+    - ${HOME}/*/*/*/.build/
+    - ${HOME}/*/*/*/.install/
 
 os:
 - linux
