@@ -93,6 +93,8 @@ CP=/bin/cp -pf
 TOUCH=/bin/touch
 FIND=find
 GPATCH=patch
+# We need `tar` with support for `--exclude=...` - e.g. a GNU tar
+GTAR=tar
 LN=ln
 LN_S=$(GNU_LN) -s -f
 # GNU ln with relative support
@@ -136,9 +138,9 @@ define autogen_sub
 	  case "x$(PREP_TYPE_$(1))" in \
 	    xnone) \
 	        cd "$(ORIGIN_SRC_DIR)/$(1)/$(BUILD_SUB_DIR_$(1))" || exit ;; \
-	    xcloneln-obj) \
+	    xclone*-obj) \
 	        cd "$(BUILD_OBJ_DIR)/$(1)/$(BUILD_SUB_DIR_$(1))" || exit ;; \
-	    xcloneln|*) \
+	    xclone*-src|*) \
 	        cd "$(BUILD_SRC_DIR)/$(1)/$(BUILD_SUB_DIR_$(1))" || exit ;; \
 	  esac && \
 	    ( if [ -x ./autogen.sh ]; then \
@@ -167,10 +169,10 @@ define configure_sub
 	    xnone)     CCACHE_BASEDIR="$(ORIGIN_SRC_DIR)/$(1)" \
 	                "$(ORIGIN_SRC_DIR)/$(1)/$(BUILD_SUB_DIR_$(1))/configure" \
 	                    $(CONFIG_OPTS) $(CONFIG_OPTS_$(1)) || exit ;; \
-	    xcloneln-obj) CCACHE_BASEDIR="$(BUILD_OBJ_DIR)/$(1)" \
+	    xclone*-obj) CCACHE_BASEDIR="$(BUILD_OBJ_DIR)/$(1)" \
 	                "$(BUILD_OBJ_DIR)/$(1)/$(BUILD_SUB_DIR_$(1))/configure" \
 	                    $(CONFIG_OPTS) $(CONFIG_OPTS_$(1)) || exit ;; \
-	    xclone*|*) CCACHE_BASEDIR="$(BUILD_SRC_DIR)/$(1)" \
+	    xclone*-src|*) CCACHE_BASEDIR="$(BUILD_SRC_DIR)/$(1)" \
 	                "$(BUILD_SRC_DIR)/$(1)/$(BUILD_SUB_DIR_$(1))/configure" \
 	                    $(CONFIG_OPTS) $(CONFIG_OPTS_$(1)) || exit ;; \
 	  esac && \
@@ -186,8 +188,8 @@ define build_sub
 	  cd "$(BUILD_OBJ_DIR)/$(1)/$(BUILD_SUB_DIR_$(1))" && \
 	  case "x$(PREP_TYPE_$(1))" in \
 	    xnone)          CCACHE_BASEDIR="$(ORIGIN_SRC_DIR)/$(1)" ;; \
-	    xcloneln-obj)   CCACHE_BASEDIR="$(BUILD_OBJ_DIR)/$(1)" ;; \
-	    xclone*|*)      CCACHE_BASEDIR="$(BUILD_SRC_DIR)/$(1)" ;; \
+	    xclone*-obj)    CCACHE_BASEDIR="$(BUILD_OBJ_DIR)/$(1)" ;; \
+	    xclone*-src|*)  CCACHE_BASEDIR="$(BUILD_SRC_DIR)/$(1)" ;; \
 	  esac && \
 	  export CCACHE_BASEDIR && \
 	  $(MAKE) $(MAKE_COMMON_ARGS_$(1)) $(MAKE_ALL_ARGS_$(1)) all && \
@@ -203,8 +205,8 @@ define install_sub
 	  cd "$(BUILD_OBJ_DIR)/$(1)/$(BUILD_SUB_DIR_$(1))" && \
 	  case "x$(PREP_TYPE_$(1))" in \
 	    xnone)          CCACHE_BASEDIR="$(ORIGIN_SRC_DIR)/$(1)" ;; \
-	    xcloneln-obj)   CCACHE_BASEDIR="$(BUILD_OBJ_DIR)/$(1)" ;; \
-	    xclone*|*)      CCACHE_BASEDIR="$(BUILD_SRC_DIR)/$(1)" ;; \
+	    xclone*-obj)    CCACHE_BASEDIR="$(BUILD_OBJ_DIR)/$(1)" ;; \
+	    xclone*-src|*)  CCACHE_BASEDIR="$(BUILD_SRC_DIR)/$(1)" ;; \
 	  esac && \
 	  export CCACHE_BASEDIR && \
 	  $(MAKE) DESTDIR="$(DESTDIR)" \
@@ -221,8 +223,8 @@ define check_sub
 	  cd "$(BUILD_OBJ_DIR)/$(1)/$(BUILD_SUB_DIR_$(1))" && \
 	  case "x$(PREP_TYPE_$(1))" in \
 	    xnone)          CCACHE_BASEDIR="$(ORIGIN_SRC_DIR)/$(1)" ;; \
-	    xcloneln-obj)   CCACHE_BASEDIR="$(BUILD_OBJ_DIR)/$(1)" ;; \
-	    xclone*|*)      CCACHE_BASEDIR="$(BUILD_SRC_DIR)/$(1)" ;; \
+	    xclone*-obj)    CCACHE_BASEDIR="$(BUILD_OBJ_DIR)/$(1)" ;; \
+	    xclone*-src|*)  CCACHE_BASEDIR="$(BUILD_SRC_DIR)/$(1)" ;; \
 	  esac && \
 	  export CCACHE_BASEDIR && \
 	  $(MAKE) DESTDIR="$(DESTDIR)" \
@@ -243,8 +245,8 @@ define distcheck_sub
 	  cd "$(BUILD_OBJ_DIR)/$(1)/$(BUILD_SUB_DIR_$(1))" && \
 	  case "x$(PREP_TYPE_$(1))" in \
 	    xnone)          CCACHE_BASEDIR="$(ORIGIN_SRC_DIR)/$(1)" ;; \
-	    xcloneln-obj)   CCACHE_BASEDIR="$(BUILD_OBJ_DIR)/$(1)" ;; \
-	    xclone*|*)      CCACHE_BASEDIR="$(BUILD_SRC_DIR)/$(1)" ;; \
+	    xclone*-obj)    CCACHE_BASEDIR="$(BUILD_OBJ_DIR)/$(1)" ;; \
+	    xclone*-src|*)  CCACHE_BASEDIR="$(BUILD_SRC_DIR)/$(1)" ;; \
 	  esac && \
 	  export CCACHE_BASEDIR && \
 	  $(MAKE) DESTDIR="$(DESTDIR)" $(MAKE_COMMON_ARGS_$(1)) $(MAKE_INSTALL_ARGS_$(1)) \
@@ -261,8 +263,8 @@ define dist_sub
 	  cd "$(BUILD_OBJ_DIR)/$(1)/$(BUILD_SUB_DIR_$(1))" && \
 	  case "x$(PREP_TYPE_$(1))" in \
 	    xnone)          CCACHE_BASEDIR="$(ORIGIN_SRC_DIR)/$(1)" ;; \
-	    xcloneln-obj)   CCACHE_BASEDIR="$(BUILD_OBJ_DIR)/$(1)" ;; \
-	    xclone*|*)      CCACHE_BASEDIR="$(BUILD_SRC_DIR)/$(1)" ;; \
+	    xclone*-obj)    CCACHE_BASEDIR="$(BUILD_OBJ_DIR)/$(1)" ;; \
+	    xclone*-src|*)  CCACHE_BASEDIR="$(BUILD_SRC_DIR)/$(1)" ;; \
 	  esac && \
 	  export CCACHE_BASEDIR && \
 	  $(MAKE) DESTDIR="$(DESTDIR)" $(MAKE_COMMON_ARGS_$(1)) $(MAKE_INSTALL_ARGS_$(1)) \
@@ -279,8 +281,8 @@ define memcheck_sub
 	  cd "$(BUILD_OBJ_DIR)/$(1)/$(BUILD_SUB_DIR_$(1))" && \
 	  case "x$(PREP_TYPE_$(1))" in \
 	    xnone)          CCACHE_BASEDIR="$(ORIGIN_SRC_DIR)/$(1)" ;; \
-	    xcloneln-obj)   CCACHE_BASEDIR="$(BUILD_OBJ_DIR)/$(1)" ;; \
-	    xclone*|*)      CCACHE_BASEDIR="$(BUILD_SRC_DIR)/$(1)" ;; \
+	    xclone*-obj)    CCACHE_BASEDIR="$(BUILD_OBJ_DIR)/$(1)" ;; \
+	    xclone*-src|*)  CCACHE_BASEDIR="$(BUILD_SRC_DIR)/$(1)" ;; \
 	  esac && \
 	  export CCACHE_BASEDIR && \
 	  $(MAKE) DESTDIR="$(DESTDIR)" $(MAKE_COMMON_ARGS_$(1)) $(MAKE_INSTALL_ARGS_$(1)) \
@@ -296,8 +298,8 @@ define uninstall_sub
 	  cd "$(BUILD_OBJ_DIR)/$(1)/$(BUILD_SUB_DIR_$(1))" && \
 	  case "x$(PREP_TYPE_$(1))" in \
 	    xnone)          CCACHE_BASEDIR="$(ORIGIN_SRC_DIR)/$(1)" ;; \
-	    xcloneln-obj)   CCACHE_BASEDIR="$(BUILD_OBJ_DIR)/$(1)" ;; \
-	    xclone*|*)      CCACHE_BASEDIR="$(BUILD_SRC_DIR)/$(1)" ;; \
+	    xclone*-obj)    CCACHE_BASEDIR="$(BUILD_OBJ_DIR)/$(1)" ;; \
+	    xclone*-src|*)  CCACHE_BASEDIR="$(BUILD_SRC_DIR)/$(1)" ;; \
 	  esac && \
 	  export CCACHE_BASEDIR && \
 	  $(MAKE) DESTDIR="$(DESTDIR)" $(MAKE_COMMON_ARGS_$(1)) $(MAKE_INSTALL_ARGS_$(1)) \
@@ -316,6 +318,17 @@ define clone_ln
 	  cd "$$SRC" && \
 	    $(FIND) . -type d -exec $(MKDIR) "$$DST"/'{}' \; && \
 	    $(FIND) . \! -type d -exec $(LN_S_R) "$$SRC"/'{}' "$$DST"/'{}' \; \
+	)
+endef
+
+# Some projects (e.g. libmagic) are picky about file types, so symlinks
+# would break them. So we support copying as files too.
+define clone_tar
+	( if test x"$(1)" = x"$(2)" ; then exit ; fi && \
+	  $(RMDIR) "$(2)" && $(MKDIR) "$(2)" && \
+	  SRC="`cd "$(1)" && pwd`" && DST="`cd "$(2)" && pwd`" && \
+	  ( cd "$$SRC" && $(GTAR) -c --exclude=.git -f - ./ ) | \
+	    ( cd "$$DST" && $(GTAR) xf - ) \
 	)
 endef
 
@@ -440,6 +453,7 @@ $(BUILD_OBJ_DIR)/tntnet/.memchecked: $(BUILD_OBJ_DIR)/tntnet/.built
 	@$(call echo_noop,$@)
 
 COMPONENTS_FTY += libmagic
+PREP_TYPE_libmagic = clonetar-src
 $(BUILD_OBJ_DIR)/libmagic/.memchecked: $(BUILD_OBJ_DIR)/libmagic/.built
 	@$(call echo_noop,$@)
 
@@ -448,6 +462,7 @@ $(BUILD_OBJ_DIR)/libsodium/.memchecked: $(BUILD_OBJ_DIR)/libsodium/.built
 	@$(call echo_noop,$@)
 
 COMPONENTS_FTY += libzmq
+PREP_TYPE_libzmq = clonetar-src
 $(BUILD_OBJ_DIR)/libzmq/.configured: $(BUILD_OBJ_DIR)/libsodium/.installed
 # TODO: It was called "make check-valgrind-memcheck" back then
 $(BUILD_OBJ_DIR)/libzmq/.memchecked: $(BUILD_OBJ_DIR)/libzmq/.built
@@ -592,23 +607,29 @@ $(BUILD_OBJ_DIR)/%/.prepped: $(abs_srcdir)/.git/modules/%/FETCH_HEAD $(abs_srcdi
 	 xcloneln-obj) \
 	    echo "CLONE sources of $(notdir $(@D)) as symlinks under BUILD_OBJ_DIR while prepping..." ; \
 	    $(call clone_ln,$(ORIGIN_SRC_DIR)/$(notdir $(@D)),$(BUILD_OBJ_DIR)/$(notdir $(@D))) ;; \
-	 xcloneln|*) \
+	 xcloneln-src) \
 	    echo "CLONE sources of $(notdir $(@D)) as symlinks under common BUILD_SRC_DIR while prepping..." ; \
 	    $(call clone_ln,$(ORIGIN_SRC_DIR)/$(notdir $(@D)),$(BUILD_SRC_DIR)/$(notdir $(@D))) ;; \
+	 xclonetar-obj) \
+	    echo "CLONE sources of $(notdir $(@D)) via tarballs under BUILD_OBJ_DIR while prepping..." ; \
+	    $(call clone_tar,$(ORIGIN_SRC_DIR)/$(notdir $(@D)),$(BUILD_OBJ_DIR)/$(notdir $(@D))) ;; \
+	 xclonetar-src|*) \
+	    echo "CLONE sources of $(notdir $(@D)) via tarballs under common BUILD_SRC_DIR while prepping..." ; \
+	    $(call clone_tar,$(ORIGIN_SRC_DIR)/$(notdir $(@D)),$(BUILD_SRC_DIR)/$(notdir $(@D))) ;; \
 	 esac
 	@if test -n "$(PREP_ACTION_BEFORE_PATCHING_$(notdir $(@D)))" ; then \
 	    case "x$(PREP_TYPE_$(notdir $(@D)))" in \
 	     xnone) echo "SKIP PREP_ACTION_BEFORE_PATCHING sources for $(notdir $(@D))..." ; exit 0 ;; \
-	     xcloneln-obj) cd $(BUILD_OBJ_DIR)/$(notdir $(@D)) || exit ;; \
-	     xclone*|*)    cd $(BUILD_SRC_DIR)/$(notdir $(@D)) || exit ;; \
+	     xclone*-obj)   cd $(BUILD_OBJ_DIR)/$(notdir $(@D)) || exit ;; \
+	     xclone*-src|*) cd $(BUILD_SRC_DIR)/$(notdir $(@D)) || exit ;; \
 	    esac && \
 	    ( true ; $(PREP_ACTION_BEFORE_PATCHING_$(notdir $(@D))) ) ; \
 	 fi
 	@if test -n "$(PATCH_LIST_$(notdir $(@D)))" ; then \
 	    case "x$(PREP_TYPE_$(notdir $(@D)))" in \
 	     xnone) echo "SKIP PATCHING sources for $(notdir $(@D))..." ; exit 0 ;; \
-	     xcloneln-obj) cd $(BUILD_OBJ_DIR)/$(notdir $(@D)) || exit ;; \
-	     xclone*|*)    cd $(BUILD_SRC_DIR)/$(notdir $(@D)) || exit ;; \
+	     xclone*-obj)   cd $(BUILD_OBJ_DIR)/$(notdir $(@D)) || exit ;; \
+	     xclone*-src|*) cd $(BUILD_SRC_DIR)/$(notdir $(@D)) || exit ;; \
 	    esac && \
 	    for P in $(PATCH_LIST_$(notdir $(@D))) ; do \
 	        echo "PATCH sources in `pwd` with $$P" ; \
