@@ -87,6 +87,9 @@ export DESTDIR
 MKDIR=/bin/mkdir -p
 RMDIR=/bin/rm -rf
 RMFILE=/bin/rm -f
+RM=$(RMFILE)
+MV=/bin/mv -f
+CP=/bin/cp -pf
 TOUCH=/bin/touch
 FIND=find
 GPATCH=patch
@@ -129,7 +132,7 @@ COMPONENTS_FTY_EXPERIMENTAL =
 # Note: per http://lists.busybox.net/pipermail/buildroot/2013-May/072556.html
 # the autogen, autoreconf and equivalents mangle the source tree
 define autogen_sub
-	( $(MKDIR) "$(BUILD_OBJ_DIR)/$(1)/$(BUILD_SUB_DIR_$(1))" && \
+	( ( $(MKDIR) "$(BUILD_OBJ_DIR)/$(1)/$(BUILD_SUB_DIR_$(1))" && \
 	  case "x$(PREP_TYPE_$(1))" in \
 	    xnone) \
 	        cd "$(ORIGIN_SRC_DIR)/$(1)/$(BUILD_SUB_DIR_$(1))" || exit ;; \
@@ -146,7 +149,7 @@ define autogen_sub
 	        autoreconf -fiv || exit ; \
 	      fi ) && \
 	  $(TOUCH) "$(BUILD_OBJ_DIR)/$(1)"/.autogened && \
-	  $(RMFILE) "$(BUILD_OBJ_DIR)/$(1)"/.autogen-failed || \
+	  $(RMFILE) "$(BUILD_OBJ_DIR)/$(1)"/.autogen-failed ) || \
 	  { $(TOUCH) "$(BUILD_OBJ_DIR)/$(1)"/.autogen-failed ; exit 1; } \
 	)
 endef
@@ -158,7 +161,7 @@ endef
 # while for different "make" rules afterwards the working directory is always
 # under BUILD_OBJ_DIR.
 define configure_sub
-	( $(MKDIR) "$(BUILD_OBJ_DIR)/$(1)/$(BUILD_SUB_DIR_$(1))" && \
+	( ( $(MKDIR) "$(BUILD_OBJ_DIR)/$(1)/$(BUILD_SUB_DIR_$(1))" && \
 	  cd "$(BUILD_OBJ_DIR)/$(1)/$(BUILD_SUB_DIR_$(1))" && \
 	  case "x$(PREP_TYPE_$(1))" in \
 	    xnone)     CCACHE_BASEDIR="$(ORIGIN_SRC_DIR)/$(1)" \
@@ -172,7 +175,7 @@ define configure_sub
 	                    $(CONFIG_OPTS) $(CONFIG_OPTS_$(1)) || exit ;; \
 	  esac && \
 	  $(TOUCH) "$(BUILD_OBJ_DIR)/$(1)/".configured && \
-	  $(RMFILE) "$(BUILD_OBJ_DIR)/$(1)"/.configure-failed || \
+	  $(RMFILE) "$(BUILD_OBJ_DIR)/$(1)"/.configure-failed ) || \
 	  { $(TOUCH) "$(BUILD_OBJ_DIR)/$(1)/".configure-failed ; exit 1; } \
 	)
 endef
@@ -332,7 +335,8 @@ CPPFLAGS += -I$(DESTDIR)$(PREFIX)/include
 CXXFLAGS += -I$(DESTDIR)$(PREFIX)/include
 LDFLAGS += -L$(DESTDIR)$(PREFIX)/lib
 
-PKG_CONFIG_PATH ?= "$(DESTDIR)$(PREFIX)/lib/pkgconfig:/usr/lib/x86_64-linux-gnu/pkgconfig:/usr/lib/arm-linux-gnueabihf/pkgconfig:/usr/lib/pkgconfig:/lib/pkgconfig"
+PKG_CONFIG_DIR ?= $(DESTDIR)$(PREFIX)/lib/pkgconfig
+PKG_CONFIG_PATH ?= "$(PKG_CONFIG_DIR):/usr/lib/x86_64-linux-gnu/pkgconfig:/usr/lib/arm-linux-gnueabihf/pkgconfig:/usr/lib/pkgconfig:/lib/pkgconfig"
 export PKG_CONFIG_PATH
 
 CONFIG_OPTS  = --prefix="$(PREFIX)"
@@ -342,7 +346,7 @@ CONFIG_OPTS += CFLAGS="$(CFLAGS)"
 CONFIG_OPTS += CXXFLAGS="$(CXXFLAGS)"
 CONFIG_OPTS += CPPFLAGS="$(CPPFLAGS)"
 CONFIG_OPTS += PKG_CONFIG_PATH="$(PKG_CONFIG_PATH)"
-CONFIG_OPTS += --with-pkgconfdir="$(DESTDIR)$(PREFIX)/lib/pkgconfig"
+CONFIG_OPTS += --with-pkgconfdir="$(PKG_CONFIG_DIR)"
 CONFIG_OPTS += --with-docs=no --without-docs
 CONFIG_OPTS += --with-systemdtmpfilesdir="$(DESTDIR)$(PREFIX)/lib/tmpfiles.d"
 CONFIG_OPTS += --with-systemdsystempresetdir="$(DESTDIR)$(PREFIX)/lib/systemd/system-preset"
@@ -593,6 +597,14 @@ $(BUILD_OBJ_DIR)/%/.prepped: $(abs_srcdir)/.git/modules/%/FETCH_HEAD $(abs_srcdi
 	    echo "CLONE sources of $(notdir $(@D)) as symlinks under common BUILD_SRC_DIR while prepping..." ; \
 	    $(call clone_ln,$(ORIGIN_SRC_DIR)/$(notdir $(@D)),$(BUILD_SRC_DIR)/$(notdir $(@D))) ;; \
 	 esac
+	@if test -n "$(PREP_ACTION_BEFORE_PATCHING_$(notdir $(@D)))" ; then \
+	    case "x$(PREP_TYPE_$(notdir $(@D)))" in \
+	     xnone) echo "SKIP PREP_ACTION_BEFORE_PATCHING sources for $(notdir $(@D))..." ; exit 0 ;; \
+	     xcloneln-obj) cd $(BUILD_OBJ_DIR)/$(notdir $(@D)) || exit ;; \
+	     xclone*|*)    cd $(BUILD_SRC_DIR)/$(notdir $(@D)) || exit ;; \
+	    esac && \
+	    ( true ; $(PREP_ACTION_BEFORE_PATCHING_$(notdir $(@D))) ) ; \
+	 fi
 	@if test -n "$(PATCH_LIST_$(notdir $(@D)))" ; then \
 	    case "x$(PREP_TYPE_$(notdir $(@D)))" in \
 	     xnone) echo "SKIP PATCHING sources for $(notdir $(@D))..." ; exit 0 ;; \
@@ -601,7 +613,7 @@ $(BUILD_OBJ_DIR)/%/.prepped: $(abs_srcdir)/.git/modules/%/FETCH_HEAD $(abs_srcdi
 	    esac && \
 	    for P in $(PATCH_LIST_$(notdir $(@D))) ; do \
 	        echo "PATCH sources in `pwd` with $$P" ; \
-	        $(GPATCH) -t < "$$P" || exit ; \
+	        $(GPATCH) $(PATCH_OPTS_$(notdir $(@D))) --merge --forward --batch < "$$P" || exit ; \
 	    done ; \
 	 fi
 	@if test -s "$@" && test -s "$<" && diff "$@" "$<" > /dev/null 2>&1 ; then \
