@@ -293,7 +293,6 @@ endef
 
 define uninstall_sub
 	( $(MKDIR) "$(BUILD_OBJ_DIR)/$(1)/$(BUILD_SUB_DIR_$(1))" $(DESTDIR) $(INSTDIR) && \
-	  $(RMFILE) "$(BUILD_OBJ_DIR)/$(1)/".installed "$(BUILD_OBJ_DIR)/$(1)/".install-failed && \
 	  cd "$(BUILD_OBJ_DIR)/$(1)/$(BUILD_SUB_DIR_$(1))" && \
 	  case "x$(PREP_TYPE_$(1))" in \
 	    xnone)          CCACHE_BASEDIR="$(ORIGIN_SRC_DIR)/$(1)" ;; \
