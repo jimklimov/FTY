@@ -124,7 +124,7 @@ COMPONENTS_FTY_EXPERIMENTAL =
 # */.prepped */.autogened */.configured */.built */.installed
 # NOTE/TODO: Get this to work with explicit list of patterns to filenames
 .SECONDARY:
-#.PRECIOUS: %/.prepped %/.autogened %/.configured %/.built %/.installed %/.checked %/.distchecked %/.disted %/.memchecked
+#.PRECIOUS: %/.prep-newestcommit %/.prepped %/.autogened %/.configured %/.built %/.installed %/.checked %/.distchecked %/.disted %/.memchecked
 
 # TODO : add a mode to check that a workspace has changed (dev work, git
 # checked out another branch, etc.) to trigger rebuilds of a project.
@@ -373,7 +373,7 @@ sinclude Makefile-local-$(BUILD_OS).mk
 sinclude Makefile-local-$(BUILD_OS)-$(BUILD_ARCH).mk
 
 # Catch empty expansions
-$(BUILD_OBJ_DIR)//.prepped $(BUILD_OBJ_DIR)//.autogened $(BUILD_OBJ_DIR)//.configured $(BUILD_OBJ_DIR)//.built $(BUILD_OBJ_DIR)//.installed $(BUILD_OBJ_DIR)//.checked $(BUILD_OBJ_DIR)//.distchecked $(BUILD_OBJ_DIR)//.disted $(BUILD_OBJ_DIR)//.memchecked:
+$(BUILD_OBJ_DIR)//.prep-newestcommit $(BUILD_OBJ_DIR)//.prepped $(BUILD_OBJ_DIR)//.autogened $(BUILD_OBJ_DIR)//.configured $(BUILD_OBJ_DIR)//.built $(BUILD_OBJ_DIR)//.installed $(BUILD_OBJ_DIR)//.checked $(BUILD_OBJ_DIR)//.distchecked $(BUILD_OBJ_DIR)//.disted $(BUILD_OBJ_DIR)//.memchecked:
 	@echo "Error in recipe expansion, can not build $@ : component part is empty" ; exit 1
 
 ########################### GSL and LIBCIDR ###############################
@@ -597,7 +597,16 @@ COMPONENTS_ALL += $(COMPONENTS_FTY)
 # Also support optional patching of sources while prepping (e.g. for
 # alternate OSes with their non-SCMed tweaks).
 
-$(BUILD_OBJ_DIR)/%/.prepped: $(abs_srcdir)/.git/modules/%/FETCH_HEAD $(abs_srcdir)/.git/modules/%/index
+$(BUILD_OBJ_DIR)/%/.prep-newestcommit: $(abs_srcdir)/.git/modules/%/FETCH_HEAD $(abs_srcdir)/.git/modules/%/index
+	@$(MKDIR) "$(@D)"
+	@if test -s "$@" && test -s "$<" && diff "$@" "$<" >/dev/null 2>&1 ; then \
+	    echo "ROLLBACK TIMESTAMP of $< to that of existing $@ because this commit is already prepped" ; \
+	    $(TOUCH) -r "$@" "$<" || true ; \
+	 else \
+	    cat "$<" > "$@" ; \
+	 fi
+
+$(BUILD_OBJ_DIR)/%/.prepped: $(BUILD_OBJ_DIR)/%/.prep-newestcommit
 	@$(MKDIR) "$(@D)"
 	@if test ! -s "$@" || ! diff "$@" "$<" > /dev/null 2>&1 ; then \
 	  if test -f "$(@D)/.installed" || test -f "$(@D)/.install-failed" ; then \
@@ -641,12 +650,7 @@ $(BUILD_OBJ_DIR)/%/.prepped: $(abs_srcdir)/.git/modules/%/FETCH_HEAD $(abs_srcdi
 	        $(GPATCH) $(PATCH_OPTS_$(notdir $(@D))) --merge --forward --batch < "$$P" || exit ; \
 	    done ; \
 	 fi
-	@if test -s "$@" && test -s "$<" && diff "$@" "$<" > /dev/null 2>&1 ; then \
-	    echo "ROLLBACK TIMESTAMP of $< to that of existing $@ because this commit is already prepped" ; \
-	    $(TOUCH) -r "$@" "$<" || true ; \
-	 else \
-	    cat "$<" > "$@" ; \
-	 fi
+	@cat "$<" > "$@"
 
 $(BUILD_OBJ_DIR)/%/.autogened: $(BUILD_OBJ_DIR)/%/.prepped
 	$(call autogen_sub,$(notdir $(@D)))
