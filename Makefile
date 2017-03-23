@@ -509,6 +509,11 @@ $(BUILD_OBJ_DIR)/fty-core/.memchecked: $(BUILD_OBJ_DIR)/fty-core/.built
 
 COMPONENTS_FTY += fty-rest
 $(BUILD_OBJ_DIR)/fty-rest/.configured: $(BUILD_OBJ_DIR)/malamute/.installed $(BUILD_OBJ_DIR)/tntdb/.installed $(BUILD_OBJ_DIR)/tntnet/.installed $(BUILD_OBJ_DIR)/fty-proto/.installed $(BUILD_OBJ_DIR)/fty-core/.installed $(BUILD_OBJ_DIR)/libcidr/.installed $(BUILD_OBJ_DIR)/libmagic/.installed
+# For now the fty-rest memchecked target program is unreliable at best, and
+# documented so in the component's Makefile. So we do not call it for now.
+# TODO: Make it somehow an experimental-build toggle?
+$(BUILD_OBJ_DIR)/fty-rest/.memchecked: $(BUILD_OBJ_DIR)/fty-rest/.built
+	@$(call echo_noop,$@)
 
 COMPONENTS_FTY += fty-nut
 $(BUILD_OBJ_DIR)/fty-nut/.configured: $(BUILD_OBJ_DIR)/fty-proto/.installed $(BUILD_OBJ_DIR)/libcidr/.installed $(BUILD_OBJ_DIR)/cxxtools/.installed $(BUILD_OBJ_DIR)/nut/.installed
