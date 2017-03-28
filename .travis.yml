@@ -112,4 +112,4 @@ before_script:
 ### Note there are many components to test, it takes time...
 ### and some tests just sleep and resume slowly, so Travis gets worried.
 ###script: travis_wait 120 ./ci_build.sh
-script: ./ci_build.sh
+script: echo "Current envvars:"; set ; ./ci_build.sh
