@@ -46,8 +46,6 @@ default|"default-tgt:"*)
         $CI_TIME make wipe
     fi
 
-    echo "`date`: Starting the sequential build attempt for singular target $BUILD_TGT..."
-
     ( echo "`date`: Starting the quiet parallel build attempt..."
 #      case "$BUILD_TYPE" in
 #        default-tgt:*check*)
