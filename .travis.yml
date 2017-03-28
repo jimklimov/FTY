@@ -18,9 +18,9 @@ cache:
   pip: true
   ccache: true
   directories:
-    - ${HOME}/build/42ity/FTY/.srcclone/
-    - ${HOME}/build/42ity/FTY/.build/
-    - ${HOME}/build/42ity/FTY/.install/
+    - ${TRAVIS_BUILD_DIR}/.srcclone/
+    - ${TRAVIS_BUILD_DIR}/.build/
+    - ${TRAVIS_BUILD_DIR}/.install/
 
 os:
 - linux
@@ -112,4 +112,5 @@ before_script:
 ### Note there are many components to test, it takes time...
 ### and some tests just sleep and resume slowly, so Travis gets worried.
 ###script: travis_wait 120 ./ci_build.sh
-script: echo "Current envvars:"; set ; ./ci_build.sh
+###script: echo "Current envvars:"; set ; ./ci_build.sh
+script: ./ci_build.sh
