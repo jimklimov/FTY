@@ -606,9 +606,12 @@ $(BUILD_OBJ_DIR)/%/.prep-newestcommit: $(abs_srcdir)/.git/modules/%/FETCH_HEAD $
 	    echo "ROLLBACK TIMESTAMP of $< to that of existing $@ because this commit is already prepped" ; \
 	    $(TOUCH) -r "$@" "$<" || true ; \
 	 else \
+	    echo "Seems a NEW COMMIT of $(notdir $(@D)) has landed, updating $@" ; \
 	    cat "$<" > "$@" ; \
 	 fi
 
+# Note: during prepping, we generally remove and recreate the OBJ_DIR
+# which contains the input file. So we stash and recreate it mid-way.
 $(BUILD_OBJ_DIR)/%/.prepped: $(BUILD_OBJ_DIR)/%/.prep-newestcommit
 	@$(MKDIR) "$(@D)"
 	@if test ! -s "$@" || ! diff "$@" "$<" > /dev/null 2>&1 ; then \
@@ -618,7 +621,8 @@ $(BUILD_OBJ_DIR)/%/.prepped: $(BUILD_OBJ_DIR)/%/.prep-newestcommit
 	  fi; \
 	 fi
 	@$(RMFILE) "$(@D)"/.*-failed
-	@case "x$(PREP_TYPE_$(notdir $(@D)))" in \
+	@PREPDATA="`LANG=C cat "$<"`" && \
+	 case "x$(PREP_TYPE_$(notdir $(@D)))" in \
 	 xnone) \
 	    echo "Nothing special to prep for $(notdir $(@D))..." ;; \
 	 xcloneln-obj) \
@@ -633,7 +637,8 @@ $(BUILD_OBJ_DIR)/%/.prepped: $(BUILD_OBJ_DIR)/%/.prep-newestcommit
 	 xclonetar-src|*) \
 	    echo "CLONE sources of $(notdir $(@D)) via tarballs under common BUILD_SRC_DIR while prepping..." ; \
 	    $(call clone_tar,$(ORIGIN_SRC_DIR)/$(notdir $(@D)),$(BUILD_SRC_DIR)/$(notdir $(@D))) ;; \
-	 esac
+	 esac && \
+	 echo "$$PREPDATA" > "$<"
 	@if test -n "$(PREP_ACTION_BEFORE_PATCHING_$(notdir $(@D)))" ; then \
 	    case "x$(PREP_TYPE_$(notdir $(@D)))" in \
 	     xnone) echo "SKIP PREP_ACTION_BEFORE_PATCHING sources for $(notdir $(@D))..." ; exit 0 ;; \
