@@ -571,6 +571,9 @@ $(BUILD_OBJ_DIR)/fty-alert-flexible/.configured: $(BUILD_OBJ_DIR)/fty-proto/.ins
 COMPONENTS_FTY_EXPERIMENTAL += fty-info
 $(BUILD_OBJ_DIR)/fty-info/.configured: $(BUILD_OBJ_DIR)/fty-proto/.installed $(BUILD_OBJ_DIR)/cxxtools/.installed $(BUILD_OBJ_DIR)/tntdb/.installed
 
+COMPONENTS_FTY_EXPERIMENTAL += fty-mdns-sd
+$(BUILD_OBJ_DIR)/fty-mdns-sd/.configured: $(BUILD_OBJ_DIR)/fty-proto/.installed
+
 COMPONENTS_ALL += $(COMPONENTS_FTY)
 
 ############################# Common route ##################################
