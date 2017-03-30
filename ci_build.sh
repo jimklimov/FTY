@@ -56,21 +56,22 @@ default|"default-tgt:"*)
 #      esac
       $CI_TIME make VERBOSE=0 V=0 -k -j4 "$BUILD_TGT" &
       PID_MAKE=$!
-      minutes=0
-      limit=30
-      while kill -0 ${PID_MAKE} >/dev/null 2>&1 ; do
-        printf ' \b' # Hidden print to keep the logs ticking
-        if [ "$minutes" == "$limit" ]; then
+      ( minutes=0
+        limit=29
+        while kill -0 ${PID_MAKE} >/dev/null 2>&1 ; do
+          printf ' \b' # Hidden print to keep the logs ticking
+          if [ "$minutes" -ge "$limit" ]; then
             echo "`date`: Parallel build timed out over $limit minutes" >&2
             kill -15 ${PID_MAKE}
             sleep 5
             exit 1
-        fi
-        minutes="$(expr $minutes + 1)"
-        sleep 60
-      done
-      echo "`date`: Parallel build attempt seems done"
-      wait ${PID_MAKE}
+          fi
+          minutes="$(expr $minutes + 1)"
+          sleep 60
+        done
+        echo "`date`: Parallel build attempt seems done" ) &
+      PID_SLEEPER=$!
+      wait ${PID_MAKE} ${PID_SLEEPER}
     ) || \
     ( echo "==================== PARALLEL ATTEMPT FAILED ($?) =========="
       echo "`date`: Starting the sequential build attempt..."
@@ -78,21 +79,22 @@ default|"default-tgt:"*)
       # thanks to comments in Travis-CI issue #4190
       $CI_TIME make VERBOSE=1 "$BUILD_TGT" &
       PID_MAKE=$!
-      minutes=0
-      limit=30
-      while kill -0 ${PID_MAKE} >/dev/null 2>&1 ; do
-        printf ' \b' # Hidden print to keep the logs ticking
-        if [ "$minutes" == "$limit" ]; then
+      ( minutes=0
+        limit=29
+        while kill -0 ${PID_MAKE} >/dev/null 2>&1 ; do
+          printf ' \b' # Hidden print to keep the logs ticking
+          if [ "$minutes" -ge "$limit" ]; then
             echo "`date`: Sequential build timed out over $limit minutes" >&2
             kill -15 ${PID_MAKE}
             sleep 5
             exit 1
-        fi
-        minutes="$(expr $minutes + 1)"
-        sleep 60
-      done
-      echo "`date`: Sequential build attempt seems done"
-      wait ${PID_MAKE}
+          fi
+          minutes="$(expr $minutes + 1)"
+          sleep 60
+        done
+        echo "`date`: Sequential build attempt seems done" ) &
+      PID_SLEEPER=$!
+      wait ${PID_MAKE} ${PID_SLEEPER}
     )
     echo "=== `date`: BUILDS FINISHED ($?)"
 
