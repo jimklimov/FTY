@@ -55,46 +55,55 @@ default|"default-tgt:"*)
 #            ;;
 #      esac
       $CI_TIME make VERBOSE=0 V=0 -k -j4 "$BUILD_TGT" &
+      PID_MAKE=$!
       minutes=0
       limit=30
-      while kill -0 $! >/dev/null 2>&1 ; do
+      while kill -0 ${PID_MAKE} >/dev/null 2>&1 ; do
         printf ' \b' # Hidden print to keep the logs ticking
         if [ "$minutes" == "$limit" ]; then
             echo "`date`: Parallel build timed out over $limit minutes" >&2
+            kill -15 ${PID_MAKE}
+            sleep 5
             exit 1
         fi
         minutes="$(expr $minutes + 1)"
         sleep 60
       done
-      wait $!
+      echo "`date`: Parallel build attempt seems done"
+      wait ${PID_MAKE}
     ) || \
     ( echo "==================== PARALLEL ATTEMPT FAILED ($?) =========="
       echo "`date`: Starting the sequential build attempt..."
       # Avoiding travis_wait() and build timeouts during tests
       # thanks to comments in Travis-CI issue #4190
       $CI_TIME make VERBOSE=1 "$BUILD_TGT" &
+      PID_MAKE=$!
       minutes=0
       limit=30
-      while kill -0 $! >/dev/null 2>&1 ; do
+      while kill -0 ${PID_MAKE} >/dev/null 2>&1 ; do
         printf ' \b' # Hidden print to keep the logs ticking
         if [ "$minutes" == "$limit" ]; then
             echo "`date`: Sequential build timed out over $limit minutes" >&2
+            kill -15 ${PID_MAKE}
+            sleep 5
             exit 1
         fi
         minutes="$(expr $minutes + 1)"
         sleep 60
       done
-      wait $!
+      echo "`date`: Sequential build attempt seems done"
+      wait ${PID_MAKE}
     )
+    echo "=== `date`: BUILDS FINISHED ($?)"
 
-    echo "=== Are GitIgnores good after 'make $BUILD_TGT'? (should have no output below)"
+    echo "=== `date`: Are GitIgnores good after 'make $BUILD_TGT'? (should have no output below)"
     git status -s || git status || true
     echo "==="
     if [ "$HAVE_CCACHE" = yes ]; then
         echo "CCache stats after build:"
         ccache -s
     fi
-    echo "=== Exiting after the custom-build target 'make $BUILD_TGT' succeeded OK"
+    echo "=== `date`: Exiting after the custom-build target 'make $BUILD_TGT' succeeded OK"
     exit 0
     ;;
 bindings)
