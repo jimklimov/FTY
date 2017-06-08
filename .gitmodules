@@ -109,3 +109,6 @@
 [submodule "fty-mdns-sd"]
 	path = fty-mdns-sd
 	url = https://github.com/42ity/fty-mdns-sd
+[submodule "fty-discovery"]
+	path = fty-discovery
+	url = https://github.com/42ity/fty-discovery
