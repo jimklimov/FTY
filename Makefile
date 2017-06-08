@@ -574,6 +574,9 @@ $(BUILD_OBJ_DIR)/fty-info/.configured: $(BUILD_OBJ_DIR)/fty-proto/.installed $(B
 COMPONENTS_FTY_EXPERIMENTAL += fty-mdns-sd
 $(BUILD_OBJ_DIR)/fty-mdns-sd/.configured: $(BUILD_OBJ_DIR)/fty-proto/.installed
 
+COMPONENTS_FTY_EXPERIMENTAL += fty-discovery
+$(BUILD_OBJ_DIR)/fty-discovery/.configured: $(BUILD_OBJ_DIR)/fty-proto/.installed
+
 COMPONENTS_ALL += $(COMPONENTS_FTY)
 
 ############################# Common route ##################################
