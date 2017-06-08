@@ -32,8 +32,12 @@ against, or lua-5.1/5.2, etc.), as well as to completely check out the
 source code to build.
 
 This `Makefile` has been verified on Debian 8 (devel images for the project
-build farm); feel free to update the recipes if needed for other OSes and
-distros.
+build farm); it also passes on Ubuntu-based systems used in the Travis CI
+cloud. Much but not all of this code can also build under OpenIndiana, more
+with a purpose to test the approach to portability than to use it there (in
+the near term at least). Feel free to update the recipes if needed for other
+OSes and distros, and take inspiration from hooks made for and used by the
+OpenIndiana/SunOS integration.
 
 == Fetching all current sources and updating the HEADs
 
