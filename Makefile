@@ -636,6 +636,9 @@ $(BUILD_OBJ_DIR)/fty-metric-snmp/.configured: $(BUILD_OBJ_DIR)/fty-proto/.instal
 COMPONENTS_FTY_EXPERIMENTAL += fty-discovery
 $(BUILD_OBJ_DIR)/fty-discovery/.configured: $(BUILD_OBJ_DIR)/fty-proto/.installed
 
+COMPONENTS_FTY_EXPERIMENTAL += fty-sensor-gpio
+$(BUILD_OBJ_DIR)/fty-sensor-gpio/.configured: $(BUILD_OBJ_DIR)/fty-proto/.installed
+
 COMPONENTS_ALL += $(COMPONENTS_FTY)
 
 ############################# Common route ##################################

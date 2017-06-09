@@ -112,3 +112,6 @@
 [submodule "fty-discovery"]
 	path = fty-discovery
 	url = https://github.com/42ity/fty-discovery
+[submodule "fty-sensor-gpio"]
+	path = fty-sensor-gpio
+	url = https://github.com/42ity/fty-sensor-gpio
