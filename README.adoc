@@ -31,7 +31,8 @@ which our project does not modify (such as MySQL/MariaDB libraries to link
 against, or lua-5.1/5.2, etc.), as well as internet connection to completely
 check out the source code to build. The `Makefile` defines dependencies that
 can cause download or update of sources from designated remote repositories
-using `git`, so the basic way to build the 42ITy(TM) ecosystem is to:
+using `git`, so the basic way to build the 42ITy(TM) ecosystem using those
+component revisions that the FTY repository points to at any given time is to:
 
 ----
 $ git clone https://github.com/42ity/FTY && \
@@ -41,6 +42,9 @@ $ git clone https://github.com/42ity/FTY && \
 
 To update sources from current state of remote Git branches and rebuild in
 proper ordering whatever has changed later on, you can use e.g. `make world`.
+You can also do this for initial build command, if you want to build right
+away with the current state of default branch in each component repository.
+
 Also you can call a number of actions against specific components using a
 metaphor of subdirectory in the recipes, e.g. `make recheck/fty-example`.
 See the `Makefile` for different wildcard actions it defines (with percent
