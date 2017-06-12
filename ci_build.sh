@@ -2,7 +2,7 @@
 
 ################################################################################
 # This file is based on a template used by zproject, but isn't auto-generated. #
-# Building of dependencies (our components and forks of third-party projects   #
+# Building of dependencies (our components and forks of third-party projects)  #
 # in correct order is buried into the Makefile.                                #
 ################################################################################
 
@@ -30,7 +30,14 @@ case "$BUILD_TYPE" in
 default|"default-tgt:"*)
     LANG=C
     LC_ALL=C
-    export LANG LC_ALL
+    TZ=UTC
+    export LANG LC_ALL TZ
+
+    # Empirical time limit is about 49 minutes, but we want some slack for rare checks
+    # and to have time to roll up ccache etc. to run this job faster next time.
+    # Also, package installation etc. is also part of timed overhead...
+    _TRAVIS_TIMELIMIT="$(expr 45 \* 60)"
+    _TS_START="$(date -u +%s)"
 
     # Build and check this project; note that zprojects always have an autogen.sh
     [ -z "$CI_TIME" ] || echo "`date`: Starting build of currently tested project..."
@@ -54,49 +61,83 @@ default|"default-tgt:"*)
 #            echo "`date`: Proceed with general build..."
 #            ;;
 #      esac
+      BLDRES=255
       $CI_TIME make VERBOSE=0 V=0 -k -j4 "$BUILD_TGT" &
       PID_MAKE=$!
       ( minutes=0
+        ticks=0
         limit=29
-        while kill -0 ${PID_MAKE} >/dev/null 2>&1 ; do
+        while [ -d /proc/${PID_MAKE}/fd ] ; do
           printf ' \b' # Hidden print to keep the logs ticking
-          if [ "$minutes" -ge "$limit" ]; then
-            echo "`date`: Parallel build timed out over $limit minutes" >&2
+          _TS_NOW="$(date -u +%s)"
+          if [ "$minutes" -ge "$limit" ] || [ "$(expr ${_TS_NOW} - ${_TS_START} )" -gt "${_TRAVIS_TIMELIMIT}" ]; then
+            echo "`date`: Parallel build timed out over $limit minutes, or total job time is nearing the limit; will TERM the PID ${PID_MAKE}" >&2
+            ps -xawwwu
             kill -15 ${PID_MAKE}
             sleep 5
             exit 1
           fi
-          minutes="$(expr $minutes + 1)"
-          sleep 60
+          ticks="$(expr $ticks + 1)"
+          if [ "$ticks" = 12 ] ; then
+            minutes="$(expr $minutes + 1)"
+            ticks=0
+          fi
+          sleep 5
         done
         echo "`date`: Parallel build attempt seems done" ) &
       PID_SLEEPER=$!
-      wait ${PID_MAKE} ${PID_SLEEPER}
+      RES=0
+      wait ${PID_MAKE} || RES=$?
+      echo "`date`: Parallel PID_MAKE has finished, now RES=$RES"
+      wait ${PID_SLEEPER} || RES=$?
+      echo "`date`: Parallel PID_SLEEPER has finished, now RES=$RES"
+      exit $RES
     ) || \
-    ( echo "==================== PARALLEL ATTEMPT FAILED ($?) =========="
+    ( RES=$?
+      echo "==================== PARALLEL ATTEMPT FAILED ($RES) =========="
+      _TS_NOW="$(date -u +%s)"
+      if [ "$(expr ${_TS_NOW} - ${_TS_START} )" -gt "${_TRAVIS_TIMELIMIT}" ]; then
+        echo "`date`: total job time is nearing the limit, not starting the sequential build" >&2
+        exit $RES
+      fi
       echo "`date`: Starting the sequential build attempt..."
       # Avoiding travis_wait() and build timeouts during tests
       # thanks to comments in Travis-CI issue #4190
       $CI_TIME make VERBOSE=1 "$BUILD_TGT" &
       PID_MAKE=$!
       ( minutes=0
+        ticks=0
         limit=29
-        while kill -0 ${PID_MAKE} >/dev/null 2>&1 ; do
+#        while kill -0 ${PID_MAKE} >/dev/null 2>&1 ; do
+        while [ -d /proc/${PID_MAKE}/fd ] ; do
           printf ' \b' # Hidden print to keep the logs ticking
-          if [ "$minutes" -ge "$limit" ]; then
-            echo "`date`: Sequential build timed out over $limit minutes" >&2
+          _TS_NOW="$(date -u +%s)"
+          if [ "$minutes" -ge "$limit" ] || [ "$(expr ${_TS_NOW} - ${_TS_START} )" -gt "${_TRAVIS_TIMELIMIT}" ]; then
+            echo "`date`: Sequential build timed out over $limit minutes, or total job time is nearing the limit; will TERM the PID ${PID_MAKE}" >&2
+            ps -xawwwu
             kill -15 ${PID_MAKE}
             sleep 5
             exit 1
           fi
-          minutes="$(expr $minutes + 1)"
-          sleep 60
+          ticks="$(expr $ticks + 1)"
+          if [ "$ticks" = 12 ] ; then
+            minutes="$(expr $minutes + 1)"
+            ticks=0
+          fi
+          sleep 5
         done
         echo "`date`: Sequential build attempt seems done" ) &
       PID_SLEEPER=$!
-      wait ${PID_MAKE} ${PID_SLEEPER}
-    )
-    echo "=== `date`: BUILDS FINISHED ($?)"
+      RES=0
+      wait ${PID_MAKE} || RES=$?
+      echo "`date`: Sequential PID_MAKE has finished, now RES=$RES"
+      wait ${PID_SLEEPER} || RES=$?
+      echo "`date`: Sequential PID_SLEEPER has finished, now RES=$RES"
+      exit $RES
+    ) && \
+    BLDRES=0 || \
+    BLDRES=$?
+    echo "=== `date`: BUILDS FINISHED ($BLDRES)"
 
     echo "=== `date`: Are GitIgnores good after 'make $BUILD_TGT'? (should have no output below)"
     git status -s || git status || true
@@ -105,8 +146,10 @@ default|"default-tgt:"*)
         echo "CCache stats after build:"
         ccache -s
     fi
-    echo "=== `date`: Exiting after the custom-build target 'make $BUILD_TGT' succeeded OK"
-    exit 0
+    [ "$BLDRES" = 0 ] && \
+    echo "=== `date`: Exiting after the custom-build target 'make $BUILD_TGT' succeeded OK" || \
+    echo "=== `date`: Exiting after the custom-build target 'make $BUILD_TGT' FAILED with code $BLDRES" >&2
+    exit $BLDRES
     ;;
 bindings)
     pushd "./bindings/${BINDING}" && ./ci_build.sh
