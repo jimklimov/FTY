@@ -696,6 +696,14 @@ COMPONENTS_ALL += $(COMPONENTS_FTY)
 # Also support optional patching of sources while prepping (e.g. for
 # alternate OSes with their non-SCMed tweaks).
 
+$(abs_srcdir)/.git/modules/%/FETCH_HEAD $(abs_srcdir)/.git/modules/%/index $(abs_srcdir)/%/.git:
+	@if [ ! -s "$@" ] ; then \
+	    echo "FETCHING component '$(notdir $(@D))' from Git"; \
+	    git submodule init $(notdir $(@D)) && \
+	    git submodule update $(notdir $(@D)) && \
+	    ( cd $(notdir $(@D)) && git pull --all ) ; \
+	 fi
+
 $(BUILD_OBJ_DIR)/%/.prep-newestcommit: $(abs_srcdir)/.git/modules/%/FETCH_HEAD $(abs_srcdir)/.git/modules/%/index
 	@$(MKDIR) "$(@D)"
 	@if test -s "$@" && test -s "$<" && diff "$@" "$<" >/dev/null 2>&1 ; then \
@@ -708,7 +716,7 @@ $(BUILD_OBJ_DIR)/%/.prep-newestcommit: $(abs_srcdir)/.git/modules/%/FETCH_HEAD $
 
 # Note: during prepping, we generally remove and recreate the OBJ_DIR
 # which contains the input file. So we stash and recreate it mid-way.
-$(BUILD_OBJ_DIR)/%/.prepped: $(BUILD_OBJ_DIR)/%/.prep-newestcommit
+$(BUILD_OBJ_DIR)/%/.prepped: $(BUILD_OBJ_DIR)/%/.prep-newestcommit $(abs_srcdir)/%/.git
 	@$(MKDIR) "$(@D)"
 	@if test ! -s "$@" || ! diff "$@" "$<" > /dev/null 2>&1 ; then \
 	  if test -f "$(@D)/.installed" || test -f "$(@D)/.install-failed" ; then \
