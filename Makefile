@@ -894,7 +894,7 @@ regenerate/%: $(BUILD_OBJ_DIR)/zproject/.installed
 ### follows the configured default branch. Simple "git-resync"
 ### stays in developer's current branch and merges it with
 ### changes trickling down from upstream default branch.
-git-resync/% git-resync-auto/%:
+git-resync/% git-resync-auto/%: $(abs_srcdir)/%/.git
 	@( BASEBRANCH="`git config -f $(abs_srcdir)/.gitmodules submodule.$(@F).branch`" || BASEBRANCH="" ; \
 	  test -n "$$BASEBRANCH" || BASEBRANCH=master ; \
 	  cd "$(abs_srcdir)/$(@F)" && \
