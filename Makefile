@@ -546,18 +546,7 @@ else
 
 endif
 
-#    COMPONENTS_FTY += czmq
     COMPONENTS_FTY += $(COMPONENT_CZMQ)
-
-%/czmq: %/$(COMPONENT_CZMQ)
-	@true
-
-$(ORIGIN_SRC_DIR)/czmq: $(ORIGIN_SRC_DIR)/$(COMPONENT_CZMQ)
-	@$(RM) $@
-	@$(LN_S) $< $@
-
-# TODO: Rework this multiversioning - would not be nice for parallel builds of different things in one workspace
-$(BUILD_OBJ_DIR)/czmq/.prepped $(BUILD_OBJ_DIR)/czmq/.prep-newestcommit $(ORIGIN_SRC_DIR)/czmq/.prep-newestcommit : $(ORIGIN_SRC_DIR)/czmq
 
 $(BUILD_OBJ_DIR)/$(COMPONENT_CZMQ)/.configured: $(BUILD_OBJ_DIR)/libzmq/.installed
 
