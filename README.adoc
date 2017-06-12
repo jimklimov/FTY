@@ -28,8 +28,22 @@ ready for correct parallel compilation with GNU Make 3.81 or newer, and can
 take advantage of `ccache` if available on your system. It is up to the
 developer to provide an environment with appropriate third-party software
 which our project does not modify (such as MySQL/MariaDB libraries to link
-against, or lua-5.1/5.2, etc.), as well as to completely check out the
-source code to build.
+against, or lua-5.1/5.2, etc.), as well as internet connection to completely
+check out the source code to build. The `Makefile` defines dependencies that
+can cause download or update of sources from designated remote repositories
+using `git`, so the basic way to build the 42ITy(TM) ecosystem is to:
+
+----
+$ git clone https://github.com/42ity/FTY && \
+  cd FTY && \
+  make -j 4
+----
+
+To update sources and rebuild whatever has changed later on, you can use e.g.
+`make world`, or call a number of actions on specific components using a
+metaphor of subdirectory in the recipes, e.g. `make recheck/fty-example`.
+See the `Makefile` for different wildcard actions it defines (with percent
+character), using this query for the current version: `egrep '/%:$' Makefile`
 
 Note that as part of the project's evolution and legacy, it used to require
 the `czmq` version 3.0.2, and since that release was obsoleted by upstream
