@@ -542,9 +542,8 @@ ifeq ($(strip $(CI_CZMQ_VER)),3)
 
     COMPONENT_CZMQ=czmq-v3.0.2
 
-    CONFIG_OPTS_czmq ?= CFLAGS="$(CFLAGS) -Wno-deprecated-declarations"
-    CONFIG_OPTS_czmq += CXXFLAGS="$(CXXFLAGS) -Wno-deprecated-declarations"
-    CONFIG_OPTS_czmq += CPPFLAGS="$(CPPFLAGS) -Wno-deprecated-declarations"
+    CONFIG_OPTS_$(COMPONENT_CZMQ) ?= CFLAGS="$(CFLAGS) -Wno-deprecated-declarations" CXXFLAGS="$(CXXFLAGS) -Wno-deprecated-declarations" CPPFLAGS="$(CPPFLAGS) -Wno-deprecated-declarations"
+
 # Make sure the workspace is (based on) branch "v3.0.2" at this time
 # That version of czmq autogen.sh requires a "libtool" while debian has
 # only "libtoolize", so fall back if needed.
