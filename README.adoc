@@ -39,8 +39,9 @@ $ git clone https://github.com/42ity/FTY && \
   make -j 4
 ----
 
-To update sources and rebuild whatever has changed later on, you can use e.g.
-`make world`, or call a number of actions on specific components using a
+To update sources from current state of remote Git branches and rebuild in
+proper ordering whatever has changed later on, you can use e.g. `make world`.
+Also you can call a number of actions against specific components using a
 metaphor of subdirectory in the recipes, e.g. `make recheck/fty-example`.
 See the `Makefile` for different wildcard actions it defines (with percent
 character), using this query for the current version: `egrep '/%:$' Makefile`
