@@ -787,7 +787,7 @@ clean-src/%:
 	 else \
 	    echo "  NOOP    Generally $@ has nothing to do for now"; \
 	 fi
-	@if test x"$(@F)" = x"czmq" && -L "$(ORIGIN_SRC_DIR)/$(@F)" ; then \
+	@if test x"$(@F)" = x"czmq" && test -L "$(ORIGIN_SRC_DIR)/$(@F)" ; then \
 	    $(RM) "$(ORIGIN_SRC_DIR)/$(@F)" ; \
 	 else true; fi
 
