@@ -695,12 +695,16 @@ COMPONENTS_ALL += $(COMPONENTS_FTY)
 # Also support optional patching of sources while prepping (e.g. for
 # alternate OSes with their non-SCMed tweaks).
 
+# Note: this fetches current info from remotes (in particular to get the
+# FETCH_HEAD file), but does not necessarily update the local workspace
+# with checked-out sources, nor picks a branch. By default codebase stays
+# at the commit-id pointed to by git submodule for each component.
 $(abs_srcdir)/.git/modules/%/FETCH_HEAD $(abs_srcdir)/.git/modules/%/index $(abs_srcdir)/%/.git:
 	@if [ ! -s "$@" ] ; then \
 	    echo "FETCHING component '$(notdir $(@D))' from Git"; \
 	    git submodule init $(notdir $(@D)) && \
 	    git submodule update $(notdir $(@D)) && \
-	    ( cd $(notdir $(@D)) && git pull --all ) ; \
+	    ( cd $(notdir $(@D)) && git fetch --all ) ; \
 	 fi
 
 $(BUILD_OBJ_DIR)/%/.prep-newestcommit: $(abs_srcdir)/.git/modules/%/FETCH_HEAD $(abs_srcdir)/.git/modules/%/index
