@@ -1,5 +1,22 @@
 = README for FTY
 
+== TL;DR summary
+
+This repository allows to quickly checkout, build, test and develop the
+ecosystem of http://42ity.org/[42ITy(TM)] project, including components
+of the project itself and customized or original dependency projects.
+
+To build the latest HEAD of each component's default branch just run this:
+----
+$ git clone https://github.com/42ity/FTY && \
+  ( cd FTY && make world )
+----
+
+It is recommended to have installed `ccache` to speed up subsequent
+rebuilds, as well as certain other common dependencies and tools.
+For reference, you can find a list of additional packages needed on
+Debian and Ubuntu Linux distributions in the `.travis.yml` file.
+
 == About the FTY repository
 
 FTY is a "dispatcher" repository which links (as "git submodules") to the
