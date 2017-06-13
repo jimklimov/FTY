@@ -38,6 +38,16 @@ components in order (this is automated by the accompanying `Makefile`):
   each other as defined in their `profile.xml` manifests for `zproject`
 * `fty-core` and `fty-rest` possibly come last
 
+Note that the "git submodules" mechanism used by the FTY repository can
+only refer to specific Git commit IDs, not branches or tags, so when you
+first clone the repositories you will get a lot of "detached HEADs" in
+the component subdirectories. This suffices for automated builds with
+predetermined versions of the software. The FTY repository `Makefile`
+recipes and scripts include additional methods to add support for human
+developers as well, in order to both ease integration with their own
+forks of the components on GitHub, and to follow actual Git branches
+in the local workspace checkouts.
+
 == Making the ecosystem
 
 The included `Makefile` automates building of project components, including
