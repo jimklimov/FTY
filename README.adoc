@@ -78,6 +78,12 @@ metaphor of subdirectory in the recipes, e.g. `make recheck/fty-example`.
 See the `Makefile` for different wildcard actions it defines (with percent
 character), using this query for the current version: `egrep '/%:$' Makefile`
 
+When running parallel `make -jN` beware that if you spawn too many workers,
+the operating system might kill off some of them if it is insufficiently
+resourced, causing the build to fail not due to source code errors. In order
+to take advantage of parallel processing, you may be well served by running
+first a parallel and then a sequential build attempt: `make -j 4 -k || make`
+
 Note that as part of the project's evolution and legacy, it used to require
 the `czmq` version 3.0.2, and since that release was obsoleted by upstream
 a while ago, we tracked our own fork with small fixes. Subsequently the code
