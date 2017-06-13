@@ -24,11 +24,12 @@ repositories used to build the 42ITy(TM) project. This includes some third
 party projects (git HEADs), forks of third-party projects customized for
 42ITy(TM) needs, and of course lots of original development.
 
-For a rebuild from scratch (to be automated) you'd need:
+For a rebuild from scratch you'd need to compile and install the following
+components in order (this is automated by the accompanying `Makefile`):
 
 * `gsl` and `zproject` (optional -- to refresh project definitions)
 * `libzmq`
-* `libczmq`
+* `libczmq` (one of the supported `czmq` variants as discussed below)
 * `malamute`
 * `cxxtools`
 * `tntdb`
