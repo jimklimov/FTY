@@ -44,5 +44,6 @@ PATCH_OPTS_libcidr = -p1
 
 PREP_ACTION_BEFORE_PATCHING_fty-rest = ( \
 	  test -x /usr/lib/libsasl.so && \
+	    $(MKDIR) $(PKG_CONFIG_DIR)/ && \
 	    $(CP) $(ORIGIN_SRC_DIR)/.hacks/SunOS/libsasl2.pc $(PKG_CONFIG_DIR)/ ; \
 	)
