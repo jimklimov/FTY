@@ -713,7 +713,7 @@ $(BUILD_OBJ_DIR)/%/.prep-newestcommit: $(abs_srcdir)/.git/modules/%/FETCH_HEAD $
 	    echo "ROLLBACK TIMESTAMP of $< to that of existing $@ because this commit is already prepped" ; \
 	    $(TOUCH) -r "$@" "$<" || true ; \
 	 else \
-	    echo "Seems a NEW COMMIT of $(notdir $(@D)) has landed, updating $@" ; \
+	    echo "Seems a NEW COMMIT of $(notdir $(@D)) has landed (compared to last build), updating $@" ; \
 	    cat "$<" > "$@" ; \
 	 fi
 
