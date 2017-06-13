@@ -84,6 +84,8 @@ resourced, causing the build to fail not due to source code errors. In order
 to take advantage of parallel processing, you may be well served by running
 first a parallel and then a sequential build attempt: `make -j 4 -k || make`
 
+=== Support for multiple CZMQ library versions
+
 Note that as part of the project's evolution and legacy, it used to require
 the `czmq` version 3.0.2, and since that release was obsoleted by upstream
 a while ago, we tracked our own fork with small fixes. Subsequently the code
@@ -104,6 +106,8 @@ as a `make` argument); suported values are `3` for our czmq-v3.0.2 fork
 the upstream/master which is currently under the 4.x umbrella versions,
 and `pkg` for OS packages of the whole `libsodium`+`libzmq`+`czmq`+`malamute`
 stack.
+
+=== Support for different operating systems
 
 This `Makefile` has been verified on Debian 8 (devel images for the project
 build farm); it also passes on Ubuntu-based systems used in the Travis CI
