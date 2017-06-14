@@ -398,6 +398,10 @@ CONFIG_OPTS += --quiet
 # For projects from around the zeromq community, use stable APIs
 CONFIG_OPTS += --enable-drafts=no
 
+ifeq ($(strip $(ADDRESS_SANITIZER)),enabled)
+CONFIG_OPTS += --enable-address-sanitizer=yes
+endif
+
 # optional overrides of config above, etc.
 sinclude Makefile-local.mk
 sinclude Makefile-local-$(BUILD_OS).mk
