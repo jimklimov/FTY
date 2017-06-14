@@ -209,6 +209,39 @@ matrix:
         - *pkg_deps_prereqs_zmq_master
 
 
+  - env: CI_CZMQ_VER=3 ADDRESS_SANITIZER=enabled BUILD_TYPE=default-tgt:memcheck
+    os: linux
+    dist: trusty
+    sudo: false
+    addons:
+      apt:
+        packages:
+        - *pkg_deps_common
+        - valgrind
+
+  - env: CI_CZMQ_VER=4 ADDRESS_SANITIZER=enabled BUILD_TYPE=default-tgt:memcheck
+    os: linux
+    dist: trusty
+    sudo: false
+    addons:
+      apt:
+        packages:
+        - *pkg_deps_common
+        - valgrind
+
+  - env: CI_CZMQ_VER=pkg ADDRESS_SANITIZER=enabled BUILD_TYPE=default-tgt:memcheck
+    os: linux
+    dist: trusty
+    sudo: false
+    addons:
+      apt:
+        sources: *pkg_src_zeromq_ubuntu14
+        packages:
+        - *pkg_deps_common
+        - valgrind
+        - *pkg_deps_prereqs_zmq_master
+
+
   - env: CI_CZMQ_VER=3 BUILD_TYPE=default-tgt:check
     os: linux
     services: docker
