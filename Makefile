@@ -860,6 +860,20 @@ dist/%: $(BUILD_OBJ_DIR)/%/.disted
 valgrind/% memcheck/%: $(BUILD_OBJ_DIR)/%/.memchecked
 	@true
 
+# This is a sort of torture test for components that fail, but not
+# consistently (e.g. due to race conditions, phase of moon, etc.)
+# Run the memcheck for the component indefinitely, until it fails.
+valgrind-loop/% memcheck-loop/%: $(BUILD_OBJ_DIR)/%/.checked
+	@echo "Looping indefinitely until memcheck of $(@F) fails..."
+	+N=1; while $(call memcheck_sub,$(@F)) ; do \
+	    echo "The $$N run of memcheck of $(@F) succeeded, retrying..." ; \
+	    N="`expr $$N + 1`" || true ; \
+	    sleep 1; \
+	 done ; \
+	 RES=$$? ; \
+	 echo "The $$N run of memcheck of $(@F) FAILED with code $$RES" >&2 ; \
+	 exit $$RES
+
 assume/%:
 	@echo "ASSUMING that $(@F) is available through means other than building from sources"
 	@$(MKDIR) $(BUILD_OBJ_DIR)/$(@F)
