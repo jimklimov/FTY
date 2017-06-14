@@ -543,6 +543,12 @@ $(BUILD_OBJ_DIR)/libzmq/.configured: $(BUILD_OBJ_DIR)/libsodium/.installed
 $(BUILD_OBJ_DIR)/libzmq/.memchecked: $(BUILD_OBJ_DIR)/libzmq/.built
 	@$(call echo_noop,$@)
 
+# There is something fishy at this time when running code against libzmq.so
+# built with ASAN (unresolved symbols are reported).
+ifeq ($(strip $(ADDRESS_SANITIZER)),enabled)
+CONFIG_OPTS_libzmq = --enable-address-sanitizer=no
+endif
+
 ifeq ($(strip $(CI_CZMQ_VER)),3)
 
     COMPONENT_CZMQ=czmq-v3.0.2
