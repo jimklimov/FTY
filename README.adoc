@@ -107,6 +107,29 @@ the `upstream/master` which is currently under the 4.x umbrella versions,
 and `pkg` for OS packages of the whole `libsodium`+`libzmq`+`czmq`+`malamute`
 stack.
 
+=== Support for Address Sanitizer
+
+The zeromq-related ecosystem of software projects has recently added support
+for building with the Address Sanitizer in supportive compilers such as the
+recent GCC versions. You can find more details about this technology at
+https://gcc.gnu.org/onlinedocs/gcc/Instrumentation-Options.html and
+https://github.com/google/sanitizers/wiki/AddressSanitizer.
+
+This can be enabled in Travis CI tests for projects generated with `zproject`
+and now for (Travis or manually executed) builds done with the `Makefile`
+provided by this FTY repository, by an exporting an environment variable
+usually before a `memcheck`/`valgrind` build and run:
+
+````
+$ export ADDRESS_SANITIZER=enabled
+$ make memcheck/fty-example
+````
+
+Note that the actual compilation flags enabled by such toggle can depend
+on contents of the `configure.ac` scripts in each component project, and of
+course functionality of the actual implementation depends on the evolution
+level of the compiler in use for the build.
+
 === Support for different operating systems
 
 This `Makefile` has been verified on Debian 8 (devel images for the project
