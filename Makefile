@@ -577,6 +577,12 @@ endif
 
     COMPONENTS_FTY += $(COMPONENT_CZMQ)
 
+# There is something fishy at this time when running code against libczmq.so
+# built with ASAN (unresolved symbols are reported).
+ifeq ($(strip $(ADDRESS_SANITIZER)),enabled)
+CONFIG_OPTS_libczmq = --enable-address-sanitizer=no
+endif
+
 $(BUILD_OBJ_DIR)/$(COMPONENT_CZMQ)/.configured: $(BUILD_OBJ_DIR)/libzmq/.installed
 
 
