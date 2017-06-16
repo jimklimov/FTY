@@ -96,6 +96,9 @@ pkg_deps_devtools: &pkg_deps_devtools
     - git
     - ccache
 
+pkg_deps_asan: &pkg_deps_asan
+    - liblsan0
+
 # For old case - we build our forks or referrals
 #pkg_deps_prereqs_czmq3: &pkg_deps_prereqs_czmq3
 #    - libzmq3-dev
@@ -209,7 +212,7 @@ matrix:
         - *pkg_deps_prereqs_zmq_master
 
 
-  - env: CI_CZMQ_VER=3 ADDRESS_SANITIZER=enabled BUILD_TYPE=default-tgt:memcheck
+  - env: CI_CZMQ_VER=3 ADDRESS_SANITIZER=enabled BUILD_TYPE=default-tgt:check
     os: linux
     dist: trusty
     sudo: false
@@ -217,9 +220,9 @@ matrix:
       apt:
         packages:
         - *pkg_deps_common
-        - valgrind
+        - *pkg_deps_asan
 
-  - env: CI_CZMQ_VER=4 ADDRESS_SANITIZER=enabled BUILD_TYPE=default-tgt:memcheck
+  - env: CI_CZMQ_VER=4 ADDRESS_SANITIZER=enabled BUILD_TYPE=default-tgt:check
     os: linux
     dist: trusty
     sudo: false
@@ -227,9 +230,9 @@ matrix:
       apt:
         packages:
         - *pkg_deps_common
-        - valgrind
+        - *pkg_deps_asan
 
-  - env: CI_CZMQ_VER=pkg ADDRESS_SANITIZER=enabled BUILD_TYPE=default-tgt:memcheck
+  - env: CI_CZMQ_VER=pkg ADDRESS_SANITIZER=enabled BUILD_TYPE=default-tgt:check
     os: linux
     dist: trusty
     sudo: false
@@ -238,7 +241,7 @@ matrix:
         sources: *pkg_src_zeromq_ubuntu14
         packages:
         - *pkg_deps_common
-        - valgrind
+        - *pkg_deps_asan
         - *pkg_deps_prereqs_zmq_master
 
 
