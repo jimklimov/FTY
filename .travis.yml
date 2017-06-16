@@ -98,6 +98,11 @@ pkg_deps_devtools: &pkg_deps_devtools
 
 pkg_deps_asan: &pkg_deps_asan
     - liblsan0
+    - libasan0
+    - libasan1
+    - libasan2
+    - libtsan0
+    - libubsan0
 
 # For old case - we build our forks or referrals
 #pkg_deps_prereqs_czmq3: &pkg_deps_prereqs_czmq3
