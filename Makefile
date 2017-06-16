@@ -399,8 +399,17 @@ CONFIG_OPTS += --quiet
 # For projects from around the zeromq community, use stable APIs
 CONFIG_OPTS += --enable-drafts=no
 
+# The value of "enabled" is shared with zeromq and migh be opted
+# out of in some component recipes below.
+# The "enforced" setting is not opted out of, reserved for tests
+# that might fail but be true (and help debug why that fails).
 ifeq ($(strip $(ADDRESS_SANITIZER)),enabled)
 CONFIG_OPTS += --enable-address-sanitizer=yes
+else
+ifeq ($(strip $(ADDRESS_SANITIZER)),enforced)
+CONFIG_OPTS += --enable-address-sanitizer=yes
+else
+endif
 endif
 
 # optional overrides of config above, etc.
