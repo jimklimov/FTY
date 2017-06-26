@@ -1,5 +1,22 @@
 = README for FTY
 
+== TL;DR summary
+
+This repository allows to quickly checkout, build, test and develop the
+ecosystem of http://42ity.org/[42ITy(TM)] project, including components
+of the project itself and customized or original dependency projects.
+
+To build the latest HEAD of each component's default branch just run this:
+----
+$ git clone https://github.com/42ity/FTY && \
+  ( cd FTY && make world )
+----
+
+It is recommended to have installed `ccache` to speed up subsequent
+rebuilds, as well as certain other common dependencies and tools.
+For reference, you can find a list of additional packages needed on
+Debian and Ubuntu Linux distributions in the `.travis.yml` file.
+
 == About the FTY repository
 
 FTY is a "dispatcher" repository which links (as "git submodules") to the
@@ -7,11 +24,12 @@ repositories used to build the 42ITy(TM) project. This includes some third
 party projects (git HEADs), forks of third-party projects customized for
 42ITy(TM) needs, and of course lots of original development.
 
-For a rebuild from scratch (to be automated) you'd need:
+For a rebuild from scratch you'd need to compile and install the following
+components in order (this is automated by the accompanying `Makefile`):
 
 * `gsl` and `zproject` (optional -- to refresh project definitions)
 * `libzmq`
-* `libczmq`
+* `libczmq` (one of the supported `czmq` variants as discussed below)
 * `malamute`
 * `cxxtools`
 * `tntdb`
@@ -20,6 +38,16 @@ For a rebuild from scratch (to be automated) you'd need:
   each other as defined in their `profile.xml` manifests for `zproject`
 * `fty-core` and `fty-rest` possibly come last
 
+Note that the "git submodules" mechanism used by the FTY repository can
+only refer to specific Git commit IDs, not branches or tags, so when you
+first clone the repositories you will get a lot of "detached HEADs" in
+the component subdirectories. This suffices for automated builds with
+predetermined versions of the software. The FTY repository `Makefile`
+recipes and scripts include additional methods to add support for human
+developers as well, in order to both ease integration with their own
+forks of the components on GitHub, and to follow actual Git branches
+in the local workspace checkouts.
+
 == Making the ecosystem
 
 The included `Makefile` automates building of project components, including
@@ -27,20 +55,102 @@ the customized third-party projects, in the order of dependencies. It is
 ready for correct parallel compilation with GNU Make 3.81 or newer, and can
 take advantage of `ccache` if available on your system. It is up to the
 developer to provide an environment with appropriate third-party software
-whic our project does not modify (such as MySQL/MariaDB libraries to link
-against, or lua-5.1/5.2, etc.), as well as to completely check out the
-source code to build.
+which our project does not modify (such as MySQL/MariaDB libraries to link
+against, or lua-5.1/5.2, etc.), as well as internet connection to completely
+check out the source code to build. The `Makefile` defines dependencies that
+can cause download or update of sources from designated remote repositories
+using `git`, so the basic way to build the 42ITy(TM) ecosystem using those
+component revisions that the FTY repository points to at any given time is to:
+
+----
+$ git clone https://github.com/42ity/FTY && \
+  cd FTY && \
+  make -j 4
+----
+
+To update sources from current state of remote Git branches and rebuild in
+proper ordering whatever has changed later on, you can use e.g. `make world`.
+You can also do this for initial build command, if you want to build right
+away with the current state of default branch in each component repository.
+
+Also you can call a number of actions against specific components using a
+metaphor of subdirectory in the recipes, e.g. `make recheck/fty-example`.
+See the `Makefile` for different wildcard actions it defines (with percent
+character), using this query for the current version: `egrep '/%:$' Makefile`
+
+When running parallel `make -jN` beware that if you spawn too many workers,
+the operating system might kill off some of them if it is insufficiently
+resourced, causing the build to fail not due to source code errors. In order
+to take advantage of parallel processing, you may be well served by running
+first a parallel and then a sequential build attempt: `make -j 4 -k || make`
+
+=== Support for multiple CZMQ library versions
+
+Note that as part of the project's evolution and legacy, it used to require
+the `czmq` version 3.0.2, and since that release was obsoleted by upstream
+a while ago, we tracked our own fork with small fixes. Subsequently the code
+of 42ITy(TM) components where it mattered was updated to support either the
+CZMQ3 or CZMQ4 APIs, and now the `Makefile` in this repository allows to
+automate the builds against either our `czmq-v3.0.2` fork or the upstream
+`czmq-master` from the GitHub, or using binary packages of zeromq stack
+as provided in your OS by other means (beware that these can lag behind
+respective `upstream/master` or `upstream/stable` branches and so can lack
+the features that 42ITy codebase might need). Our current goal is to drop
+the requirement of the obsoleted version and use the community-supported
+master branch, where we can collaborate on fixes for bugs that bite us all.
+
+To choose the `czmq` version to build your FTY components against, you can
+define the `CI_CZMQ_VER=<value>` (as an exported environment variable, or
+as a `make` argument); suported values are `3` for our "czmq-v3.0.2" fork
+(it is also the default choice if no value is set explicitly), `4` for
+the `upstream/master` which is currently under the 4.x umbrella versions,
+and `pkg` for OS packages of the whole `libsodium`+`libzmq`+`czmq`+`malamute`
+stack.
+
+=== Support for Address Sanitizer
+
+The zeromq-related ecosystem of software projects has recently added support
+for building with the Address Sanitizer in supportive compilers such as the
+recent GCC versions. You can find more details about this technology at
+https://gcc.gnu.org/onlinedocs/gcc/Instrumentation-Options.html and
+https://github.com/google/sanitizers/wiki/AddressSanitizer.
+
+This can be enabled in Travis CI tests for projects generated with `zproject`
+and now for (Travis or manually executed) builds done with the `Makefile`
+provided by this FTY repository, by an exporting an environment variable
+usually before a `memcheck`/`valgrind` build and run:
+
+````
+$ export ADDRESS_SANITIZER=enabled
+$ make memcheck/fty-example
+````
+
+Note that the actual compilation flags enabled by such toggle can depend
+on contents of the `configure.ac` scripts in each component project, and of
+course functionality of the actual implementation depends on the evolution
+level of the compiler in use for the build.
+
+=== Support for different operating systems
 
 This `Makefile` has been verified on Debian 8 (devel images for the project
-build farm); feel free to update the recipes if needed for other OSes and
-distros.
+build farm); it also passes on Ubuntu-based systems used in the Travis CI
+cloud. Much but not all of this code can also build under OpenIndiana, more
+with a purpose to test the approach to portability than to use it there (in
+the near term at least). Feel free to update the recipes if needed for other
+OSes and distros, and take inspiration from hooks made for and used by the
+OpenIndiana/SunOS integration.
 
 == Fetching all current sources and updating the HEADs
 
 Note that when you initially check out a clone of this repository, you only
 get meta-data. To instantiate (or subsequently update) the actual source
-code for the components as well as to update the reference to Git HEADs of
-the referenced components, run `./sync.sh` in this workspace.
+code for the components, as well as to update the reference to Git HEADs of
+the referenced components, run the `./sync.sh` script in this workspace.
+
+NOTE: If you intend not only to build the unmodified 42ITy codebase, but to
+also collaborate about changes and improvements, see the chapter below about
+setting up your forks on GitHub and how to automate definition of references
+to both your "origin" fork and our common "upstream" repository.
 
 NOTE: In order for updates from the common codebase to come without conflicts,
 never work in a `master` branch (or other preferred branch in certain repos)!
@@ -67,9 +177,31 @@ or (to specify a default non-`master` branch right away):
 :; git submodule add -b 42ity https://github.com/42ity/third-party-fork
 ----
 
-Note that after adding sources a submodule, you'd likely want to reference
+Note that after adding sources for a submodule, you'd likely want to reference
 its place in the dependency chain for the `Makefile` of this FTY workspace
-as well.
+as well (perhaps among `COMPONENTS_FTY_EXPERIMENTAL` first, for skeleton
+component directories). Don't forget to `git add` both the updated `Makefile`
+and the new component directory, and to set up your own developer fork for it
+as detailed below.
+
+== Adding new FTY components
+
+When starting a new component, don't hesitate to start with `fty-example` and
+its `project.xml` in particular to seed the generation of your new codebase
+in a way similar to our other components.
+
+If your codebase uses features of C++11 or newer standard, see notes in the
+`.travis.yml` file (re-)generated for your component about requesting an
+appropriate build environment from the Travis CI farm, with a capable compiler.
+
+If the new component delivers `systemd` services that should be manageable
+as part of the 42ITy(TM) product, consider updating the list of recognized
+services used in `fty-core::tools/systemd` and in `fty-rest::systemctl.ecpp`
+(or rather `fty-rest::helpers.cc` at this time).
+
+Finally, although orthogonal to updating this repository, don't forget to
+enable Travis CI for the new component and add or update some corresponding
+recipes on your build farm, if any.
 
 == Changing tracked repository data
 

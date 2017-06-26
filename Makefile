@@ -27,6 +27,7 @@ install: install-fty
 uninstall: uninstall-all uninstall-fty-experimental
 clean: clean-all clean-fty-experimental
 check: check-all
+check-verbose: check-verbose-all
 dist: dist-all
 distclean: distclean-all
 distcheck: distcheck-all
@@ -40,6 +41,11 @@ BUILD_OS ?= $(shell uname -s)
 BUILD_ARCH ?= $(shell uname -m)
 ARCH=$(BUILD_ARCH)
 export ARCH
+
+# Current legacy default, and something to have definite recipe behavior
+ifeq ($(strip $(CI_CZMQ_VER)),)
+CI_CZMQ_VER ?= 3
+endif
 
 # $(abs_srcdir) defaults to location of this Makefile (and accompanying sources)
 # Can override on command-line if needed for any reason, for example
@@ -55,14 +61,14 @@ ORIGIN_SRC_DIR ?= $(abs_srcdir)
 # sources live, as a a wipable local git clone of those submodules to
 # support the multi-host builds from same source checkout (autoreconf
 # changes the source tree and so depends on tools available on the host).
-BUILD_SRC_DIR ?= $(abs_builddir)/.srcclone/$(BUILD_OS)-$(BUILD_ARCH)
+BUILD_SRC_DIR ?= $(abs_builddir)/.srcclone/$(BUILD_OS)-$(BUILD_ARCH)-czmq_$(CI_CZMQ_VER)
 
 # Subdirectory where out-of-tree builds happen (with a sub-dir per
 # component where object files and other products are created). For a
 # few components this is effectively used as their BUILD_SRC_DIR too
 # (e.g. those that are not managed by autotools and so do not easily
 # support out-of-tree builds).
-BUILD_OBJ_DIR ?= $(abs_builddir)/.build/$(BUILD_OS)-$(BUILD_ARCH)
+BUILD_OBJ_DIR ?= $(abs_builddir)/.build/$(BUILD_OS)-$(BUILD_ARCH)-czmq_$(CI_CZMQ_VER)
 
 # Root dir where tools are installed into (using their default paths inside)
 # We also do use some of those tools (e.g. GSL) during further builds.
@@ -70,7 +76,7 @@ BUILD_OBJ_DIR ?= $(abs_builddir)/.build/$(BUILD_OS)-$(BUILD_ARCH)
 # such stuff, so if you are building just a prototype area for packaging,
 # consider setting an explicit PREFIX (not relative to DESTDIR or INSTDIR).
 DESTDIR ?=
-INSTDIR ?= $(abs_builddir)/.install/$(BUILD_OS)-$(BUILD_ARCH)
+INSTDIR ?= $(abs_builddir)/.install/$(BUILD_OS)-$(BUILD_ARCH)-czmq_$(CI_CZMQ_VER)
 # Note: DESTDIR is a common var that is normally added during "make install"
 # but in out case this breaks dependencies written into the built libs if
 # the build-products are used in-place. INSTDIR is effectively the expected
@@ -124,7 +130,7 @@ COMPONENTS_FTY_EXPERIMENTAL =
 # */.prepped */.autogened */.configured */.built */.installed
 # NOTE/TODO: Get this to work with explicit list of patterns to filenames
 .SECONDARY:
-#.PRECIOUS: %/.prep-newestcommit %/.prepped %/.autogened %/.configured %/.built %/.installed %/.checked %/.distchecked %/.disted %/.memchecked
+#.PRECIOUS: %/.prep-newestcommit %/.prepped %/.autogened %/.configured %/.built %/.installed %/.checked %/.checked-verbose %/.distchecked %/.disted %/.memchecked
 
 # TODO : add a mode to check that a workspace has changed (dev work, git
 # checked out another branch, etc.) to trigger rebuilds of a project.
@@ -236,6 +242,27 @@ define check_sub
 endef
 
 # This assumes that the Makefile is present in submodule's build-dir
+# This is just an additional option flag in zproject generated makefiles,
+# to run the selftest programs in verbose mode. Note that non-zeromq
+# ecosystem projects can lack this recipe and might fail due to that.
+define check_verbose_sub
+	( $(MKDIR) "$(BUILD_OBJ_DIR)/$(1)/$(BUILD_SUB_DIR_$(1))" $(DESTDIR) $(INSTDIR) && \
+	  cd "$(BUILD_OBJ_DIR)/$(1)/$(BUILD_SUB_DIR_$(1))" && \
+	  case "x$(PREP_TYPE_$(1))" in \
+	    xnone)          CCACHE_BASEDIR="$(ORIGIN_SRC_DIR)/$(1)" ;; \
+	    xclone*-obj)    CCACHE_BASEDIR="$(BUILD_OBJ_DIR)/$(1)" ;; \
+	    xclone*-src|*)  CCACHE_BASEDIR="$(BUILD_SRC_DIR)/$(1)" ;; \
+	  esac && \
+	  export CCACHE_BASEDIR && \
+	  $(MAKE) DESTDIR="$(DESTDIR)" \
+	    $(MAKE_COMMON_ARGS_$(1)) $(MAKE_INSTALL_ARGS_$(1)) check-verbose && \
+	  $(TOUCH) "$(BUILD_OBJ_DIR)/$(1)/".checked-verbose && \
+	  $(RMFILE) "$(BUILD_OBJ_DIR)/$(1)"/.check-verbose-failed || \
+	  { $(TOUCH) "$(BUILD_OBJ_DIR)/$(1)/".check-verbose-failed ; exit 1; } \
+	)
+endef
+
+# This assumes that the Makefile is present in submodule's build-dir
 # Unfortunately, one may have to be careful about passing CONFIG_OPTS
 # values with spaces; note that values inside CONFIG_OPTS may be quoted.
 # Also it seems that both envvar and makefile-arg settings are needed :\
@@ -337,6 +364,10 @@ define echo_noop
 	( echo "  NOOP    Generally recipe for $@ has nothing to do" ; $(TOUCH) $@ )
 endef
 
+define echo_noop_pkg
+	( echo "  NOOP    Generally recipe for $@ has nothing to do because dependency is used pre-packaged" ; $(MKDIR) $(@D); $(TOUCH) $@ )
+endef
+
 CFLAGS ?=
 CPPFLAGS ?=
 CXXFLAGS ?=
@@ -360,6 +391,7 @@ CONFIG_OPTS += CPPFLAGS="$(CPPFLAGS)"
 CONFIG_OPTS += PKG_CONFIG_PATH="$(PKG_CONFIG_PATH)"
 CONFIG_OPTS += --with-pkgconfdir="$(PKG_CONFIG_DIR)"
 CONFIG_OPTS += --with-docs=no --without-docs
+CONFIG_OPTS += --with-doc=no --without-doc
 CONFIG_OPTS += --with-systemdtmpfilesdir="$(DESTDIR)$(PREFIX)/lib/tmpfiles.d"
 CONFIG_OPTS += --with-systemdsystempresetdir="$(DESTDIR)$(PREFIX)/lib/systemd/system-preset"
 CONFIG_OPTS += --with-systemdsystemunitdir="$(DESTDIR)$(PREFIX)/lib/systemd/system"
@@ -367,13 +399,26 @@ CONFIG_OPTS += --quiet
 # For projects from around the zeromq community, use stable APIs
 CONFIG_OPTS += --enable-drafts=no
 
+# The value of "enabled" is shared with zeromq and migh be opted
+# out of in some component recipes below.
+# The "enforced" setting is not opted out of, reserved for tests
+# that might fail but be true (and help debug why that fails).
+ifeq ($(strip $(ADDRESS_SANITIZER)),enabled)
+CONFIG_OPTS += --enable-address-sanitizer=yes
+else
+ifeq ($(strip $(ADDRESS_SANITIZER)),enforced)
+CONFIG_OPTS += --enable-address-sanitizer=yes
+else
+endif
+endif
+
 # optional overrides of config above, etc.
 sinclude Makefile-local.mk
 sinclude Makefile-local-$(BUILD_OS).mk
 sinclude Makefile-local-$(BUILD_OS)-$(BUILD_ARCH).mk
 
 # Catch empty expansions
-$(BUILD_OBJ_DIR)//.prep-newestcommit $(BUILD_OBJ_DIR)//.prepped $(BUILD_OBJ_DIR)//.autogened $(BUILD_OBJ_DIR)//.configured $(BUILD_OBJ_DIR)//.built $(BUILD_OBJ_DIR)//.installed $(BUILD_OBJ_DIR)//.checked $(BUILD_OBJ_DIR)//.distchecked $(BUILD_OBJ_DIR)//.disted $(BUILD_OBJ_DIR)//.memchecked:
+$(BUILD_OBJ_DIR)//.prep-newestcommit $(BUILD_OBJ_DIR)//.prepped $(BUILD_OBJ_DIR)//.autogened $(BUILD_OBJ_DIR)//.configured $(BUILD_OBJ_DIR)//.built $(BUILD_OBJ_DIR)//.installed $(BUILD_OBJ_DIR)//.checked $(BUILD_OBJ_DIR)//.checked-verbose $(BUILD_OBJ_DIR)//.distchecked $(BUILD_OBJ_DIR)//.disted $(BUILD_OBJ_DIR)//.memchecked:
 	@echo "Error in recipe expansion, can not build $@ : component part is empty" ; exit 1
 
 ########################### GSL and LIBCIDR ###############################
@@ -390,7 +435,7 @@ $(BUILD_OBJ_DIR)/gsl/.autogened: $(BUILD_OBJ_DIR)/gsl/.prepped
 $(BUILD_OBJ_DIR)/gsl/.configured: $(BUILD_OBJ_DIR)/gsl/.autogened
 	@$(call echo_noop,$@)
 
-$(BUILD_OBJ_DIR)/gsl/.checked $(BUILD_OBJ_DIR)/gsl/.distchecked $(BUILD_OBJ_DIR)/gsl/.memchecked $(BUILD_OBJ_DIR)/gsl/.disted: $(BUILD_OBJ_DIR)/gsl/.built
+$(BUILD_OBJ_DIR)/gsl/.checked $(BUILD_OBJ_DIR)/gsl/.checked-verbose $(BUILD_OBJ_DIR)/gsl/.distchecked $(BUILD_OBJ_DIR)/gsl/.memchecked $(BUILD_OBJ_DIR)/gsl/.disted: $(BUILD_OBJ_DIR)/gsl/.built
 	@$(call echo_noop,$@)
 
 #$(BUILD_OBJ_DIR)/gsl/.built: BUILD_SRC_DIR=$(BUILD_OBJ_DIR)
@@ -409,7 +454,7 @@ $(BUILD_OBJ_DIR)/libcidr/.autogened: $(BUILD_OBJ_DIR)/libcidr/.prepped
 #$(BUILD_OBJ_DIR)/libcidr/.built: BUILD_SRC_DIR=$(BUILD_OBJ_DIR)
 #$(BUILD_OBJ_DIR)/libcidr/.installed: BUILD_SRC_DIR=$(BUILD_OBJ_DIR)
 
-$(BUILD_OBJ_DIR)/libcidr/.checked $(BUILD_OBJ_DIR)/libcidr/.distchecked $(BUILD_OBJ_DIR)/libcidr/.memchecked $(BUILD_OBJ_DIR)/libcidr/.disted: $(BUILD_OBJ_DIR)/libcidr/.built
+$(BUILD_OBJ_DIR)/libcidr/.checked $(BUILD_OBJ_DIR)/libcidr/.checked-verbose $(BUILD_OBJ_DIR)/libcidr/.distchecked $(BUILD_OBJ_DIR)/libcidr/.memchecked $(BUILD_OBJ_DIR)/libcidr/.disted: $(BUILD_OBJ_DIR)/libcidr/.built
 	@$(call echo_noop,$@)
 
 ######################## Other components ##################################
@@ -422,7 +467,7 @@ $(BUILD_OBJ_DIR)/libcidr/.checked $(BUILD_OBJ_DIR)/libcidr/.distchecked $(BUILD_
 COMPONENTS_ALL += zproject
 $(BUILD_OBJ_DIR)/zproject/.autogened: $(BUILD_OBJ_DIR)/gsl/.installed
 
-$(BUILD_OBJ_DIR)/zproject/.checked $(BUILD_OBJ_DIR)/zproject/.distchecked $(BUILD_OBJ_DIR)/zproject/.memchecked: $(BUILD_OBJ_DIR)/zproject/.built
+$(BUILD_OBJ_DIR)/zproject/.checked $(BUILD_OBJ_DIR)/zproject/.checked-verbose $(BUILD_OBJ_DIR)/zproject/.distchecked $(BUILD_OBJ_DIR)/zproject/.memchecked: $(BUILD_OBJ_DIR)/zproject/.built
 	@$(call echo_noop,$@)
 
 COMPONENTS_FTY += cxxtools
@@ -457,34 +502,103 @@ PREP_TYPE_libmagic = clonetar-src
 $(BUILD_OBJ_DIR)/libmagic/.memchecked: $(BUILD_OBJ_DIR)/libmagic/.built
 	@$(call echo_noop,$@)
 
-COMPONENTS_FTY += libsodium
+
+ifeq ($(strip $(CI_CZMQ_VER)),pkg)
+#    COMPONENTS_FTY += libsodium
+#    COMPONENTS_FTY += libzmq
+#    COMPONENTS_FTY += czmq
+#    COMPONENTS_FTY += malamute
+
+    # In case of "pkg" which stands for using the upstream packages we
+    # have nothing to build - the env (e.g. Travis) should provide them
+    # pre-installed in system areas. If they mismatch our expectations,
+    # this means the env is obsolete... or too far in the future ;)
+
+COMPONENT_CZMQ=czmq
+
+$(BUILD_OBJ_DIR)/libsodium/.prep-newestcommit $(BUILD_OBJ_DIR)/libsodium/.prepped \
+$(BUILD_OBJ_DIR)/libsodium/.autogened $(BUILD_OBJ_DIR)/libsodium/.configured \
+$(BUILD_OBJ_DIR)/libsodium/.built $(BUILD_OBJ_DIR)/libsodium/.installed \
+$(BUILD_OBJ_DIR)/libsodium/.checked $(BUILD_OBJ_DIR)/libsodium/.distchecked \
+$(BUILD_OBJ_DIR)/libsodium/.disted $(BUILD_OBJ_DIR)/libsodium/.memchecked \
+$(BUILD_OBJ_DIR)/libzmq/.prep-newestcommit $(BUILD_OBJ_DIR)/libzmq/.prepped \
+$(BUILD_OBJ_DIR)/libzmq/.autogened $(BUILD_OBJ_DIR)/libzmq/.configured \
+$(BUILD_OBJ_DIR)/libzmq/.built $(BUILD_OBJ_DIR)/libzmq/.installed \
+$(BUILD_OBJ_DIR)/libzmq/.checked $(BUILD_OBJ_DIR)/libzmq/.distchecked \
+$(BUILD_OBJ_DIR)/libzmq/.disted $(BUILD_OBJ_DIR)/libzmq/.memchecked \
+$(BUILD_OBJ_DIR)/czmq/.prep-newestcommit $(BUILD_OBJ_DIR)/czmq/.prepped \
+$(BUILD_OBJ_DIR)/czmq/.autogened $(BUILD_OBJ_DIR)/czmq/.configured \
+$(BUILD_OBJ_DIR)/czmq/.built $(BUILD_OBJ_DIR)/czmq/.installed \
+$(BUILD_OBJ_DIR)/czmq/.checked $(BUILD_OBJ_DIR)/czmq/.distchecked \
+$(BUILD_OBJ_DIR)/czmq/.disted $(BUILD_OBJ_DIR)/czmq/.memchecked \
+$(BUILD_OBJ_DIR)/malamute/.prep-newestcommit $(BUILD_OBJ_DIR)/malamute/.prepped \
+$(BUILD_OBJ_DIR)/malamute/.autogened $(BUILD_OBJ_DIR)/malamute/.configured \
+$(BUILD_OBJ_DIR)/malamute/.built $(BUILD_OBJ_DIR)/malamute/.installed \
+$(BUILD_OBJ_DIR)/malamute/.checked $(BUILD_OBJ_DIR)/malamute/.distchecked \
+$(BUILD_OBJ_DIR)/malamute/.disted $(BUILD_OBJ_DIR)/malamute/.memchecked :
+	@$(call echo_noop_pkg,$@)
+
+else
+    # CI_CZMQ_VER not specified, or "3" (or "4" quietly)
+
+    COMPONENTS_FTY += libsodium
 $(BUILD_OBJ_DIR)/libsodium/.memchecked: $(BUILD_OBJ_DIR)/libsodium/.built
 	@$(call echo_noop,$@)
 
-COMPONENTS_FTY += libzmq
-PREP_TYPE_libzmq = clonetar-src
+    COMPONENTS_FTY += libzmq
+    PREP_TYPE_libzmq = clonetar-src
 $(BUILD_OBJ_DIR)/libzmq/.configured: $(BUILD_OBJ_DIR)/libsodium/.installed
 # TODO: It was called "make check-valgrind-memcheck" back then
 $(BUILD_OBJ_DIR)/libzmq/.memchecked: $(BUILD_OBJ_DIR)/libzmq/.built
 	@$(call echo_noop,$@)
 
-COMPONENTS_FTY += czmq
-CONFIG_OPTS_czmq ?= CFLAGS="$(CFLAGS) -Wno-deprecated-declarations"
-CONFIG_OPTS_czmq += CXXFLAGS="$(CXXFLAGS) -Wno-deprecated-declarations"
-CONFIG_OPTS_czmq += CPPFLAGS="$(CPPFLAGS) -Wno-deprecated-declarations"
+# There is something fishy at this time when running code against libzmq.so
+# built with ASAN (unresolved symbols are reported).
+ifeq ($(strip $(ADDRESS_SANITIZER)),enabled)
+CONFIG_OPTS_libzmq = --enable-address-sanitizer=no
+endif
+
+ifeq ($(strip $(CI_CZMQ_VER)),3)
+
+    COMPONENT_CZMQ=czmq-v3.0.2
+
+    CONFIG_OPTS_$(COMPONENT_CZMQ) ?= CFLAGS="$(CFLAGS) -Wno-deprecated-declarations" CXXFLAGS="$(CXXFLAGS) -Wno-deprecated-declarations" CPPFLAGS="$(CPPFLAGS) -Wno-deprecated-declarations"
+
 # Make sure the workspace is (based on) branch "v3.0.2" at this time
 # That version of czmq autogen.sh requires a "libtool" while debian has
 # only "libtoolize", so fall back if needed.
-$(BUILD_OBJ_DIR)/czmq/.autogened: $(BUILD_OBJ_DIR)/czmq/.prepped
+$(BUILD_OBJ_DIR)/$(COMPONENT_CZMQ)/.autogened: $(BUILD_OBJ_DIR)/$(COMPONENT_CZMQ)/.prepped
 	+$(call autogen_sub,$(notdir $(@D))) || \
 	 ( cd "$(BUILD_SRC_DIR)/$(notdir $(@D))/$(BUILD_SUB_DIR_$(notdir $(@D)))" \
 	   && autoreconf -fiv )
 	$(TOUCH) $@
 
-$(BUILD_OBJ_DIR)/czmq/.configured: $(BUILD_OBJ_DIR)/libzmq/.installed
+# Note: czmq3 seems to fail memcheck, disable it for now
+$(BUILD_OBJ_DIR)/$(COMPONENT_CZMQ)/.memchecked: $(BUILD_OBJ_DIR)/$(COMPONENT_CZMQ)/.built
+	@$(call echo_noop,$@)
 
-COMPONENTS_FTY += malamute
-$(BUILD_OBJ_DIR)/malamute/.configured: $(BUILD_OBJ_DIR)/czmq/.installed $(BUILD_OBJ_DIR)/libsodium/.installed
+
+else
+    # Note: this currently assumes that "CI_CZMQ_VER=4" means upstream/master
+    COMPONENT_CZMQ=czmq-master
+
+endif
+
+    COMPONENTS_FTY += $(COMPONENT_CZMQ)
+
+# There is something fishy at this time when running code against libczmq.so
+# built with ASAN (unresolved symbols are reported).
+ifeq ($(strip $(ADDRESS_SANITIZER)),enabled)
+CONFIG_OPTS_libczmq = --enable-address-sanitizer=no
+endif
+
+$(BUILD_OBJ_DIR)/$(COMPONENT_CZMQ)/.configured: $(BUILD_OBJ_DIR)/libzmq/.installed
+
+
+    COMPONENTS_FTY += malamute
+$(BUILD_OBJ_DIR)/malamute/.configured: $(BUILD_OBJ_DIR)/$(COMPONENT_CZMQ)/.installed $(BUILD_OBJ_DIR)/libsodium/.installed
+
+endif
 
 COMPONENTS_FTY += nut
 CONFIG_OPTS_nut ?= --with-doc=skip
@@ -560,6 +674,13 @@ $(BUILD_OBJ_DIR)/fty-example/.configured: $(BUILD_OBJ_DIR)/fty-proto/.installed
 COMPONENTS_FTY += fty-alert-flexible
 $(BUILD_OBJ_DIR)/fty-alert-flexible/.configured: $(BUILD_OBJ_DIR)/fty-proto/.installed
 
+COMPONENTS_FTY += fty-info
+$(BUILD_OBJ_DIR)/fty-info/.configured: $(BUILD_OBJ_DIR)/fty-proto/.installed $(BUILD_OBJ_DIR)/cxxtools/.installed
+# $(BUILD_OBJ_DIR)/tntdb/.installed
+
+COMPONENTS_FTY += fty-mdns-sd
+$(BUILD_OBJ_DIR)/fty-mdns-sd/.configured: $(BUILD_OBJ_DIR)/fty-proto/.installed
+
 ### Note: The following components are experimental recent additions,
 ### and in their current state they break FTY builds (and they do not
 ### yet do anything useful). So while this Makefile supports a basic
@@ -568,11 +689,11 @@ $(BUILD_OBJ_DIR)/fty-alert-flexible/.configured: $(BUILD_OBJ_DIR)/fty-proto/.ins
 COMPONENTS_FTY_EXPERIMENTAL += fty-metric-snmp
 $(BUILD_OBJ_DIR)/fty-metric-snmp/.configured: $(BUILD_OBJ_DIR)/fty-proto/.installed
 
-COMPONENTS_FTY_EXPERIMENTAL += fty-info
-$(BUILD_OBJ_DIR)/fty-info/.configured: $(BUILD_OBJ_DIR)/fty-proto/.installed $(BUILD_OBJ_DIR)/cxxtools/.installed $(BUILD_OBJ_DIR)/tntdb/.installed
+COMPONENTS_FTY_EXPERIMENTAL += fty-discovery
+$(BUILD_OBJ_DIR)/fty-discovery/.configured: $(BUILD_OBJ_DIR)/fty-proto/.installed $(BUILD_OBJ_DIR)/libcidr/.installed $(BUILD_OBJ_DIR)/cxxtools/.installed
 
-COMPONENTS_FTY_EXPERIMENTAL += fty-mdns-sd
-$(BUILD_OBJ_DIR)/fty-mdns-sd/.configured: $(BUILD_OBJ_DIR)/fty-proto/.installed
+COMPONENTS_FTY_EXPERIMENTAL += fty-sensor-gpio
+$(BUILD_OBJ_DIR)/fty-sensor-gpio/.configured: $(BUILD_OBJ_DIR)/fty-proto/.installed
 
 COMPONENTS_ALL += $(COMPONENTS_FTY)
 
@@ -600,19 +721,31 @@ COMPONENTS_ALL += $(COMPONENTS_FTY)
 # Also support optional patching of sources while prepping (e.g. for
 # alternate OSes with their non-SCMed tweaks).
 
+# Note: this fetches current info from remotes (in particular to get the
+# FETCH_HEAD file), but does not necessarily update the local workspace
+# with checked-out sources, nor picks a branch. By default codebase stays
+# at the commit-id pointed to by git submodule for each component.
+$(abs_srcdir)/.git/modules/%/FETCH_HEAD $(abs_srcdir)/.git/modules/%/index $(abs_srcdir)/%/.git:
+	@if [ ! -s "$@" ] ; then \
+	    echo "FETCHING component '$(notdir $(@D))' from Git"; \
+	    git submodule init $(notdir $(@D)) && \
+	    git submodule update $(notdir $(@D)) && \
+	    ( cd $(notdir $(@D)) && git fetch --all ) ; \
+	 fi
+
 $(BUILD_OBJ_DIR)/%/.prep-newestcommit: $(abs_srcdir)/.git/modules/%/FETCH_HEAD $(abs_srcdir)/.git/modules/%/index
 	@$(MKDIR) "$(@D)"
 	@if test -s "$@" && test -s "$<" && diff "$@" "$<" >/dev/null 2>&1 ; then \
 	    echo "ROLLBACK TIMESTAMP of $< to that of existing $@ because this commit is already prepped" ; \
 	    $(TOUCH) -r "$@" "$<" || true ; \
 	 else \
-	    echo "Seems a NEW COMMIT of $(notdir $(@D)) has landed, updating $@" ; \
+	    echo "Seems a NEW COMMIT of $(notdir $(@D)) has landed (compared to last build), updating $@" ; \
 	    cat "$<" > "$@" ; \
 	 fi
 
 # Note: during prepping, we generally remove and recreate the OBJ_DIR
 # which contains the input file. So we stash and recreate it mid-way.
-$(BUILD_OBJ_DIR)/%/.prepped: $(BUILD_OBJ_DIR)/%/.prep-newestcommit
+$(BUILD_OBJ_DIR)/%/.prepped: $(BUILD_OBJ_DIR)/%/.prep-newestcommit $(abs_srcdir)/%/.git
 	@$(MKDIR) "$(@D)"
 	@if test ! -s "$@" || ! diff "$@" "$<" > /dev/null 2>&1 ; then \
 	  if test -f "$(@D)/.installed" || test -f "$(@D)/.install-failed" ; then \
@@ -680,6 +813,9 @@ $(BUILD_OBJ_DIR)/%/.installed: $(BUILD_OBJ_DIR)/%/.built
 $(BUILD_OBJ_DIR)/%/.checked: $(BUILD_OBJ_DIR)/%/.built
 	+$(call check_sub,$(notdir $(@D)))
 
+$(BUILD_OBJ_DIR)/%/.checked-verbose: $(BUILD_OBJ_DIR)/%/.built
+	+$(call check_verbose_sub,$(notdir $(@D)))
+
 $(BUILD_OBJ_DIR)/%/.distchecked: $(BUILD_OBJ_DIR)/%/.built
 	+$(call distcheck_sub,$(notdir $(@D)))
 
@@ -707,6 +843,9 @@ clean-src/%:
 	 else \
 	    echo "  NOOP    Generally $@ has nothing to do for now"; \
 	 fi
+	@if test x"$(@F)" = x"czmq" && test -L "$(ORIGIN_SRC_DIR)/$(@F)" ; then \
+	    $(RM) "$(ORIGIN_SRC_DIR)/$(@F)" ; \
+	 else true; fi
 
 distclean/% clean/%:
 	$(MAKE) clean-obj/$(@F)
@@ -730,6 +869,9 @@ install/%: $(BUILD_OBJ_DIR)/%/.installed
 check/%: $(BUILD_OBJ_DIR)/%/.checked
 	@true
 
+check-verbose/%: $(BUILD_OBJ_DIR)/%/.checked-verbose
+	@true
+
 distcheck/%: $(BUILD_OBJ_DIR)/%/.distchecked
 	@true
 
@@ -738,6 +880,20 @@ dist/%: $(BUILD_OBJ_DIR)/%/.disted
 
 valgrind/% memcheck/%: $(BUILD_OBJ_DIR)/%/.memchecked
 	@true
+
+# This is a sort of torture test for components that fail, but not
+# consistently (e.g. due to race conditions, phase of moon, etc.)
+# Run the memcheck for the component indefinitely, until it fails.
+valgrind-loop/% memcheck-loop/%: $(BUILD_OBJ_DIR)/%/.checked
+	@echo "Looping indefinitely until memcheck of $(@F) fails..."
+	+N=1; while $(call memcheck_sub,$(@F)) ; do \
+	    echo "The $$N run of memcheck of $(@F) succeeded, retrying..." ; \
+	    N="`expr $$N + 1`" || true ; \
+	    sleep 1; \
+	 done ; \
+	 RES=$$? ; \
+	 echo "The $$N run of memcheck of $(@F) FAILED with code $$RES" >&2 ; \
+	 exit $$RES
 
 assume/%:
 	@echo "ASSUMING that $(@F) is available through means other than building from sources"
@@ -755,6 +911,10 @@ rebuild/%:
 recheck/%:
 	$(MAKE) clean/$(@F)
 	$(MAKE) $(BUILD_OBJ_DIR)/$(@F)/.checked
+
+recheck-verbose/%:
+	$(MAKE) clean/$(@F)
+	$(MAKE) $(BUILD_OBJ_DIR)/$(@F)/.checked-verbose
 
 redistcheck/%:
 	$(MAKE) clean/$(@F)
@@ -774,7 +934,7 @@ regenerate/%: $(BUILD_OBJ_DIR)/zproject/.installed
 ### follows the configured default branch. Simple "git-resync"
 ### stays in developer's current branch and merges it with
 ### changes trickling down from upstream default branch.
-git-resync/% git-resync-auto/%:
+git-resync/% git-resync-auto/%: $(abs_srcdir)/%/.git
 	@( BASEBRANCH="`git config -f $(abs_srcdir)/.gitmodules submodule.$(@F).branch`" || BASEBRANCH="" ; \
 	  test -n "$$BASEBRANCH" || BASEBRANCH=master ; \
 	  cd "$(abs_srcdir)/$(@F)" && \
@@ -830,6 +990,8 @@ reinstall-fty-experimental:
 	@echo "COMPLETED $@ : made '$^'"
 
 wipe mrproper:
+	if [ -d $(BUILD_SRC_DIR) ] ; then chmod -R u+w $(BUILD_SRC_DIR) || true ; fi
+	if [ -d $(BUILD_OBJ_DIR) ] ; then chmod -R u+w $(BUILD_OBJ_DIR) || true ; fi
 	$(RMDIR) $(BUILD_SRC_DIR) $(BUILD_OBJ_DIR)
 	case "$(INSTDIR)" in \
 	    $(abs_builddir)/.install/*)  $(RMDIR) $(INSTDIR) ;; \

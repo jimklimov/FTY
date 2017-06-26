@@ -69,10 +69,21 @@
 [submodule "libzmq"]
 	path = libzmq
 	url = https://github.com/zeromq/libzmq
-[submodule "czmq"]
-	path = czmq
+#[submodule "czmq"]
+### In this branch, we try to use our old frozen fork that is obsoleted in upstream
+#	path = czmq
+#	url = https://github.com/42ity/czmq
+#	branch = v3.0.2
+[submodule "czmq-v3.0.2"]
+### In this branch, we try to use our old frozen fork that is obsoleted in upstream
+	path = czmq-v3.0.2
 	url = https://github.com/42ity/czmq
 	branch = v3.0.2
+[submodule "czmq-master"]
+### In this branch, we try to use upstream instead
+	path = czmq-master
+	url = https://github.com/zeromq/czmq
+	branch = master
 [submodule "fty-kpi-power-uptime"]
 	path = fty-kpi-power-uptime
 	url = https://github.com/42ity/fty-kpi-power-uptime
@@ -103,3 +114,9 @@
 [submodule "fty-mdns-sd"]
 	path = fty-mdns-sd
 	url = https://github.com/42ity/fty-mdns-sd
+[submodule "fty-discovery"]
+	path = fty-discovery
+	url = https://github.com/42ity/fty-discovery
+[submodule "fty-sensor-gpio"]
+	path = fty-sensor-gpio
+	url = https://github.com/42ity/fty-sensor-gpio
