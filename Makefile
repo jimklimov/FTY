@@ -622,6 +622,11 @@ $(BUILD_OBJ_DIR)/fty-core/.memchecked: $(BUILD_OBJ_DIR)/fty-core/.built
 	@$(call echo_noop,$@)
 
 COMPONENTS_FTY += fty-rest
+# No -llsan on Travis
+ifneq ($(strip $(BUILD_TYPE)),)
+CONFIG_OPTS_fty-rest += --enable-leak-sanitizer=no
+endif
+
 $(BUILD_OBJ_DIR)/fty-rest/.configured: $(BUILD_OBJ_DIR)/malamute/.installed $(BUILD_OBJ_DIR)/tntdb/.installed $(BUILD_OBJ_DIR)/tntnet/.installed $(BUILD_OBJ_DIR)/fty-proto/.installed $(BUILD_OBJ_DIR)/fty-core/.installed $(BUILD_OBJ_DIR)/libcidr/.installed $(BUILD_OBJ_DIR)/libmagic/.installed
 # For now the fty-rest memchecked target program is unreliable at best, and
 # documented so in the component's Makefile. So we do not call it for now.
