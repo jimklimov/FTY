@@ -180,6 +180,9 @@ or (to specify a default non-`master` branch right away):
 :; git submodule add -b 42ity https://github.com/42ity/third-party-fork
 ----
 
+Tracking and checkout of new repositories under https://github.com/42ity/ can
+be automated using `./sync-repos.sh` script.
+
 Note that after adding sources for a submodule, you'd likely want to reference
 its place in the dependency chain for the `Makefile` of this FTY workspace
 as well (perhaps among `COMPONENTS_FTY_EXPERIMENTAL` first, for skeleton
