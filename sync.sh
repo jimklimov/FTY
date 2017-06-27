@@ -2,6 +2,7 @@
 
 # Initially fetch or subsequently update the components
 # referred to as "git submodule"'s
+# Can also run from Travis CI context, hence support for its vars
 # Copyright (C) 2017 by Jim Klimov <EvgenyKlimov@eaton.com>
 
 # See also
