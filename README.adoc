@@ -130,6 +130,9 @@ on contents of the `configure.ac` scripts in each component project, and of
 course functionality of the actual implementation depends on the evolution
 level of the compiler in use for the build.
 
+Also note that Leak Sanitizer (`-llsan`) is not currently available in the
+Travis CI operating environments.
+
 === Support for different operating systems
 
 This `Makefile` has been verified on Debian 8 (devel images for the project
