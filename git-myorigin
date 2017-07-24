@@ -35,6 +35,7 @@ change_upstream() (
         if curl "$REPO_URL" 2>/dev/null| egrep -v '{"error" *: *"Not Found"}' >/dev/null ; then
             echo "GitHub says personal repository was found, adding reference to local checkout" >&2
             git remote add origin "$REPO_URL"
+            git remote set-url --push upstream no_direct_push_to_upstream
         else
             echo "GitHub says personal repository was not found" >&2
         fi
