@@ -120,10 +120,10 @@ and now for (Travis or manually executed) builds done with the `Makefile`
 provided by this FTY repository, by an exporting an environment variable
 usually before a `memcheck`/`valgrind` build and run:
 
-````
+----
 $ export ADDRESS_SANITIZER=enabled
 $ make memcheck/fty-example
-````
+----
 
 Note that the actual compilation flags enabled by such toggle can depend
 on contents of the `configure.ac` scripts in each component project, and of
