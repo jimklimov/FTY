@@ -320,6 +320,8 @@ define memcheck_sub
 	)
 endef
 
+# NOTE: This is not implemented in GSL Makefile so usual methods error out
+	rm -f $(INSTDIR)/usr/local/bin/gsl
 define uninstall_sub
 	( $(MKDIR) "$(BUILD_OBJ_DIR)/$(1)/$(BUILD_SUB_DIR_$(1))" $(DESTDIR) $(INSTDIR) && \
 	  cd "$(BUILD_OBJ_DIR)/$(1)/$(BUILD_SUB_DIR_$(1))" && \
@@ -329,8 +331,11 @@ define uninstall_sub
 	    xclone*-src|*)  CCACHE_BASEDIR="$(BUILD_SRC_DIR)/$(1)" ;; \
 	  esac && \
 	  export CCACHE_BASEDIR && \
-	  $(MAKE) DESTDIR="$(DESTDIR)" $(MAKE_COMMON_ARGS_$(1)) $(MAKE_INSTALL_ARGS_$(1)) \
-	    uninstall && \
+	  case "x$(1)" in \
+	    xgsl) $(RMFILE) $(DESTDIR_$(1))/bin/gsl ;; \
+	    *)    $(MAKE) DESTDIR="$(DESTDIR)" $(MAKE_COMMON_ARGS_$(1)) $(MAKE_INSTALL_ARGS_$(1)) \
+	            uninstall ;; \
+	  esac && \
 	  $(RMFILE) "$(BUILD_OBJ_DIR)/$(1)"/.installed "$(BUILD_OBJ_DIR)/$(1)"/.install-failed \
 	)
 endef
@@ -425,7 +430,8 @@ $(BUILD_OBJ_DIR)//.prep-newestcommit $(BUILD_OBJ_DIR)//.prepped $(BUILD_OBJ_DIR)
 # This is built in-tree, and without autoconf, so is trickier to handle
 COMPONENTS_ALL += gsl
 BUILD_SUB_DIR_gsl=src/
-MAKE_COMMON_ARGS_gsl=DESTDIR="$(DESTDIR)$(PREFIX)/local"
+DESTDIR_gsl=$(DESTDIR)$(PREFIX)/local
+MAKE_COMMON_ARGS_gsl=DESTDIR="$(DESTDIR_gsl)"
 PREP_TYPE_gsl = cloneln-obj
 
 # These are no-ops for GSL:
@@ -440,6 +446,7 @@ $(BUILD_OBJ_DIR)/gsl/.checked $(BUILD_OBJ_DIR)/gsl/.checked-verbose $(BUILD_OBJ_
 
 #$(BUILD_OBJ_DIR)/gsl/.built: BUILD_SRC_DIR=$(BUILD_OBJ_DIR)
 #$(BUILD_OBJ_DIR)/gsl/.installed: BUILD_SRC_DIR=$(BUILD_OBJ_DIR)
+
 
 ### Rinse and repeat for libcidr, but there's less to customize
 COMPONENTS_FTY += libcidr
