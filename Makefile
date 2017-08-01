@@ -321,7 +321,6 @@ define memcheck_sub
 endef
 
 # NOTE: This is not implemented in GSL Makefile so usual methods error out
-	rm -f $(INSTDIR)/usr/local/bin/gsl
 define uninstall_sub
 	( $(MKDIR) "$(BUILD_OBJ_DIR)/$(1)/$(BUILD_SUB_DIR_$(1))" $(DESTDIR) $(INSTDIR) && \
 	  cd "$(BUILD_OBJ_DIR)/$(1)/$(BUILD_SUB_DIR_$(1))" && \
