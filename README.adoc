@@ -5,12 +5,20 @@
 This repository allows to quickly checkout, build, test and develop the
 ecosystem of http://42ity.org/[42ITy(TM)] project, including components
 of the project itself and customized or original dependency projects.
+There are some third-party dependencies and tools (suggested in details
+below) that this repository does not provide; they are expected to just
+be on your build system when the corresponding `configure` script runs.
 
 To build the latest HEAD of each component's default branch just run this:
 ----
 $ git clone https://github.com/42ity/FTY && \
   ( cd FTY && make world )
 ----
+
+Note that this would require an internet connection to check out all the
+repositories, and considerable time to build the ecosystem. To rebuild
+the checkouts already present on your system (e.g. to continue a broken
+build after installing dependencies), the ordinary `make` should suffice.
 
 It is recommended to have installed `ccache` to speed up subsequent
 rebuilds, as well as certain other common dependencies and tools.
@@ -53,14 +61,18 @@ in the local workspace checkouts.
 The included `Makefile` automates building of project components, including
 the customized third-party projects, in the order of dependencies. It is
 ready for correct parallel compilation with GNU Make 3.81 or newer, and can
-take advantage of `ccache` if available on your system. It is up to the
-developer to provide an environment with appropriate third-party software
-which our project does not modify (such as MySQL/MariaDB libraries to link
-against, or lua-5.1/5.2, etc.), as well as internet connection to completely
-check out the source code to build. The `Makefile` defines dependencies that
-can cause download or update of sources from designated remote repositories
-using `git`, so the basic way to build the 42ITy(TM) ecosystem using those
-component revisions that the FTY repository points to at any given time is to:
+take advantage of `ccache` if available on your system.
+
+It is up to the developer to provide a build environment with appropriate
+third-party software dependencies which our project does not modify, nor
+track git HEADs, nor build (such as MySQL/MariaDB libraries to link against,
+or lua-5.1/5.2, or libneon, or libapr, maybe openssl etc.), as well as an
+internet connection to completely check out the source code to build.
+
+The `Makefile` defines dependencies and recipes that can cause download or
+update of sources from designated remote repositories using `git`, so the
+basic way to build the 42ITy(TM) ecosystem using those component revisions
+that the FTY repository points to at any given time is to:
 
 ----
 $ git clone https://github.com/42ity/FTY && \
