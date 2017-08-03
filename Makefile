@@ -400,8 +400,12 @@ CONFIG_OPTS += --with-systemdtmpfilesdir="$(DESTDIR)$(PREFIX)/lib/tmpfiles.d"
 CONFIG_OPTS += --with-systemdsystempresetdir="$(DESTDIR)$(PREFIX)/lib/systemd/system-preset"
 CONFIG_OPTS += --with-systemdsystemunitdir="$(DESTDIR)$(PREFIX)/lib/systemd/system"
 CONFIG_OPTS += --quiet
-# For projects from around the zeromq community, use stable APIs
+# For projects from around the zeromq community, use stable APIs by default
+ifeq ($(strip $(CZMQ_BUILD_DRAFT_API)),yes)
+CONFIG_OPTS += --enable-drafts=yes
+else
 CONFIG_OPTS += --enable-drafts=no
+endif
 
 # The value of "enabled" is shared with zeromq and migh be opted
 # out of in some component recipes below.
