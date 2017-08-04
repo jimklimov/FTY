@@ -649,8 +649,6 @@ $(BUILD_OBJ_DIR)/fty-core/.configured: $(BUILD_OBJ_DIR)/malamute/.installed $(BU
 $(BUILD_OBJ_DIR)/fty-core/.memchecked: $(BUILD_OBJ_DIR)/fty-core/.built
 	@$(call echo_noop,$@)
 
-# TODO: fty-rest seems to not use the ccache setup prepared by this
-# Makefile, at least it complained in a prepared fty-devel OS image
 COMPONENTS_FTY += fty-rest
 # No -llsan on Travis
 ifneq ($(strip $(BUILD_TYPE)),)
