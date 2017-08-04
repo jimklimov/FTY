@@ -98,6 +98,7 @@ MV=/bin/mv -f
 CP=/bin/cp -pf
 TOUCH=/bin/touch
 FIND=find
+SED=sed
 GPATCH=patch
 # We need `tar` with support for `--exclude=...` - e.g. a GNU tar
 GTAR=tar
@@ -648,6 +649,8 @@ $(BUILD_OBJ_DIR)/fty-core/.configured: $(BUILD_OBJ_DIR)/malamute/.installed $(BU
 $(BUILD_OBJ_DIR)/fty-core/.memchecked: $(BUILD_OBJ_DIR)/fty-core/.built
 	@$(call echo_noop,$@)
 
+# TODO: fty-rest seems to not use the ccache setup prepared by this
+# Makefile, at least it complained in a prepared fty-devel OS image
 COMPONENTS_FTY += fty-rest
 # No -llsan on Travis
 ifneq ($(strip $(BUILD_TYPE)),)
@@ -660,6 +663,42 @@ $(BUILD_OBJ_DIR)/fty-rest/.configured: $(BUILD_OBJ_DIR)/malamute/.installed $(BU
 # TODO: Make it somehow an experimental-build toggle?
 $(BUILD_OBJ_DIR)/fty-rest/.memchecked: $(BUILD_OBJ_DIR)/fty-rest/.built
 	@$(call echo_noop,$@)
+
+# Note: these recipes run "tntnet" from PATH which should be our build product
+web-test: $(BUILD_OBJ_DIR)/fty-rest/.built
+	cd $(<D) && $(MAKE) web-test
+
+# This one requires configuration on developer's workstation, allowing
+# the "sudo" and preparing the database schema, credentials, configs etc.
+# It is intended to run in copies of the "fty-devel" image otherwise
+# configured and ready to run the production code.
+# Requiring the config file is one way to lock this recipe from running
+# on arbitrary unprepared environments (especially with root privileges).
+# And also we do need it to match the freshly-built server with OS setup.
+# TODO: Support some merge of data from these files, to use new tntnet.xml
+# configurations for developed servlets, etc.
+web-test-bios: $(BUILD_OBJ_DIR)/fty-rest/.built /etc/tntnet/bios.xml
+	cd $(<D) && $(MAKE) web-test-deps && \
+	    echo "TRYING TO STOP tntnet@bios systemd service to avoid conflicts..." && \
+	    { sudo systemctl stop tntnet@bios.service || true; } && \
+	    echo "READING ennvars that configure systemd service tntnet@bios..." && \
+	    { if test -s /etc/systemd/system/tntnet\@bios.service ; then \
+	        while read LINE ; do case "$$LINE" in EnvironmentFile=*) \
+	            F="`echo "$$LINE" | $(SED) -s 's,^EnvironmentFile=\-?,,'`" && [ -n "$$F" ] && \
+	            if [ -s "$$F" ] ; then echo "=== $$F"; \
+	                . "$$F" && \
+	                while IFS='=' read K V ; do echo "===== $$K"; eval export $$K ; done < "$$F" ; \
+	            fi;; \
+	        esac; done < /etc/systemd/system/tntnet\@bios.service ; \
+	      fi; } && \
+	    { if test -s /run/tntnet-bios.env ; then echo "=== /run/tntnet-bios.env"; . /run/tntnet-bios.env && \
+	        while IFS='=' read K V ; do echo "===== $$K"; eval export $$K ; done < /run/tntnet-bios.env ; \
+	      fi; } && \
+	    echo "STARTING custom tntnet daemon with custom fty-rest and system bios.xml..." && \
+	    $(SED) -e 's|^.*<compPath>.*</compPath>.*$$||' \
+	           -e 's|^\(.*</dir>.*\)$$|\1\n<compPath><entry>$(BUILD_OBJ_DIR)/fty-rest/.libs</entry></compPath>|' \
+	        < /etc/tntnet/bios.xml > bios.xml && \
+	    sudo tntnet $(BUILD_OBJ_DIR)/fty-rest/bios.xml
 
 COMPONENTS_FTY += fty-nut
 $(BUILD_OBJ_DIR)/fty-nut/.configured: $(BUILD_OBJ_DIR)/fty-proto/.installed $(BUILD_OBJ_DIR)/libcidr/.installed $(BUILD_OBJ_DIR)/cxxtools/.installed $(BUILD_OBJ_DIR)/nut/.installed
