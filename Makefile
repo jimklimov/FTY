@@ -684,21 +684,21 @@ web-test-bios: $(BUILD_OBJ_DIR)/fty-rest/.built /etc/tntnet/bios.xml
 	    echo "READING ennvars that configure systemd service tntnet@bios..." && \
 	    { if test -s /etc/systemd/system/tntnet\@bios.service ; then \
 	        while read LINE ; do case "$$LINE" in EnvironmentFile=*) \
-	            F="`echo "$$LINE" | $(SED) -s 's,^EnvironmentFile=\-?,,'`" && [ -n "$$F" ] && \
+	            F="`echo "$$LINE" | $(SED) -s 's,^EnvironmentFile=\-*,,'`" && [ -n "$$F" ] && \
 	            if [ -s "$$F" ] ; then echo "=== $$F"; \
 	                . "$$F" && \
-	                while IFS='=' read K V ; do echo "===== $$K"; eval export $$K ; done < "$$F" ; \
+	                while IFS='=' read K V ; do echo "===== export $$K = $$V"; eval export $$K ; done < "$$F" ; \
 	            fi;; \
 	        esac; done < /etc/systemd/system/tntnet\@bios.service ; \
 	      fi; } && \
 	    { if test -s /run/tntnet-bios.env ; then echo "=== /run/tntnet-bios.env"; . /run/tntnet-bios.env && \
-	        while IFS='=' read K V ; do echo "===== $$K"; eval export $$K ; done < /run/tntnet-bios.env ; \
+	        while IFS='=' read K V ; do echo "===== export $$K = $$V"; eval export $$K ; done < /run/tntnet-bios.env ; \
 	      fi; } && \
 	    echo "STARTING custom tntnet daemon with custom fty-rest and system bios.xml..." && \
 	    $(SED) -e 's|^.*<compPath>.*</compPath>.*$$||' \
 	           -e 's|^\(.*</dir>.*\)$$|\1\n<compPath><entry>$(BUILD_OBJ_DIR)/fty-rest/.libs</entry></compPath>|' \
 	        < /etc/tntnet/bios.xml > bios.xml && \
-	    sudo tntnet $(BUILD_OBJ_DIR)/fty-rest/bios.xml
+	    sudo -E tntnet $(BUILD_OBJ_DIR)/fty-rest/bios.xml
 
 COMPONENTS_FTY += fty-nut
 $(BUILD_OBJ_DIR)/fty-nut/.configured: $(BUILD_OBJ_DIR)/fty-proto/.installed $(BUILD_OBJ_DIR)/libcidr/.installed $(BUILD_OBJ_DIR)/cxxtools/.installed $(BUILD_OBJ_DIR)/nut/.installed
