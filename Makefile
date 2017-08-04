@@ -793,15 +793,15 @@ $(BUILD_OBJ_DIR)/%/.prepped: $(BUILD_OBJ_DIR)/%/.prep-newestcommit $(abs_srcdir)
 	 xcloneln-obj) \
 	    echo "CLONE sources of $(notdir $(@D)) as symlinks under BUILD_OBJ_DIR while prepping..." ; \
 	    $(call clone_ln,$(ORIGIN_SRC_DIR)/$(notdir $(@D)),$(BUILD_OBJ_DIR)/$(notdir $(@D))) ;; \
-	 xcloneln-src) \
-	    echo "CLONE sources of $(notdir $(@D)) as symlinks under common BUILD_SRC_DIR while prepping..." ; \
-	    $(call clone_ln,$(ORIGIN_SRC_DIR)/$(notdir $(@D)),$(BUILD_SRC_DIR)/$(notdir $(@D))) ;; \
 	 xclonetar-obj) \
 	    echo "CLONE sources of $(notdir $(@D)) via tarballs under BUILD_OBJ_DIR while prepping..." ; \
 	    $(call clone_tar,$(ORIGIN_SRC_DIR)/$(notdir $(@D)),$(BUILD_OBJ_DIR)/$(notdir $(@D))) ;; \
-	 xclonetar-src|*) \
+	 xclonetar-src) \
 	    echo "CLONE sources of $(notdir $(@D)) via tarballs under common BUILD_SRC_DIR while prepping..." ; \
 	    $(call clone_tar,$(ORIGIN_SRC_DIR)/$(notdir $(@D)),$(BUILD_SRC_DIR)/$(notdir $(@D))) ;; \
+	 xcloneln-src|*) \
+	    echo "CLONE sources of $(notdir $(@D)) as symlinks under common BUILD_SRC_DIR while prepping..." ; \
+	    $(call clone_ln,$(ORIGIN_SRC_DIR)/$(notdir $(@D)),$(BUILD_SRC_DIR)/$(notdir $(@D))) ;; \
 	 esac && \
 	 echo "$$PREPDATA" > "$<"
 	@if test -n "$(PREP_ACTION_BEFORE_PATCHING_$(notdir $(@D)))" ; then \
