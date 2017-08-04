@@ -320,7 +320,10 @@ define memcheck_sub
 	)
 endef
 
-# NOTE: This is not implemented in GSL Makefile so usual methods error out
+# NOTE: This was not implemented in GSL Makefile so usual methods errored out.
+# Note that we can have removed source/build dir for a component (rebuild/*)
+# but have it isntalled... so we do try to uninstall. But if that fails on
+# e.g. missing directories and we have no record of installing it - it's fine.
 define uninstall_sub
 	( $(MKDIR) "$(BUILD_OBJ_DIR)/$(1)/$(BUILD_SUB_DIR_$(1))" $(DESTDIR) $(INSTDIR) && \
 	  cd "$(BUILD_OBJ_DIR)/$(1)/$(BUILD_SUB_DIR_$(1))" && \
@@ -333,7 +336,11 @@ define uninstall_sub
 	  case "x$(1)" in \
 	    xgsl) $(RMFILE) $(DESTDIR_$(1))/bin/gsl ;; \
 	    *)    $(MAKE) DESTDIR="$(DESTDIR)" $(MAKE_COMMON_ARGS_$(1)) $(MAKE_INSTALL_ARGS_$(1)) \
-	            uninstall ;; \
+	            uninstall || { \
+	            if test -f "$(BUILD_OBJ_DIR)/$(1)"/.installed || \
+	               test -f "$(BUILD_OBJ_DIR)/$(1)"/.install-failed ; then \
+	                echo "FAILED to uninstall the previously built component $(1)" >&2 ; false ; \
+	            else echo "IGNORE failure to uninstall the component $(1) we did not build yet" >&2 ; true ; fi ; } ;; \
 	  esac && \
 	  $(RMFILE) "$(BUILD_OBJ_DIR)/$(1)"/.installed "$(BUILD_OBJ_DIR)/$(1)"/.install-failed \
 	)
