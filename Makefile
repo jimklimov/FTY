@@ -605,6 +605,15 @@ endif
 
 $(BUILD_OBJ_DIR)/$(COMPONENT_CZMQ)/.configured: $(BUILD_OBJ_DIR)/libzmq/.installed
 
+ifneq ($strip($(COMPONENT_CZMQ)),czmq)
+    PREP_TYPE_czmq = $(PREP_TYPE_$(COMPONENT_CZMQ))
+# Compatibility aliases
+%/czmq:
+	@$(MAKE) $(@D)/$(COMPONENT_CZMQ)
+
+$(BUILD_OBJ_DIR)/czmq/%: $(BUILD_OBJ_DIR)/$(COMPONENT_CZMQ)/%
+	@true
+endif
 
     COMPONENTS_FTY += malamute
 $(BUILD_OBJ_DIR)/malamute/.configured: $(BUILD_OBJ_DIR)/$(COMPONENT_CZMQ)/.installed $(BUILD_OBJ_DIR)/libsodium/.installed
