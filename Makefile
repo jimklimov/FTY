@@ -595,6 +595,7 @@ else
 endif
 
     COMPONENTS_FTY += $(COMPONENT_CZMQ)
+    PREP_TYPE_$(COMPONENT_CZMQ) = cloneln-src
 
 # There is something fishy at this time when running code against libczmq.so
 # built with ASAN (unresolved symbols are reported).
@@ -718,7 +719,7 @@ COMPONENTS_ALL += $(COMPONENTS_FTY)
 
 # So far prepping is no-op for most of our components
 # Note that these rules fire if the git FETCH_HEAD file is "newer"
-# (ccording to filesystem timestamp) than the last .prepper flag-file.
+# (according to filesystem timestamp) than the last .prepped flag-file.
 # This does not necessarily mean that rebuild should be done (e.g. the
 # stashed build area might be older than a git checkout of the workspace
 # with same commit hash), so we verify that the commit-id also differs or
@@ -877,6 +878,23 @@ configure/%: $(BUILD_OBJ_DIR)/%/.configured
 
 build/%: $(BUILD_OBJ_DIR)/%/.built
 	@true
+
+# Fake the updated sources to build just the recently changed code
+# Requires cloneln-src to be in effect for the component
+# Can not guarantee consistency of codebase in automated builds -
+# this option is here only to speed up manual development iterations.
+devel/%:
+	@case "x$(PREP_TYPE_$(@F))" in \
+	 xcloneln-src) echo "Updating last build of component $(@F)..." ; \
+	    if test -f $(BUILD_OBJ_DIR)/$(@F)/.configured ; then \
+	        $(TOUCH) $(BUILD_OBJ_DIR)/$(@F)/.configured ; \
+	    else \
+	        $(MAKE) $(BUILD_OBJ_DIR)/$(@F)/.configured ; \
+	    fi && \
+	    $(MAKE) $(BUILD_OBJ_DIR)/$(@F)/.built ;; \
+	 *) echo "Rebuilding component $(@F) because its PREP_TYPE is not 'cloneln-src' (is '$(PREP_TYPE_$(@F))' instead)..." ; \
+	    $(MAKE) rebuild/$(@F) ;; \
+	esac
 
 install/%: $(BUILD_OBJ_DIR)/%/.installed
 	@true

@@ -96,6 +96,43 @@ resourced, causing the build to fail not due to source code errors. In order
 to take advantage of parallel processing, you may be well served by running
 first a parallel and then a sequential build attempt: `make -j 4 -k || make`
 
+==== Developer incremental build support
+
+The `Makefile` provides a development-rebuild option, invoked like this:
+
+----
+$ make devel/fty-example
+----
+
+which takes effect for components "prepped" as symlinks (e.g. by setting
+`PREP_TYPE_fty-example=cloneln-src` in the `Makefile`).
+
+If the component was already configured, this recipe just runs a `make`
+in its custom build directory and so recompiles just the binaries whose
+sources you have changed right in the common checked-out Git workspace.
+
+Of course, this only works as long as you have not added new source files,
+etc. -- but that sort of change would anyway need a `rebuild/fty-example`.
+Other similar limitations may exist but were not yet found or documented.
+
+As a fallback, this would `prep`/`autogen`/`configure` components that
+were not yet "configured", and would fall back to a full `rebuild` for
+components that are not "prepped" as symlinks.
+
+The intended use-case looks like this, to streamline iterations of small
+changes during development:
+
+----
+$ gmake devel/fty-example && gmake memcheck/fty-example
+----
+
+...or this for custom runs (assuming one platform so `/*/` is not ambiguous
+in the short example below):
+
+----
+$ gmake devel/fty-example && (cd .build/*/fty-example && src/test-me --arg -v)
+----
+
 === Support for multiple CZMQ library versions
 
 Note that as part of the project's evolution and legacy, it used to require
