@@ -105,7 +105,7 @@ $ make devel/fty-example
 ----
 
 which takes effect for components "prepped" as symlinks (e.g. by setting
-`PREP_TYPE_fty-example=cloneln-src` in the `Makefile`).
+`PREP_TYPE_fty-example=cloneln-src` or `cloneobj-src` in the `Makefile`).
 
 If the component was already configured, this recipe just runs a `make`
 in its custom build directory and so recompiles just the binaries whose

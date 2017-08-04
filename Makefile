@@ -885,7 +885,7 @@ build/%: $(BUILD_OBJ_DIR)/%/.built
 # this option is here only to speed up manual development iterations.
 devel/%:
 	@case "x$(PREP_TYPE_$(@F))" in \
-	 xcloneln-src) echo "Updating last build of component $(@F)..." ; \
+	 xcloneln-*) echo "Updating last build of component $(@F)..." ; \
 	    if test -f $(BUILD_OBJ_DIR)/$(@F)/.configured ; then \
 	        $(TOUCH) $(BUILD_OBJ_DIR)/$(@F)/.configured ; \
 	    else \
