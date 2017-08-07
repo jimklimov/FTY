@@ -356,7 +356,10 @@ define clone_ln
 	  SRC="`cd "$(1)" && pwd`" && DST="`cd "$(2)" && pwd`" && \
 	  cd "$$SRC" && \
 	    $(FIND) . -type d -exec $(MKDIR) "$$DST"/'{}' \; && \
-	    $(FIND) . \! -type d -exec $(LN_S_R) "$$SRC"/'{}' "$$DST"/'{}' \; \
+	    $(FIND) . \! -type d -exec $(LN_S_R) "$$SRC"/'{}' "$$DST"/'{}' \; && \
+	  if test -s "$$DST"/configure && test -s "$$DST"/configure.ac ; then \
+	    $(RM) "$$DST"/configure; \
+	  else true ; fi \
 	)
 endef
 
