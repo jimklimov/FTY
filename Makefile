@@ -662,11 +662,14 @@ $(BUILD_OBJ_DIR)/fty-proto/.configured: $(BUILD_OBJ_DIR)/malamute/.installed $(B
 
 # Note: more and more core is a collection of scripts, so should need less deps
 COMPONENTS_FTY += fty-core
+PREP_TYPE_fty-core = clonetar-src
 $(BUILD_OBJ_DIR)/fty-core/.configured: $(BUILD_OBJ_DIR)/malamute/.installed $(BUILD_OBJ_DIR)/tntdb/.installed $(BUILD_OBJ_DIR)/tntnet/.installed $(BUILD_OBJ_DIR)/libcidr/.installed
 $(BUILD_OBJ_DIR)/fty-core/.memchecked: $(BUILD_OBJ_DIR)/fty-core/.built
 	@$(call echo_noop,$@)
 
 COMPONENTS_FTY += fty-rest
+PREP_TYPE_fty-rest = clonetar-src
+
 # No -llsan on Travis
 ifneq ($(strip $(BUILD_TYPE)),)
 CONFIG_OPTS_fty-rest += --enable-leak-sanitizer=no
