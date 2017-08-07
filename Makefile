@@ -1075,7 +1075,16 @@ reinstall/%:
 
 ### Use currently developed zproject to regenerate a project
 regenerate/%: $(BUILD_OBJ_DIR)/zproject/.installed
-	( cd "$(abs_srcdir)/$(@F)" && gsl project.xml && ./autogen.sh && git difftool -y )
+	@( cd "$(abs_srcdir)/$(@F)" && \
+	    echo "REGENERATING ZPROJECT for $(@F)..." && \
+	    gsl project.xml && \
+	    ./autogen.sh && \
+	    case "$(@F)" in \
+	        */fty-*) echo "REMOVING CMAKE files from fty-* component sources..." ; \
+	            rm -f CMake* *.cmake builds/cmake/ci_build.sh || true ;; \
+	    esac && \
+	    git difftool -y || \
+	    { echo "FAILED to regenerate zproject for $(@F)!" >&2; exit 1; } )
 
 ### Resync current checkout to upstream/master
 ### The "auto" mode is intended for rebuilds, so it quietly
