@@ -1016,6 +1016,10 @@ distcheck/%: $(BUILD_OBJ_DIR)/%/.distchecked
 dist/%: $(BUILD_OBJ_DIR)/%/.disted
 	@true
 
+redist/%:
+	$(MAKE) clean/$(@F)
+	$(MAKE) $(BUILD_OBJ_DIR)/$(@F)/.disted
+
 valgrind/% memcheck/%: $(BUILD_OBJ_DIR)/%/.memchecked
 	@true
 
