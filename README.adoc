@@ -135,6 +135,13 @@ in the short example below):
 $ gmake devel/fty-example && (cd .build/*/fty-example && src/test-me --arg -v)
 ----
 
+NOTE: At this time, the `devel/*` recipe only looks at, and recompiles
+if needed, the specified component -- not those it might depend on -- so
+in case you edit lots of ecosystem, refresh such components explicitly:
+----
+$ gmake devel/{fty-proto,czmq}
+----
+
 ==== Developer fty-rest support
 
 This `Makefile` supports `make web-test` and `make web-test-bios` recipes to
