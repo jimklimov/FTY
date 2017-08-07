@@ -139,11 +139,14 @@ addons:
 # Set CI_TIME=true to enable build-step profiling in Travis
 # Set CI_TRACE=true to enable shell script tracing in Travis
 # Set CI_CONFIG_QUIET=true to enable "configure --quiet" (only report stderr)
+# Set CI_GIT_RESYNC=true to pull latest sources for each submodule, or set it
+#   to "false" and check out just the commit IDs pointed to by FTY repo snapshot.
 env:
   global:
     - CI_TIME=true
     - CI_TRACE=false
     - CI_QUIET=true
+    - CI_GIT_RESYNC=false
 
 # Note: this matrix currently assumes that "CI_CZMQ_VER=4" means builds
 # against upstream/master from github, and "CI_CZMQ_VER=3" means usage
@@ -372,8 +375,8 @@ matrix:
         - valgrind
 
 before_install:
-- date; echo Syncing Git repos...
-- DO_BUMP=no time ./sync.sh
+- date; echo Syncing Git submodule repos...
+- if [ "$CI_GIT_RESYNC" == true ] ; then DO_BUMP=no time ./sync.sh ; else git submodule init && { git submodule update --depth 3 -j8 || git submodule update --depth 3 || git submodule update ; } ; fi
 - if [ $TRAVIS_OS_NAME == "osx" ] ; then brew update; brew install binutils asciidoc docbook-xsl ; XML_CATALOG_FILES=/usr/local/etc/xml/catalog ; export XML_CATALOG_FILES ; fi
 
 install:
