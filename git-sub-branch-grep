@@ -1,0 +1,13 @@
+#!/bin/bash
+
+# This helper `git grep`'s in submodules
+# Run this script from the FTY workspace root, passing the searched token.
+#
+# Copyright (C) 2017 by Jim Klimov <EvgenyKlimov@eaton.com>
+
+
+echo "Top-level FTY:"
+git grep "$@"
+
+git submodule foreach "git grep $* || true"
+

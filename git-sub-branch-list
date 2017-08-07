@@ -1,0 +1,15 @@
+#!/bin/bash
+
+# This helper lists current branches in submodules and reports
+# if they are not the defaults tracked by current FTY repo branch
+# Run this script from the FTY workspace root, no arguments needed.
+#
+# Copyright (C) 2017 by Jim Klimov <EvgenyKlimov@eaton.com>
+
+echo "Top-level FTY:"
+git branch | grep "*"
+
+git submodule foreach 'git branch | grep "*" ;
+    CURRBRANCH=$(git branch | grep "*" | awk "{print \$2}");
+    BASEBRANCH="$(git config -f ../.gitmodules submodule.`basename $PWD`.branch)" && test -n "$BASEBRANCH" || BASEBRANCH=master;
+    if [ x"$CURRBRANCH" != x"$BASEBRANCH" ]; then echo "WARNING: not on default branch ($BASEBRANCH)!"; fi'
