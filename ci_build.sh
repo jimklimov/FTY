@@ -139,9 +139,16 @@ default|"default-tgt:"*)
     BLDRES=$?
     echo "=== `date`: BUILDS FINISHED ($BLDRES)"
 
+    # Normally the build is out-of-tree via symlinks or tarballs,
+    # so any changes in subdirectories would be unexpected, other
+    # than pulling newer sources than what submodules point to.
     echo "=== `date`: Are GitIgnores good after 'make $BUILD_TGT'? (should have no output below)"
-    git status -s || git status || true
+    git status -s || true
     echo "==="
+    if [ -n "`git status -s 2>/dev/null`" ] ; then
+        git status || true
+        echo "==="
+    fi
     if [ "$HAVE_CCACHE" = yes ]; then
         echo "CCache stats after build:"
         ccache -s
