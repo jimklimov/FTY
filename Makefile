@@ -323,7 +323,7 @@ endef
 
 # NOTE: This was not implemented in GSL Makefile so usual methods errored out.
 # Note that we can have removed source/build dir for a component (rebuild/*)
-# but have it isntalled... so we do try to uninstall. But if that fails on
+# but have it installed... so we do try to uninstall. But if that fails on
 # e.g. missing directories and we have no record of installing it - it's fine.
 define uninstall_sub
 	( $(MKDIR) "$(BUILD_OBJ_DIR)/$(1)/$(BUILD_SUB_DIR_$(1))" $(DESTDIR) $(INSTDIR) && \
@@ -345,6 +345,14 @@ define uninstall_sub
 	  esac && \
 	  $(RMFILE) "$(BUILD_OBJ_DIR)/$(1)"/.installed "$(BUILD_OBJ_DIR)/$(1)"/.install-failed \
 	)
+endef
+
+# Wrap uninstall_sub() in a way that should not break "make" even if it failed
+# TODO: One problem is we do not calculate reverse-dependencies, to specify in
+# which order can submodules be un-installed (recipe needs them configured to
+# know which paths to remove, and lack of czmq removed early breaks everyone).
+define uninstall_lax_sub
+	( $(call uninstall_sub,$(1)) || echo "FAILED TO UNINSTALL $(@D), this can cause [make] Error messages later" >&2 )
 endef
 
 # This clones directory $1 into $2 recursively, making real new dirs
@@ -877,7 +885,7 @@ $(BUILD_OBJ_DIR)/%/.prepped: $(BUILD_OBJ_DIR)/%/.prep-newestfetch $(BUILD_OBJ_DI
 	@if test ! -s "$@" || ! diff "$@" "$<" > /dev/null 2>&1 ; then \
 	  if test -f "$(@D)/.installed" || test -f "$(@D)/.install-failed" ; then \
 	    echo "UNINSTALL old build of $(notdir $(@D)) while prepping anew..." ; \
-	    $(call uninstall_sub,$(notdir $(@D))) ; else true ; \
+	    $(call uninstall_lax_sub,$(notdir $(@D))) ; else true ; \
 	  fi; \
 	 fi
 	@$(RMFILE) "$(@D)"/.*-failed
@@ -1071,7 +1079,7 @@ redistcheck/%:
 	$(MAKE) $(BUILD_OBJ_DIR)/$(@F)/.distchecked
 
 reinstall/%:
-	if test -f $(BUILD_OBJ_DIR)/$(@F)/.installed ; then $(call uninstall_sub,$(@F)) ; fi
+	if test -f $(BUILD_OBJ_DIR)/$(@F)/.installed ; then $(call uninstall_lax_sub,$(@F)) ; fi
 	$(MAKE) clean/$(@F)
 	$(MAKE) $(BUILD_OBJ_DIR)/$(@F)/.installed
 
@@ -1113,6 +1121,9 @@ git-resync/% git-resync-auto/%: $(abs_srcdir)/%/.git
 # Note this one would trigger a (re)build run
 uninstall/%: $(BUILD_OBJ_DIR)/%/.configured
 	$(call uninstall_sub,$(@F))
+
+uninstall_lax/%:
+	$(call uninstall_lax_sub,$(@F))
 
 # Rule-them-all rules! e.g. build-all install-all uninstall-all clean-all
 rebuild-all:
