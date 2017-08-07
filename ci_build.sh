@@ -48,7 +48,7 @@ default|"default-tgt:"*)
             BUILD_TGT="`echo "$BUILD_TYPE" | sed 's,^default-tgt:,,'`" ;;
     esac
 
-    if [ x"$CI_WIPE_FIRST" = xyes ]; then
+    if [ x"$CI_WIPE_FIRST" = xyes ] || [ x"$CI_WIPE_FIRST" = xtrue ]; then
         echo "`date`: First wiping stashed workspace directories..."
         $CI_TIME make wipe
     fi

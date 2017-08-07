@@ -140,13 +140,15 @@ addons:
 # Set CI_TRACE=true to enable shell script tracing in Travis
 # Set CI_CONFIG_QUIET=true to enable "configure --quiet" (only report stderr)
 # Set CI_GIT_RESYNC=true to pull latest sources for each submodule, or set it
-#   to "false" and check out just the commit IDs pointed to by FTY repo snapshot.
+#   to "false" and check out just the commit IDs pointed to by FTY repo snapshot
+# Set CI_WIPE_FIRST=true to "make wipe" the workspace before builds
 env:
   global:
-    - CI_TIME=true
-    - CI_TRACE=false
-    - CI_QUIET=true
-    - CI_GIT_RESYNC=false
+    - DEFAULT_CI_TIME=true
+    - DEFAULT_CI_TRACE=false
+    - DEFAULT_CI_QUIET=true
+    - DEFAULT_CI_GIT_RESYNC=false
+    - DEFAULT_CI_WIPE_FIRST=false
 
 # Note: this matrix currently assumes that "CI_CZMQ_VER=4" means builds
 # against upstream/master from github, and "CI_CZMQ_VER=3" means usage
@@ -375,6 +377,11 @@ matrix:
         - valgrind
 
 before_install:
+- [ -n "$CI_TIME" ] || CI_TIME="$DEFAULT_CI_TIME"
+- [ -n "$CI_TRACE" ] || CI_TRACE="$DEFAULT_CI_TRACE"
+- [ -n "$CI_QUIET" ] || CI_QUIET="$DEFAULT_CI_QUIET"
+- [ -n "$CI_GIT_RESYNC" ] || CI_GIT_RESYNC="$DEFAULT_CI_GIT_RESYNC"
+- [ -n "$CI_WIPE_FIRST" ] || CI_WIPE_FIRST="$DEFAULT_CI_WIPE_FIRST"
 - date; echo Syncing Git submodule repos...
 - if [ "$CI_GIT_RESYNC" == true ] ; then DO_BUMP=no time ./sync.sh ; else git submodule init && { git submodule update --depth 3 || git submodule update ; } ; fi
 - if [ $TRAVIS_OS_NAME == "osx" ] ; then brew update; brew install binutils asciidoc docbook-xsl ; XML_CATALOG_FILES=/usr/local/etc/xml/catalog ; export XML_CATALOG_FILES ; fi
@@ -384,6 +391,11 @@ install:
 - pip install pycparser
 
 before_script:
+- [ -n "$CI_TIME" ] || CI_TIME="$DEFAULT_CI_TIME"
+- [ -n "$CI_TRACE" ] || CI_TRACE="$DEFAULT_CI_TRACE"
+- [ -n "$CI_QUIET" ] || CI_QUIET="$DEFAULT_CI_QUIET"
+- [ -n "$CI_GIT_RESYNC" ] || CI_GIT_RESYNC="$DEFAULT_CI_GIT_RESYNC"
+- [ -n "$CI_WIPE_FIRST" ] || CI_WIPE_FIRST="$DEFAULT_CI_WIPE_FIRST"
 - date; echo Fixing up SASL...
 - ./.travis.fixsasl
 
