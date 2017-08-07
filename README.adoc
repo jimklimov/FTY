@@ -104,10 +104,11 @@ The `Makefile` provides a development-rebuild option, invoked like this:
 $ make devel/fty-example
 ----
 
-which takes effect for components "prepped" as symlinks (e.g. by setting
-`PREP_TYPE_fty-example=cloneln-src` or `cloneobj-src` in the `Makefile`).
+which takes effect both for components "prepped" as symlinks (e.g. by setting
+`PREP_TYPE_fty-example=cloneln-src` or `cloneln-obj` in the `Makefile`) and
+as copies of files (`PREP_TYPE_component=clonetar-src` or `clonetar-obj`).
 This is the default now, unless a recipe for some component defines a
-different `PREP_TYPE` because of its (non-autotools) build-system quirks.
+different `PREP_TYPE` because of its build-system quirks.
 
 If the component was already configured, this recipe just runs a `make`
 in its custom build directory and so recompiles just the binaries whose

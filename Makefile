@@ -364,7 +364,8 @@ define clone_ln
 	  SRC="`cd "$(1)" && pwd`" && DST="`cd "$(2)" && pwd`" && \
 	  cd "$$SRC" && \
 	    $(FIND) . -type d -exec $(MKDIR) "$$DST"/'{}' \; && \
-	    $(FIND) . \! -type d -exec $(LN_S_R) "$$SRC"/'{}' "$$DST"/'{}' \; && \
+	    $(FIND) . \! -type d \! -type l -exec $(LN_S_R) "$$SRC"/'{}' "$$DST"/'{}' \; && \
+	    $(FIND) . -type l -exec $(CP) -P "$$SRC"/'{}' "$$DST"/'{}' \; && \
 	  if test -s "$$DST"/configure && test -s "$$DST"/configure.ac ; then \
 	    $(RM) "$$DST"/configure; \
 	  else true ; fi \
@@ -379,6 +380,16 @@ define clone_tar
 	  SRC="`cd "$(1)" && pwd`" && DST="`cd "$(2)" && pwd`" && \
 	  ( cd "$$SRC" && $(GTAR) -c --exclude=.git -f - ./ ) | \
 	    ( cd "$$DST" && $(GTAR) xf - ) \
+	)
+endef
+
+# Update existing clone, using newer files from source dir
+# Assumes GNU cp or compatible
+define clone_cp_update
+	( if test x"$(1)" = x"$(2)" ; then exit ; fi && \
+	  $(MKDIR) "$(2)" && \
+	  SRC="`cd "$(1)" && pwd`" && DST="`cd "$(2)" && pwd`" && \
+	  ( cd "$$SRC" && $(CP) -Ppurd ./ "$$DST"/ ) \
 	)
 endef
 
@@ -896,15 +907,15 @@ $(BUILD_OBJ_DIR)/%/.prepped: $(BUILD_OBJ_DIR)/%/.prep-newestfetch $(BUILD_OBJ_DI
 	 xcloneln-obj) \
 	    echo "CLONE sources of $(notdir $(@D)) as symlinks under BUILD_OBJ_DIR while prepping..." ; \
 	    $(call clone_ln,$(ORIGIN_SRC_DIR)/$(notdir $(@D)),$(BUILD_OBJ_DIR)/$(notdir $(@D))) ;; \
+	 xcloneln-src) \
+	    echo "CLONE sources of $(notdir $(@D)) as symlinks under common BUILD_SRC_DIR while prepping..." ; \
+	    $(call clone_ln,$(ORIGIN_SRC_DIR)/$(notdir $(@D)),$(BUILD_SRC_DIR)/$(notdir $(@D))) ;; \
 	 xclonetar-obj) \
 	    echo "CLONE sources of $(notdir $(@D)) via tarballs under BUILD_OBJ_DIR while prepping..." ; \
 	    $(call clone_tar,$(ORIGIN_SRC_DIR)/$(notdir $(@D)),$(BUILD_OBJ_DIR)/$(notdir $(@D))) ;; \
-	 xclonetar-src) \
+	 xclonetar-src|*) \
 	    echo "CLONE sources of $(notdir $(@D)) via tarballs under common BUILD_SRC_DIR while prepping..." ; \
 	    $(call clone_tar,$(ORIGIN_SRC_DIR)/$(notdir $(@D)),$(BUILD_SRC_DIR)/$(notdir $(@D))) ;; \
-	 xcloneln-src|*) \
-	    echo "CLONE sources of $(notdir $(@D)) as symlinks under common BUILD_SRC_DIR while prepping..." ; \
-	    $(call clone_ln,$(ORIGIN_SRC_DIR)/$(notdir $(@D)),$(BUILD_SRC_DIR)/$(notdir $(@D))) ;; \
 	 esac && \
 	 echo "$$PREPDATA" > "$<"
 	@if test -n "$(PREP_ACTION_BEFORE_PATCHING_$(notdir $(@D)))" ; then \
@@ -1004,7 +1015,21 @@ build/%: $(BUILD_OBJ_DIR)/%/.built
 # this option is here only to speed up manual development iterations.
 devel/%:
 	@case "x$(PREP_TYPE_$(@F))" in \
-	 xcloneln-*|x) echo "LOOKING AT '$(BUILD_OBJ_DIR)/$(@F)/.configured'" ; \
+	 xcloneln-*) ;; \
+	 xclonetar-obj) \
+	    if test -d "$(BUILD_OBJ_DIR)/$(@F)" ; then \
+	        echo "UPDATING sources-clone in BUILD_OBJ_DIR/$(@F)..." ; \
+	        $(call clone_cp_update,$(ORIGIN_SRC_DIR)/$(@F),$(BUILD_OBJ_DIR)/$(@F)) ; \
+	    fi ;; \
+	 xclonetar-src|x) \
+	    if test -d "$(BUILD_SRC_DIR)/$(@F)" ; then \
+	        echo "UPDATING sources-clone in BUILD_SRC_DIR/$(@F)..." ; \
+	        $(call clone_cp_update,$(ORIGIN_SRC_DIR)/$(@F),$(BUILD_SRC_DIR)/$(@F)) ; \
+	    fi ;; \
+	 *) echo "REBUILDING component $(@F) because its PREP_TYPE='$(PREP_TYPE_$(@F))' is not 'cloneln-*'..." ; \
+	    $(MAKE) rebuild/$(@F) ; exit ;; \
+	 esac && \
+	    echo "LOOKING AT '$(BUILD_OBJ_DIR)/$(@F)/.configured'" && \
 	    if test -f $(BUILD_OBJ_DIR)/$(@F)/.configured ; then \
 	        echo "UPDATING last build of component $(@F) which was already configured..." ; \
 	        $(TOUCH) $(BUILD_OBJ_DIR)/$(@F)/.configured ; \
@@ -1012,10 +1037,7 @@ devel/%:
 	        echo "UPDATING last build of component $(@F) starting by re-configuring it..." ; \
 	        $(MAKE) $(BUILD_OBJ_DIR)/$(@F)/.configured ; \
 	    fi && \
-	    $(MAKE) $(BUILD_OBJ_DIR)/$(@F)/.built ;; \
-	 *) echo "REBUILDING component $(@F) because its PREP_TYPE='$(PREP_TYPE_$(@F))' is not 'cloneln-*'..." ; \
-	    $(MAKE) rebuild/$(@F) ;; \
-	esac
+	    $(MAKE) $(BUILD_OBJ_DIR)/$(@F)/.built
 
 install/%: $(BUILD_OBJ_DIR)/%/.installed
 	@true
