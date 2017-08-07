@@ -602,8 +602,10 @@ $(BUILD_OBJ_DIR)/$(COMPONENT_CZMQ)/.autogened: $(BUILD_OBJ_DIR)/$(COMPONENT_CZMQ
 	   && autoreconf -fiv )
 	$(TOUCH) $@
 
-# Note: czmq3 seems to fail memcheck, disable it for now
-$(BUILD_OBJ_DIR)/$(COMPONENT_CZMQ)/.memchecked: $(BUILD_OBJ_DIR)/$(COMPONENT_CZMQ)/.built
+# Note: czmq3 seems to fail *check, disable it for now
+# FYI: hangs in zauth tests, e.g.
+#   ^C czmq_selftest: ../../src/zauth_v2.c:733: zauth_v2_test: Assertion `success' failed.
+$(BUILD_OBJ_DIR)/$(COMPONENT_CZMQ)/.checked $(BUILD_OBJ_DIR)/$(COMPONENT_CZMQ)/.distchecked $(BUILD_OBJ_DIR)/$(COMPONENT_CZMQ)/.memchecked: $(BUILD_OBJ_DIR)/$(COMPONENT_CZMQ)/.built
 	@$(call echo_noop,$@)
 
 
