@@ -938,14 +938,16 @@ build/%: $(BUILD_OBJ_DIR)/%/.built
 # this option is here only to speed up manual development iterations.
 devel/%:
 	@case "x$(PREP_TYPE_$(@F))" in \
-	 xcloneln-*|x) echo "Updating last build of component $(@F)..." ; \
+	 xcloneln-*|x) echo "LOOKING AT '$(BUILD_OBJ_DIR)/$(@F)/.configured'" ; \
 	    if test -f $(BUILD_OBJ_DIR)/$(@F)/.configured ; then \
+	        echo "UPDATING last build of component $(@F) which was already configured..." ; \
 	        $(TOUCH) $(BUILD_OBJ_DIR)/$(@F)/.configured ; \
 	    else \
+	        echo "UPDATING last build of component $(@F) starting by re-configuring it..." ; \
 	        $(MAKE) $(BUILD_OBJ_DIR)/$(@F)/.configured ; \
 	    fi && \
 	    $(MAKE) $(BUILD_OBJ_DIR)/$(@F)/.built ;; \
-	 *) echo "Rebuilding component $(@F) because its PREP_TYPE='$(PREP_TYPE_$(@F))' is not 'cloneln-*'..." ; \
+	 *) echo "REBUILDING component $(@F) because its PREP_TYPE='$(PREP_TYPE_$(@F))' is not 'cloneln-*'..." ; \
 	    $(MAKE) rebuild/$(@F) ;; \
 	esac
 
