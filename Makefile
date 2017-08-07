@@ -623,12 +623,21 @@ $(BUILD_OBJ_DIR)/$(COMPONENT_CZMQ)/.configured: $(BUILD_OBJ_DIR)/libzmq/.install
 
 ifneq ($strip($(COMPONENT_CZMQ)),czmq)
     PREP_TYPE_czmq = $(PREP_TYPE_$(COMPONENT_CZMQ))
+
 # Compatibility aliases
-%/czmq:
+
+devel/czmq build/czmq rebuild/czmq prep/czmq configure/czmq autogen/czmq uninstall/czmq install/czmq check/czmq memcheck/czmq distcheck/czmq distclean/czmq dist/czmq:
 	@$(MAKE) $(@D)/$(COMPONENT_CZMQ)
 
-$(BUILD_OBJ_DIR)/czmq/%: $(BUILD_OBJ_DIR)/$(COMPONENT_CZMQ)/%
-	@true
+#%/czmq: $(ORIGIN_SRC_DIR)/$(COMPONENT_CZMQ)
+#	$(MAKE) $(@D)/$(COMPONENT_CZMQ)
+
+#$(BUILD_OBJ_DIR)/czmq/%: $(BUILD_OBJ_DIR)/$(COMPONENT_CZMQ)/%
+
+#$(BUILD_OBJ_DIR)/czmq/*: $(COMPONENT_CZMQ)/
+#	$(MAKE) $(BUILD_OBJ_DIR)/$(COMPONENT_CZMQ)/$(@F)
+#	@true
+
 endif
 
     COMPONENTS_FTY += malamute
