@@ -131,7 +131,7 @@ COMPONENTS_FTY_EXPERIMENTAL =
 # */.prepped */.autogened */.configured */.built */.installed
 # NOTE/TODO: Get this to work with explicit list of patterns to filenames
 .SECONDARY:
-#.PRECIOUS: %/.prep-newestcommit %/.prepped %/.autogened %/.configured %/.built %/.installed %/.checked %/.checked-verbose %/.distchecked %/.disted %/.memchecked
+#.PRECIOUS: %/.prep-newestfetch %/.prep-builtgitindex %/.prep-builtcommit %/.prepped %/.autogened %/.configured %/.built %/.installed %/.checked %/.checked-verbose %/.distchecked %/.disted %/.memchecked
 
 # TODO : add a mode to check that a workspace has changed (dev work, git
 # checked out another branch, etc.) to trigger rebuilds of a project.
@@ -434,7 +434,7 @@ sinclude Makefile-local-$(BUILD_OS).mk
 sinclude Makefile-local-$(BUILD_OS)-$(BUILD_ARCH).mk
 
 # Catch empty expansions
-$(BUILD_OBJ_DIR)//.prep-newestcommit $(BUILD_OBJ_DIR)//.prepped $(BUILD_OBJ_DIR)//.autogened $(BUILD_OBJ_DIR)//.configured $(BUILD_OBJ_DIR)//.built $(BUILD_OBJ_DIR)//.installed $(BUILD_OBJ_DIR)//.checked $(BUILD_OBJ_DIR)//.checked-verbose $(BUILD_OBJ_DIR)//.distchecked $(BUILD_OBJ_DIR)//.disted $(BUILD_OBJ_DIR)//.memchecked:
+$(BUILD_OBJ_DIR)//.prep-newestfetch $(BUILD_OBJ_DIR)//.prep-builtgitindex $(BUILD_OBJ_DIR)//.prep-builtcommit $(BUILD_OBJ_DIR)//.prepped $(BUILD_OBJ_DIR)//.autogened $(BUILD_OBJ_DIR)//.configured $(BUILD_OBJ_DIR)//.built $(BUILD_OBJ_DIR)//.installed $(BUILD_OBJ_DIR)//.checked $(BUILD_OBJ_DIR)//.checked-verbose $(BUILD_OBJ_DIR)//.distchecked $(BUILD_OBJ_DIR)//.disted $(BUILD_OBJ_DIR)//.memchecked:
 	@echo "Error in recipe expansion, can not build $@ : component part is empty" ; exit 1
 
 ########################### GSL and LIBCIDR ###############################
@@ -534,22 +534,30 @@ ifeq ($(strip $(CI_CZMQ_VER)),pkg)
 
 COMPONENT_CZMQ=czmq
 
-$(BUILD_OBJ_DIR)/libsodium/.prep-newestcommit $(BUILD_OBJ_DIR)/libsodium/.prepped \
+$(BUILD_OBJ_DIR)/libsodium/.prep-newestfetch $(BUILD_OBJ_DIR)/libsodium/.prepped \
+$(BUILD_OBJ_DIR)/libsodium/.prep-builtgitindex $(BUILD_OBJ_DIR)/libsodium/.prepped \
+$(BUILD_OBJ_DIR)/libsodium/.prep-builtcommit $(BUILD_OBJ_DIR)/libsodium/.prepped \
 $(BUILD_OBJ_DIR)/libsodium/.autogened $(BUILD_OBJ_DIR)/libsodium/.configured \
 $(BUILD_OBJ_DIR)/libsodium/.built $(BUILD_OBJ_DIR)/libsodium/.installed \
 $(BUILD_OBJ_DIR)/libsodium/.checked $(BUILD_OBJ_DIR)/libsodium/.distchecked \
 $(BUILD_OBJ_DIR)/libsodium/.disted $(BUILD_OBJ_DIR)/libsodium/.memchecked \
-$(BUILD_OBJ_DIR)/libzmq/.prep-newestcommit $(BUILD_OBJ_DIR)/libzmq/.prepped \
+$(BUILD_OBJ_DIR)/libzmq/.prep-newestfetch $(BUILD_OBJ_DIR)/libzmq/.prepped \
+$(BUILD_OBJ_DIR)/libzmq/.prep-builtgitindex $(BUILD_OBJ_DIR)/libzmq/.prepped \
+$(BUILD_OBJ_DIR)/libzmq/.prep-builtcommit $(BUILD_OBJ_DIR)/libzmq/.prepped \
 $(BUILD_OBJ_DIR)/libzmq/.autogened $(BUILD_OBJ_DIR)/libzmq/.configured \
 $(BUILD_OBJ_DIR)/libzmq/.built $(BUILD_OBJ_DIR)/libzmq/.installed \
 $(BUILD_OBJ_DIR)/libzmq/.checked $(BUILD_OBJ_DIR)/libzmq/.distchecked \
 $(BUILD_OBJ_DIR)/libzmq/.disted $(BUILD_OBJ_DIR)/libzmq/.memchecked \
-$(BUILD_OBJ_DIR)/czmq/.prep-newestcommit $(BUILD_OBJ_DIR)/czmq/.prepped \
+$(BUILD_OBJ_DIR)/czmq/.prep-newestfetch $(BUILD_OBJ_DIR)/czmq/.prepped \
+$(BUILD_OBJ_DIR)/czmq/.prep-builtgitindex $(BUILD_OBJ_DIR)/czmq/.prepped \
+$(BUILD_OBJ_DIR)/czmq/.prep-builtcommit $(BUILD_OBJ_DIR)/czmq/.prepped \
 $(BUILD_OBJ_DIR)/czmq/.autogened $(BUILD_OBJ_DIR)/czmq/.configured \
 $(BUILD_OBJ_DIR)/czmq/.built $(BUILD_OBJ_DIR)/czmq/.installed \
 $(BUILD_OBJ_DIR)/czmq/.checked $(BUILD_OBJ_DIR)/czmq/.distchecked \
 $(BUILD_OBJ_DIR)/czmq/.disted $(BUILD_OBJ_DIR)/czmq/.memchecked \
-$(BUILD_OBJ_DIR)/malamute/.prep-newestcommit $(BUILD_OBJ_DIR)/malamute/.prepped \
+$(BUILD_OBJ_DIR)/malamute/.prep-newestfetch $(BUILD_OBJ_DIR)/malamute/.prepped \
+$(BUILD_OBJ_DIR)/malamute/.prep-builtgitindex $(BUILD_OBJ_DIR)/malamute/.prepped \
+$(BUILD_OBJ_DIR)/malamute/.prep-builtcommit $(BUILD_OBJ_DIR)/malamute/.prepped \
 $(BUILD_OBJ_DIR)/malamute/.autogened $(BUILD_OBJ_DIR)/malamute/.configured \
 $(BUILD_OBJ_DIR)/malamute/.built $(BUILD_OBJ_DIR)/malamute/.installed \
 $(BUILD_OBJ_DIR)/malamute/.checked $(BUILD_OBJ_DIR)/malamute/.distchecked \
@@ -802,7 +810,7 @@ $(abs_srcdir)/.git/modules/%/FETCH_HEAD $(abs_srcdir)/.git/modules/%/index $(abs
 	    ( cd $(notdir $(@D)) && git fetch --all ) ; \
 	 fi
 
-$(BUILD_OBJ_DIR)/%/.prep-newestcommit: $(abs_srcdir)/.git/modules/%/FETCH_HEAD $(abs_srcdir)/.git/modules/%/index
+$(BUILD_OBJ_DIR)/%/.prep-newestfetch: $(abs_srcdir)/.git/modules/%/FETCH_HEAD $(abs_srcdir)/.git/modules/%/index
 	@$(MKDIR) "$(@D)"
 	@if test -s "$@" && test -s "$<" && diff "$@" "$<" >/dev/null 2>&1 ; then \
 	    echo "ROLLBACK TIMESTAMP of $< to that of existing $@ because this commit is already prepped" ; \
@@ -812,9 +820,42 @@ $(BUILD_OBJ_DIR)/%/.prep-newestcommit: $(abs_srcdir)/.git/modules/%/FETCH_HEAD $
 	    cat "$<" > "$@" ; \
 	 fi
 
+$(BUILD_OBJ_DIR)/%/.prep-builtgitindex: $(abs_srcdir)/.git/modules/%/index
+	@$(MKDIR) "$(@D)"
+	@if test -s "$@" && test -s "$<" && diff "$@" "$<" >/dev/null 2>&1 ; then \
+	    echo "ROLLBACK TIMESTAMP of $< to that of existing $@ because this commit is already prepped" ; \
+	    $(TOUCH) -r "$@" "$<" || true ; \
+	 else \
+	    echo "Seems a NEW COMMIT of $(notdir $(@D)) has landed (compared to last build), updating $@" ; \
+	    cat "$<" > "$@" ; \
+	 fi
+
+# Make sure to both run after the .git directory is available,
+# and to force evaluation of this recipe every time
+$(BUILD_OBJ_DIR)/%/.prep-builtcommit: $(abs_srcdir)/.git/modules/%/index FORCE
+	@cd "$(@D)" && \
+	    CURRENT_COMMIT_DATA="`cd $(ORIGIN_SRC_DIR) && git rev-parse --verify HEAD && git status -s | sort -n`" && \
+	    [ -n "$$CURRENT_COMMIT_DATA" ] && \
+	    if test -s "$@" ; then \
+	        SAVED_COMMIT_DATA="`cat "$@"`" && \
+	        if test x"$$CURRENT_COMMIT_DATA" = x"$$SAVED_COMMIT_DATA" ; then \
+	            exit 0 ; \
+	        else \
+	            echo "Seems a NEW COMMIT of $(notdir $(@D)) has landed (compared to last build), updating $@" ; \
+	            echo "$$CURRENT_COMMIT_DATA" > "$@" ; \
+	        fi || exit 1 ; \
+	    else \
+	        echo "Seems a NEW COMMIT of $(notdir $(@D)) has landed (compared to last build), updating $@" ; \
+	        echo "$$CURRENT_COMMIT_DATA" > "$@" ; \
+	    fi || exit 1
+
+# https://www.gnu.org/software/make/manual/html_node/Force-Targets.html
+FORCE:
+	@true
+
 # Note: during prepping, we generally remove and recreate the OBJ_DIR
 # which contains the input file. So we stash and recreate it mid-way.
-$(BUILD_OBJ_DIR)/%/.prepped: $(BUILD_OBJ_DIR)/%/.prep-newestcommit $(abs_srcdir)/%/.git
+$(BUILD_OBJ_DIR)/%/.prepped: $(BUILD_OBJ_DIR)/%/.prep-newestfetch $(BUILD_OBJ_DIR)/%/.prep-builtcommit $(BUILD_OBJ_DIR)/%/.prep-builtgitindex $(abs_srcdir)/%/.git
 	@$(MKDIR) "$(@D)"
 	@if test ! -s "$@" || ! diff "$@" "$<" > /dev/null 2>&1 ; then \
 	  if test -f "$(@D)/.installed" || test -f "$(@D)/.install-failed" ; then \
