@@ -173,6 +173,12 @@ packaged service does. As you can see, this recipe requires quite a bit
 of circumstances and intentional system setup to work; in particular this
 should keep your daily host operating system safe from experimental code ;)
 
+NOTE: This repository includes an `admin-sudo` file that you can copy into
+the `/etc/sudoers.d` (running as `root`) in an instance of our OS image:
+----
+# cp admin-sudo /etc/sudoers.d/
+----
+
 NOTE: At this time, use of the patched `/etc/tntnet/bios.xml` from the OS image
 does not take into account any customizations from the `tntnet.xml` template in
 the `fty-rest` component sources under your development and testing.

@@ -1,0 +1,8 @@
+# Special permission for "admin" accout to elevate privileges
+# for e.g. "make web-test-bios" in an FTY container.
+# Place it (as "root") into /etc/sudoers.d/ on a copy of our image.
+# Builds on other systems may require that you append this line to
+# the common /etc/sudoers.
+# If you use a different account to run the build, adapt the name below.
+
+admin ALL=(ALL) NOPASSWD: ALL
