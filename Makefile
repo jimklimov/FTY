@@ -559,6 +559,8 @@ ifeq ($(strip $(CI_CZMQ_VER)),pkg)
     # this means the env is obsolete... or too far in the future ;)
 
 COMPONENT_CZMQ=czmq
+COMPONENT_LIBZMQ=libzmq
+COMPONENT_MLM=malamute
 
 $(BUILD_OBJ_DIR)/libsodium/.prep-newestfetch $(BUILD_OBJ_DIR)/libsodium/.prepped \
 $(BUILD_OBJ_DIR)/libsodium/.prep-builtgitindex $(BUILD_OBJ_DIR)/libsodium/.prepped \
@@ -593,21 +595,23 @@ $(BUILD_OBJ_DIR)/malamute/.disted $(BUILD_OBJ_DIR)/malamute/.memchecked :
 else
     # CI_CZMQ_VER not specified, or "3" (or "4" quietly)
 
+    COMPONENT_LIBZMQ=libzmq
+
     COMPONENTS_FTY += libsodium
 $(BUILD_OBJ_DIR)/libsodium/.memchecked: $(BUILD_OBJ_DIR)/libsodium/.built
 	@$(call echo_noop,$@)
 
-    COMPONENTS_FTY += libzmq
-    PREP_TYPE_libzmq = clonetar-src
-$(BUILD_OBJ_DIR)/libzmq/.configured: $(BUILD_OBJ_DIR)/libsodium/.installed
+    COMPONENTS_FTY += $(COMPONENT_LIBZMQ)
+    PREP_TYPE_$(COMPONENT_LIBZMQ) = clonetar-src
+$(BUILD_OBJ_DIR)/$(COMPONENT_LIBZMQ)/.configured: $(BUILD_OBJ_DIR)/libsodium/.installed
 # TODO: It was called "make check-valgrind-memcheck" back then
-$(BUILD_OBJ_DIR)/libzmq/.memchecked: $(BUILD_OBJ_DIR)/libzmq/.built
+$(BUILD_OBJ_DIR)/$(COMPONENT_LIBZMQ)/.memchecked: $(BUILD_OBJ_DIR)/$(COMPONENT_LIBZMQ)/.built
 	@$(call echo_noop,$@)
 
 # There is something fishy at this time when running code against libzmq.so
 # built with ASAN (unresolved symbols are reported).
 ifeq ($(strip $(ADDRESS_SANITIZER)),enabled)
-CONFIG_OPTS_libzmq = --enable-address-sanitizer=no
+CONFIG_OPTS_$(COMPONENT_LIBZMQ) = --enable-address-sanitizer=no
 endif
 
 ifeq ($(strip $(CI_CZMQ_VER)),3)
@@ -631,10 +635,13 @@ $(BUILD_OBJ_DIR)/$(COMPONENT_CZMQ)/.autogened: $(BUILD_OBJ_DIR)/$(COMPONENT_CZMQ
 $(BUILD_OBJ_DIR)/$(COMPONENT_CZMQ)/.checked $(BUILD_OBJ_DIR)/$(COMPONENT_CZMQ)/.distchecked $(BUILD_OBJ_DIR)/$(COMPONENT_CZMQ)/.memchecked: $(BUILD_OBJ_DIR)/$(COMPONENT_CZMQ)/.built
 	@$(call echo_noop,$@)
 
+    COMPONENT_MLM=malamute-v1.0
 
 else
     # Note: this currently assumes that "CI_CZMQ_VER=4" means upstream/master
     COMPONENT_CZMQ=czmq-master
+
+    COMPONENT_MLM=malamute-master
 
 endif
 
@@ -647,7 +654,7 @@ ifeq ($(strip $(ADDRESS_SANITIZER)),enabled)
 CONFIG_OPTS_libczmq = --enable-address-sanitizer=no
 endif
 
-$(BUILD_OBJ_DIR)/$(COMPONENT_CZMQ)/.configured: $(BUILD_OBJ_DIR)/libzmq/.installed
+$(BUILD_OBJ_DIR)/$(COMPONENT_CZMQ)/.configured: $(BUILD_OBJ_DIR)/$(COMPONENT_LIBZMQ)/.installed
 
 ifneq ($strip($(COMPONENT_CZMQ)),czmq)
     PREP_TYPE_czmq = $(PREP_TYPE_$(COMPONENT_CZMQ))
@@ -668,8 +675,8 @@ devel/czmq build/czmq rebuild/czmq prep/czmq configure/czmq autogen/czmq uninsta
 
 endif
 
-    COMPONENTS_FTY += malamute
-$(BUILD_OBJ_DIR)/malamute/.configured: $(BUILD_OBJ_DIR)/$(COMPONENT_CZMQ)/.installed $(BUILD_OBJ_DIR)/libsodium/.installed
+    COMPONENTS_FTY += $(COMPONENT_MLM)
+$(BUILD_OBJ_DIR)/$(COMPONENT_MLM)/.configured: $(BUILD_OBJ_DIR)/$(COMPONENT_CZMQ)/.installed $(BUILD_OBJ_DIR)/libsodium/.installed
 
 endif
 
@@ -685,13 +692,13 @@ CONFIG_OPTS_nut += --with-devd-dir="$(DESTDIR)$(PREFIX_ETCDIR)/devd"
 CONFIG_OPTS_nut += --with-hotplug-dir="$(DESTDIR)$(PREFIX_ETCDIR)/hotplug"
 
 COMPONENTS_FTY += fty-proto
-$(BUILD_OBJ_DIR)/fty-proto/.configured: $(BUILD_OBJ_DIR)/malamute/.installed $(BUILD_OBJ_DIR)/libsodium/.installed
+$(BUILD_OBJ_DIR)/fty-proto/.configured: $(BUILD_OBJ_DIR)/$(COMPONENT_MLM)/.installed $(BUILD_OBJ_DIR)/libsodium/.installed
 # $(BUILD_OBJ_DIR)/cxxtools/.installed
 
 # Note: more and more core is a collection of scripts, so should need less deps
 COMPONENTS_FTY += fty-core
 PREP_TYPE_fty-core = clonetar-src
-$(BUILD_OBJ_DIR)/fty-core/.configured: $(BUILD_OBJ_DIR)/malamute/.installed $(BUILD_OBJ_DIR)/tntdb/.installed $(BUILD_OBJ_DIR)/tntnet/.installed $(BUILD_OBJ_DIR)/libcidr/.installed
+$(BUILD_OBJ_DIR)/fty-core/.configured: $(BUILD_OBJ_DIR)/$(COMPONENT_MLM)/.installed $(BUILD_OBJ_DIR)/tntdb/.installed $(BUILD_OBJ_DIR)/tntnet/.installed $(BUILD_OBJ_DIR)/libcidr/.installed
 $(BUILD_OBJ_DIR)/fty-core/.memchecked: $(BUILD_OBJ_DIR)/fty-core/.built
 	@$(call echo_noop,$@)
 
@@ -703,7 +710,7 @@ ifneq ($(strip $(BUILD_TYPE)),)
 CONFIG_OPTS_fty-rest += --enable-leak-sanitizer=no
 endif
 
-$(BUILD_OBJ_DIR)/fty-rest/.configured: $(BUILD_OBJ_DIR)/malamute/.installed $(BUILD_OBJ_DIR)/tntdb/.installed $(BUILD_OBJ_DIR)/tntnet/.installed $(BUILD_OBJ_DIR)/fty-proto/.installed $(BUILD_OBJ_DIR)/fty-core/.installed $(BUILD_OBJ_DIR)/libcidr/.installed $(BUILD_OBJ_DIR)/libmagic/.installed
+$(BUILD_OBJ_DIR)/fty-rest/.configured: $(BUILD_OBJ_DIR)/$(COMPONENT_MLM)/.installed $(BUILD_OBJ_DIR)/tntdb/.installed $(BUILD_OBJ_DIR)/tntnet/.installed $(BUILD_OBJ_DIR)/fty-proto/.installed $(BUILD_OBJ_DIR)/fty-core/.installed $(BUILD_OBJ_DIR)/libcidr/.installed $(BUILD_OBJ_DIR)/libmagic/.installed
 # For now the fty-rest memchecked target program is unreliable at best, and
 # documented so in the component's Makefile. So we do not call it for now.
 # TODO: Make it somehow an experimental-build toggle?
