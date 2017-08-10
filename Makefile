@@ -125,6 +125,10 @@ COMPONENTS_FTY =
 # dependencies they pull
 COMPONENTS_FTY_EXPERIMENTAL =
 
+# https://www.gnu.org/software/make/manual/html_node/Force-Targets.html
+FORCE:
+	@true
+
 # Dependencies on touch-files are calculated by caller
 # If the *_sub is called - it must do its work
 # Tell GMake to keep any secondary files such as:
@@ -706,11 +710,13 @@ $(BUILD_OBJ_DIR)/fty-rest/.configured: $(BUILD_OBJ_DIR)/malamute/.installed $(BU
 $(BUILD_OBJ_DIR)/fty-rest/.memchecked: $(BUILD_OBJ_DIR)/fty-rest/.built
 	@$(call echo_noop,$@)
 
-# Note: these recipes run "tntnet" from PATH which should be our build product
-web-test: $(BUILD_OBJ_DIR)/fty-rest/.built
-	cd $(<D) && $(MAKE) web-test
+# Note: the "web-test" and "web-test-bios" recipes run "tntnet"
+# from PATH which should prioritize our build-product
+web-test web-test-deps: $(BUILD_OBJ_DIR)/fty-rest/.built
+	cd $(<D) && $(MAKE) $@
 
-# This one requires configuration on developer's workstation, allowing
+# The web-test-bios recipe and its contributing steps defined below
+# require special configuration on developer's workstation, allowing
 # the "sudo" and preparing the database schema, credentials, configs etc.
 # It is intended to run in copies of the "fty-devel" image otherwise
 # configured and ready to run the production code.
@@ -719,28 +725,62 @@ web-test: $(BUILD_OBJ_DIR)/fty-rest/.built
 # And also we do need it to match the freshly-built server with OS setup.
 # TODO: Support some merge of data from these files, to use new tntnet.xml
 # configurations for developed servlets, etc.
-web-test-bios: $(BUILD_OBJ_DIR)/fty-rest/.built /etc/tntnet/bios.xml
-	cd $(<D) && $(MAKE) web-test-deps && \
-	    echo "TRYING TO STOP tntnet@bios systemd service to avoid conflicts..." && \
-	    { sudo systemctl stop tntnet@bios.service || true; } && \
-	    echo "READING ennvars that configure systemd service tntnet@bios..." && \
-	    { if test -s /etc/systemd/system/tntnet\@bios.service ; then \
-	        while read LINE ; do case "$$LINE" in EnvironmentFile=*) \
-	            F="`echo "$$LINE" | $(SED) -s 's,^EnvironmentFile=\-*,,'`" && [ -n "$$F" ] && \
-	            if [ -s "$$F" ] ; then echo "=== $$F"; \
-	                . "$$F" && \
-	                while IFS='=' read K V ; do echo "===== export $$K = $$V"; eval export $$K ; done < "$$F" ; \
-	            fi;; \
-	        esac; done < /etc/systemd/system/tntnet\@bios.service ; \
-	      fi; } && \
-	    { if test -s /run/tntnet-bios.env ; then echo "=== /run/tntnet-bios.env"; . /run/tntnet-bios.env && \
-	        while IFS='=' read K V ; do echo "===== export $$K = $$V"; eval export $$K ; done < /run/tntnet-bios.env ; \
-	      fi; } && \
-	    echo "STARTING custom tntnet daemon with custom fty-rest and system bios.xml..." && \
+
+$(BUILD_OBJ_DIR)/fty-rest/tntnet.xml: web-test-deps
+	@true
+
+# We depend on built tntnet.xml to ensure presence of a recent build of
+# fty-rest right now, and to maybe use that file's contents later.
+TNTNET_BIOS_XML =	/etc/tntnet/bios.xml
+TNTNET_BIOS_UNIT =	/etc/systemd/system/tntnet@bios.service
+TNTNET_BIOS_ENV =	/run/tntnet-bios.env
+
+$(BUILD_OBJ_DIR)/fty-rest/bios.xml: $(BUILD_OBJ_DIR)/fty-rest/.built $(BUILD_OBJ_DIR)/fty-rest/tntnet.xml $(TNTNET_BIOS_XML)
+	@echo "CUSTOMIZING tntnet configuration from system-provided bios.xml..." >&2 && \
+	 $(RM) "$@" "$@.tmp" && \
+	 cd $(<D) && \
 	    $(SED) -e 's|^.*<compPath>.*</compPath>.*$$||' \
 	           -e 's|^\(.*</dir>.*\)$$|\1\n<compPath><entry>$(BUILD_OBJ_DIR)/fty-rest/.libs</entry></compPath>|' \
-	        < /etc/tntnet/bios.xml > bios.xml && \
-	    sudo -E tntnet $(BUILD_OBJ_DIR)/fty-rest/bios.xml
+	        < $(TNTNET_BIOS_XML) > "$@.tmp" && \
+	    $(MV) "$@.tmp" "$@"
+
+# Execute always, files referenced from config can change
+# Also this recipe tries to use a file that might not always be present
+# Note that this "make" recipe runs unprivileged and might not see all files,
+# so it relies on "sudo" allowing ALL (or enough) actions to "cat" them.
+$(BUILD_OBJ_DIR)/fty-rest/bios.env: $(TNTNET_BIOS_UNIT) FORCE
+	@echo "STASHING aside some ennvars that configure systemd service tntnet@bios..." >&2 && \
+	    $(RM) "$@" "$@.tmp" && touch "$@.tmp" && \
+	    { if test -s $(TNTNET_BIOS_UNIT) ; then \
+	        while read LINE ; do case "$$LINE" in EnvironmentFile=*) \
+	            F="`echo "$$LINE" | $(SED) -s 's,^EnvironmentFile=\-*,,'`" && [ -n "$$F" ] && \
+	            echo "### $$F" && sudo grep = "$$F" || true ;; \
+	        esac; done < $(TNTNET_BIOS_UNIT) ; \
+	      fi; } >> "$@.tmp" && \
+	    { if test -s $(TNTNET_BIOS_ENV) ; then \
+	        echo "### $(TNTNET_BIOS_ENV)" && sudo grep = $(TNTNET_BIOS_ENV) ; \
+	      fi; } >> "$@.tmp" && \
+	    $(MV) "$@.tmp" "$@"
+
+web-test-bios-deps: $(BUILD_OBJ_DIR)/fty-rest/.built web-test-deps $(BUILD_OBJ_DIR)/fty-rest/bios.xml $(BUILD_OBJ_DIR)/fty-rest/bios.env
+	@true
+
+web-test-bios: web-test-bios-deps
+	@cd $(<D) && \
+	    echo "TRYING TO STOP tntnet@bios systemd service to avoid conflicts..." >&2 && \
+	    { sudo systemctl stop tntnet@bios.service || true; } && \
+	    { if test -s $(BUILD_OBJ_DIR)/fty-rest/bios.env ; then \
+	        echo "READING ennvars that configure systemd service tntnet@bios..." >&2 && \
+	        cat $(BUILD_OBJ_DIR)/fty-rest/bios.env ; \
+	      fi ; } && \
+	    if ! test -e /var/lib/bios/license && ! test -e /var/lib/fty/license ; then \
+	        echo "WARNING: Starting $@ while the FTY license is not accepted yet" >&2 ; \
+	    fi && \
+	    if ! test -e /var/run/fty-db-ready ; then \
+	        echo "WARNING: Starting $@ while the FTY database is not in a known-ready state" >&2 ; \
+	    fi && \
+	    echo "STARTING custom tntnet daemon with custom fty-rest and adapted system bios.xml..." >&2 && \
+	    sudo -c ". $(BUILD_OBJ_DIR)/fty-rest/bios.env || true; tntnet $(BUILD_OBJ_DIR)/fty-rest/bios.xml"
 
 COMPONENTS_FTY += fty-nut
 $(BUILD_OBJ_DIR)/fty-nut/.configured: $(BUILD_OBJ_DIR)/fty-proto/.installed $(BUILD_OBJ_DIR)/libcidr/.installed $(BUILD_OBJ_DIR)/cxxtools/.installed $(BUILD_OBJ_DIR)/nut/.installed
@@ -884,10 +924,6 @@ $(BUILD_OBJ_DIR)/%/.prep-builtcommit: $(abs_srcdir)/.git/modules/%/index FORCE
 	        echo "Seems a NEW COMMIT of $(notdir $(@D)) has landed (compared to last build), updating $@" ; \
 	        echo "$$CURRENT_COMMIT_DATA" > "$@" ; \
 	    fi || exit 1
-
-# https://www.gnu.org/software/make/manual/html_node/Force-Targets.html
-FORCE:
-	@true
 
 # Note: during prepping, we generally remove and recreate the OBJ_DIR
 # which contains the input file. So we stash and recreate it mid-way.
