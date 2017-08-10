@@ -909,6 +909,7 @@ $(BUILD_OBJ_DIR)/%/.prep-builtgitindex: $(abs_srcdir)/.git/modules/%/index
 # Make sure to both run after the .git directory is available,
 # and to force evaluation of this recipe every time
 $(BUILD_OBJ_DIR)/%/.prep-builtcommit: $(abs_srcdir)/.git/modules/%/index FORCE
+	@$(MKDIR) "$(@D)"
 	@cd "$(@D)" && \
 	    CURRENT_COMMIT_DATA="`cd $(ORIGIN_SRC_DIR) && git rev-parse --verify HEAD && git status -s | sort -n`" && \
 	    [ -n "$$CURRENT_COMMIT_DATA" ] && \
