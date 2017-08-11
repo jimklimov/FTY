@@ -635,13 +635,15 @@ $(BUILD_OBJ_DIR)/$(COMPONENT_CZMQ)/.autogened: $(BUILD_OBJ_DIR)/$(COMPONENT_CZMQ
 $(BUILD_OBJ_DIR)/$(COMPONENT_CZMQ)/.checked $(BUILD_OBJ_DIR)/$(COMPONENT_CZMQ)/.distchecked $(BUILD_OBJ_DIR)/$(COMPONENT_CZMQ)/.memchecked: $(BUILD_OBJ_DIR)/$(COMPONENT_CZMQ)/.built
 	@$(call echo_noop,$@)
 
-    COMPONENT_MLM=malamute-v1.0
+#    COMPONENT_MLM=malamute-v1.0
+    COMPONENT_MLM=malamute
 
 else
     # Note: this currently assumes that "CI_CZMQ_VER=4" means upstream/master
     COMPONENT_CZMQ=czmq-master
 
-    COMPONENT_MLM=malamute-master
+#    COMPONENT_MLM=malamute-master
+    COMPONENT_MLM=malamute
 
 endif
 
