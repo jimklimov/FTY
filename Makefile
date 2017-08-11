@@ -789,7 +789,7 @@ web-test-bios: web-test-bios-deps
 	        echo "WARNING: Starting $@ while the FTY database is not in a known-ready state" >&2 ; \
 	    fi && \
 	    echo "STARTING custom tntnet daemon with custom fty-rest and adapted system bios.xml..." >&2 && \
-	    sudo -c ". $(BUILD_OBJ_DIR)/fty-rest/bios.env || true; tntnet $(BUILD_OBJ_DIR)/fty-rest/bios.xml"
+	    sudo /bin/sh -c ". $(BUILD_OBJ_DIR)/fty-rest/bios.env || true; tntnet $(BUILD_OBJ_DIR)/fty-rest/bios.xml"
 
 COMPONENTS_FTY += fty-nut
 $(BUILD_OBJ_DIR)/fty-nut/.configured: $(BUILD_OBJ_DIR)/fty-proto/.installed $(BUILD_OBJ_DIR)/libcidr/.installed $(BUILD_OBJ_DIR)/cxxtools/.installed $(BUILD_OBJ_DIR)/nut/.installed
