@@ -468,7 +468,11 @@ $(BUILD_OBJ_DIR)//.prep-newestfetch $(BUILD_OBJ_DIR)//.prep-builtgitindex $(BUIL
 COMPONENTS_ALL += gsl
 BUILD_SUB_DIR_gsl=src/
 DESTDIR_gsl=$(DESTDIR)$(PREFIX)/local
+ifeq ($strip $(MAKE_COMMON_ARGS_gsl),)
 MAKE_COMMON_ARGS_gsl=DESTDIR="$(DESTDIR_gsl)"
+else
+MAKE_COMMON_ARGS_gsl+=DESTDIR="$(DESTDIR_gsl)"
+endif
 PREP_TYPE_gsl = cloneln-obj
 
 # These are no-ops for GSL:
