@@ -417,7 +417,7 @@ CXXFLAGS += -I$(DESTDIR)$(PREFIX)/include
 LDFLAGS += -L$(DESTDIR)$(PREFIX)/lib
 
 PKG_CONFIG_DIR ?= $(DESTDIR)$(PREFIX)/lib/pkgconfig
-PKG_CONFIG_PATH ?= "$(PKG_CONFIG_DIR):/usr/lib/x86_64-linux-gnu/pkgconfig:/usr/lib/arm-linux-gnueabihf/pkgconfig:/usr/lib/pkgconfig:/lib/pkgconfig"
+PKG_CONFIG_PATH ?= $(PKG_CONFIG_DIR):/usr/lib/x86_64-linux-gnu/pkgconfig:/usr/lib/arm-linux-gnueabihf/pkgconfig:/usr/lib/pkgconfig:/lib/pkgconfig
 export PKG_CONFIG_PATH
 
 CONFIG_OPTS  = --prefix="$(PREFIX)"
