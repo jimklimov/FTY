@@ -784,7 +784,7 @@ $(BUILD_OBJ_DIR)/fty-rest/bios.env: $(TNTNET_BIOS_UNIT) FORCE
 web-test-bios-deps: $(BUILD_OBJ_DIR)/fty-rest/.built web-test-deps $(BUILD_OBJ_DIR)/fty-rest/bios.xml $(BUILD_OBJ_DIR)/fty-rest/bios.env
 	@true
 
-web-test-bios: web-test-bios-deps
+web-test-bios: web-test-bios-deps $(BUILD_OBJ_DIR)/fty-rest/.installed
 	@cd $(<D) && \
 	    echo "TRYING TO STOP tntnet@bios systemd service to avoid conflicts..." >&2 && \
 	    { sudo systemctl stop tntnet@bios.service || true; } && \
