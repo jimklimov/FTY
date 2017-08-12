@@ -530,7 +530,8 @@ $(BUILD_OBJ_DIR)/cxxtools/.memchecked: $(BUILD_OBJ_DIR)/cxxtools/.built
 COMPONENTS_FTY += tntdb
 MAKE_COMMON_ARGS_tntdb=-j1
 BUILD_SUB_DIR_tntdb=tntdb/
-CONFIG_OPTS_tntdb ?= --without-postgresql
+CONFIG_OPTS_tntdb ?=
+CONFIG_OPTS_tntdb += --without-postgresql
 CONFIG_OPTS_tntdb += --without-sqlite
 $(BUILD_OBJ_DIR)/tntdb/.configured: $(BUILD_OBJ_DIR)/cxxtools/.installed
 $(BUILD_OBJ_DIR)/tntdb/.memchecked: $(BUILD_OBJ_DIR)/tntdb/.built
@@ -539,7 +540,8 @@ $(BUILD_OBJ_DIR)/tntdb/.memchecked: $(BUILD_OBJ_DIR)/tntdb/.built
 ### We do not link to this(???) - just use at runtime
 # Make sure the workspace is (based on) branch "2.2"
 COMPONENTS_FTY += tntnet
-CONFIG_OPTS_tntnet ?= --with-sdk
+CONFIG_OPTS_tntnet ?=
+CONFIG_OPTS_tntnet += --with-sdk
 CONFIG_OPTS_tntnet += --without-demos
 $(BUILD_OBJ_DIR)/tntnet/.configured: $(BUILD_OBJ_DIR)/cxxtools/.installed
 $(BUILD_OBJ_DIR)/tntnet/.memchecked: $(BUILD_OBJ_DIR)/tntnet/.built
@@ -610,8 +612,9 @@ $(BUILD_OBJ_DIR)/libzmq/.memchecked: $(BUILD_OBJ_DIR)/libzmq/.built
 
 # There is something fishy at this time when running code against libzmq.so
 # built with ASAN (unresolved symbols are reported).
+CONFIG_OPTS_libzmq ?=
 ifeq ($(strip $(ADDRESS_SANITIZER)),enabled)
-CONFIG_OPTS_libzmq = --enable-address-sanitizer=no
+CONFIG_OPTS_libzmq += --enable-address-sanitizer=no
 endif
 
 ifeq ($(strip $(CI_CZMQ_VER)),3)
@@ -647,8 +650,9 @@ endif
 
 # There is something fishy at this time when running code against libczmq.so
 # built with ASAN (unresolved symbols are reported).
+CONFIG_OPTS_libczmq ?=
 ifeq ($(strip $(ADDRESS_SANITIZER)),enabled)
-CONFIG_OPTS_libczmq = --enable-address-sanitizer=no
+CONFIG_OPTS_libczmq += --enable-address-sanitizer=no
 endif
 
 $(BUILD_OBJ_DIR)/$(COMPONENT_CZMQ)/.configured: $(BUILD_OBJ_DIR)/libzmq/.installed
@@ -678,7 +682,8 @@ $(BUILD_OBJ_DIR)/malamute/.configured: $(BUILD_OBJ_DIR)/$(COMPONENT_CZMQ)/.insta
 endif
 
 COMPONENTS_FTY += nut
-CONFIG_OPTS_nut ?= --with-doc=skip
+CONFIG_OPTS_nut ?=
+CONFIG_OPTS_nut += --with-doc=skip
 CONFIG_OPTS_nut += --with-dev
 CONFIG_OPTS_nut += --with-dmf
 CONFIG_OPTS_nut += --with-libltdl
@@ -703,6 +708,7 @@ COMPONENTS_FTY += fty-rest
 PREP_TYPE_fty-rest = clonetar-src
 
 # No -llsan on Travis
+CONFIG_OPTS_fty-rest ?=
 ifneq ($(strip $(BUILD_TYPE)),)
 CONFIG_OPTS_fty-rest += --enable-leak-sanitizer=no
 endif
