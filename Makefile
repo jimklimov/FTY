@@ -787,7 +787,7 @@ web-test-bios-deps: $(BUILD_OBJ_DIR)/fty-rest/.built web-test-deps $(BUILD_OBJ_D
 web-test-bios: web-test-bios-deps $(BUILD_OBJ_DIR)/fty-rest/.installed
 	@cd $(<D) && \
 	    echo "TRYING TO STOP tntnet@bios systemd service to avoid conflicts..." >&2 && \
-	    { sudo systemctl stop tntnet@bios.service || true; } && \
+	    { sudo systemctl stop tntnet@bios.service || echo "FAILED TO STOP tntnet@bios systemd service, maybe it is already down?" >&2 ; } && \
 	    { if test -s $(BUILD_OBJ_DIR)/fty-rest/bios.env ; then \
 	        echo "READING ennvars that configure systemd service tntnet@bios..." >&2 && \
 	        cat $(BUILD_OBJ_DIR)/fty-rest/bios.env ; \
