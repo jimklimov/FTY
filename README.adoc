@@ -56,6 +56,13 @@ developers as well, in order to both ease integration with their own
 forks of the components on GitHub, and to follow actual Git branches
 in the local workspace checkouts.
 
+This repository tracks a couple of similar but separate branches:
+
+* `master` refers to HEADs of our projects that we might experiment
+  upgrading into -- such as the zeromq ecosystem at this time;
+* `FTY` branch is a bit more conservative and tracks the state of
+  third-party sources used in our daily work and recent releases.
+
 == Making the ecosystem
 
 The included `Makefile` automates building of project components, including
