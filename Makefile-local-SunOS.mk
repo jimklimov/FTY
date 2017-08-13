@@ -15,6 +15,7 @@ export LD
 CONFIG_OPTS += --without-gnu-ld --with-ld=/usr/ccs/bin/ld LD=$(LD)
 
 GNU_LN=/usr/gnu/bin/ln
+GNU_CP=/usr/gnu/bin/cp
 FIND=/usr/gnu/bin/find
 GMAKE=/usr/bin/gmake
 GPATCH=gpatch
