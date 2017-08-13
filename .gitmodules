@@ -1,7 +1,7 @@
 [submodule "cxxtools"]
 	path = cxxtools
 	url = https://github.com/42ity/cxxtools
-	branch = 42ity
+	branch = 2.2-FTY
 [submodule "fty-proto"]
 	path = fty-proto
 	url = https://github.com/42ity/fty-proto
@@ -14,13 +14,15 @@
 [submodule "libmagic"]
 	path = libmagic
 	url = https://github.com/42ity/libmagic
+	branch = 5.18-FTY
 [submodule "libcidr"]
 	path = libcidr
 	url = https://github.com/42ity/libcidr
+	branch = 1.2.3-FTY
 [submodule "tntdb"]
 	path = tntdb
 	url = https://github.com/42ity/tntdb
-	branch = 1.3
+	branch = 1.3-FTY
 [submodule "fty-outage"]
 	path = fty-outage
 	url = https://github.com/42ity/fty-outage
@@ -90,7 +92,7 @@
 [submodule "tntnet"]
 	path = tntnet
 	url = https://github.com/42ity/tntnet
-	branch = 2.2
+	branch = 2.2-FTY
 [submodule "nut"]
 	path = nut
 	url = https://github.com/42ity/nut
