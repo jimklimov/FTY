@@ -95,7 +95,8 @@ RMDIR=/bin/rm -rf
 RMFILE=/bin/rm -f
 RM=$(RMFILE)
 MV=/bin/mv -f
-CP=/bin/cp -pf
+GNU_CP=/bin/cp
+CP=$(GNU_CP) -pf
 TOUCH=/bin/touch
 FIND=find
 SED=sed
@@ -417,7 +418,7 @@ CXXFLAGS += -I$(DESTDIR)$(PREFIX)/include
 LDFLAGS += -L$(DESTDIR)$(PREFIX)/lib
 
 PKG_CONFIG_DIR ?= $(DESTDIR)$(PREFIX)/lib/pkgconfig
-PKG_CONFIG_PATH ?= "$(PKG_CONFIG_DIR):/usr/lib/x86_64-linux-gnu/pkgconfig:/usr/lib/arm-linux-gnueabihf/pkgconfig:/usr/lib/pkgconfig:/lib/pkgconfig"
+PKG_CONFIG_PATH ?= $(PKG_CONFIG_DIR):/usr/lib/x86_64-linux-gnu/pkgconfig:/usr/lib/arm-linux-gnueabihf/pkgconfig:/usr/lib/pkgconfig:/lib/pkgconfig
 export PKG_CONFIG_PATH
 
 CONFIG_OPTS  = --prefix="$(PREFIX)"
@@ -468,7 +469,11 @@ $(BUILD_OBJ_DIR)//.prep-newestfetch $(BUILD_OBJ_DIR)//.prep-builtgitindex $(BUIL
 COMPONENTS_ALL += gsl
 BUILD_SUB_DIR_gsl=src/
 DESTDIR_gsl=$(DESTDIR)$(PREFIX)/local
+ifeq ($strip $(MAKE_COMMON_ARGS_gsl),)
 MAKE_COMMON_ARGS_gsl=DESTDIR="$(DESTDIR_gsl)"
+else
+MAKE_COMMON_ARGS_gsl+=DESTDIR="$(DESTDIR_gsl)"
+endif
 PREP_TYPE_gsl = cloneln-obj
 
 # These are no-ops for GSL:
@@ -526,7 +531,8 @@ $(BUILD_OBJ_DIR)/cxxtools/.memchecked: $(BUILD_OBJ_DIR)/cxxtools/.built
 COMPONENTS_FTY += tntdb
 MAKE_COMMON_ARGS_tntdb=-j1
 BUILD_SUB_DIR_tntdb=tntdb/
-CONFIG_OPTS_tntdb ?= --without-postgresql
+CONFIG_OPTS_tntdb ?=
+CONFIG_OPTS_tntdb += --without-postgresql
 CONFIG_OPTS_tntdb += --without-sqlite
 $(BUILD_OBJ_DIR)/tntdb/.configured: $(BUILD_OBJ_DIR)/cxxtools/.installed
 $(BUILD_OBJ_DIR)/tntdb/.memchecked: $(BUILD_OBJ_DIR)/tntdb/.built
@@ -535,7 +541,8 @@ $(BUILD_OBJ_DIR)/tntdb/.memchecked: $(BUILD_OBJ_DIR)/tntdb/.built
 ### We do not link to this(???) - just use at runtime
 # Make sure the workspace is (based on) branch "2.2"
 COMPONENTS_FTY += tntnet
-CONFIG_OPTS_tntnet ?= --with-sdk
+CONFIG_OPTS_tntnet ?=
+CONFIG_OPTS_tntnet += --with-sdk
 CONFIG_OPTS_tntnet += --without-demos
 $(BUILD_OBJ_DIR)/tntnet/.configured: $(BUILD_OBJ_DIR)/cxxtools/.installed
 $(BUILD_OBJ_DIR)/tntnet/.memchecked: $(BUILD_OBJ_DIR)/tntnet/.built
@@ -610,8 +617,9 @@ $(BUILD_OBJ_DIR)/$(COMPONENT_LIBZMQ)/.memchecked: $(BUILD_OBJ_DIR)/$(COMPONENT_L
 
 # There is something fishy at this time when running code against libzmq.so
 # built with ASAN (unresolved symbols are reported).
+CONFIG_OPTS_libzmq ?=
 ifeq ($(strip $(ADDRESS_SANITIZER)),enabled)
-CONFIG_OPTS_$(COMPONENT_LIBZMQ) = --enable-address-sanitizer=no
+CONFIG_OPTS_libzmq += --enable-address-sanitizer=no
 endif
 
 ifeq ($(strip $(CI_CZMQ_VER)),3)
@@ -652,8 +660,9 @@ endif
 
 # There is something fishy at this time when running code against libczmq.so
 # built with ASAN (unresolved symbols are reported).
+CONFIG_OPTS_libczmq ?=
 ifeq ($(strip $(ADDRESS_SANITIZER)),enabled)
-CONFIG_OPTS_libczmq = --enable-address-sanitizer=no
+CONFIG_OPTS_libczmq += --enable-address-sanitizer=no
 endif
 
 $(BUILD_OBJ_DIR)/$(COMPONENT_CZMQ)/.configured: $(BUILD_OBJ_DIR)/$(COMPONENT_LIBZMQ)/.installed
@@ -683,7 +692,8 @@ $(BUILD_OBJ_DIR)/$(COMPONENT_MLM)/.configured: $(BUILD_OBJ_DIR)/$(COMPONENT_CZMQ
 endif
 
 COMPONENTS_FTY += nut
-CONFIG_OPTS_nut ?= --with-doc=skip
+CONFIG_OPTS_nut ?=
+CONFIG_OPTS_nut += --with-doc=skip
 CONFIG_OPTS_nut += --with-dev
 CONFIG_OPTS_nut += --with-dmf
 CONFIG_OPTS_nut += --with-libltdl
@@ -708,6 +718,7 @@ COMPONENTS_FTY += fty-rest
 PREP_TYPE_fty-rest = clonetar-src
 
 # No -llsan on Travis
+CONFIG_OPTS_fty-rest ?=
 ifneq ($(strip $(BUILD_TYPE)),)
 CONFIG_OPTS_fty-rest += --enable-leak-sanitizer=no
 endif
@@ -774,10 +785,10 @@ $(BUILD_OBJ_DIR)/fty-rest/bios.env: $(TNTNET_BIOS_UNIT) FORCE
 web-test-bios-deps: $(BUILD_OBJ_DIR)/fty-rest/.built web-test-deps $(BUILD_OBJ_DIR)/fty-rest/bios.xml $(BUILD_OBJ_DIR)/fty-rest/bios.env
 	@true
 
-web-test-bios: web-test-bios-deps
+web-test-bios: web-test-bios-deps $(BUILD_OBJ_DIR)/fty-rest/.installed
 	@cd $(<D) && \
 	    echo "TRYING TO STOP tntnet@bios systemd service to avoid conflicts..." >&2 && \
-	    { sudo systemctl stop tntnet@bios.service || true; } && \
+	    { sudo systemctl stop tntnet@bios.service || echo "FAILED TO STOP tntnet@bios systemd service, maybe it is already down?" >&2 ; } && \
 	    { if test -s $(BUILD_OBJ_DIR)/fty-rest/bios.env ; then \
 	        echo "READING ennvars that configure systemd service tntnet@bios..." >&2 && \
 	        cat $(BUILD_OBJ_DIR)/fty-rest/bios.env ; \
