@@ -780,6 +780,7 @@ $(BUILD_OBJ_DIR)/fty-rest/bios.env: $(TNTNET_BIOS_UNIT) FORCE
 	    { if test -s $(TNTNET_BIOS_ENV) ; then \
 	        echo "### $(TNTNET_BIOS_ENV)" && sudo grep = $(TNTNET_BIOS_ENV) ; \
 	      fi; } >> "$@.tmp" && \
+	    echo 'PATH="$(PATH)"' >> "$@.tmp" && \
 	    $(MV) "$@.tmp" "$@"
 
 web-test-bios-deps: $(BUILD_OBJ_DIR)/fty-rest/.built web-test-deps $(BUILD_OBJ_DIR)/fty-rest/bios.xml $(BUILD_OBJ_DIR)/fty-rest/bios.env
