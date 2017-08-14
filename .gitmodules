@@ -75,6 +75,10 @@
 [submodule "libzmq"]
 	path = libzmq
 	url = https://github.com/zeromq/libzmq
+[submodule "libzmq-v4.2.0"]
+	path = libzmq
+	url = https://github.com/42ity/libzmq
+	branch = 4.2.0-FTY
 #[submodule "czmq"]
 ### In this branch, we try to use our old frozen fork that is obsoleted in upstream
 #	path = czmq
@@ -84,7 +88,7 @@
 ### In this branch, we try to use our old frozen fork that is obsoleted in upstream
 	path = czmq-v3.0.2
 	url = https://github.com/42ity/czmq
-	branch = v3.0.2
+	branch = v3.0.2-FTY
 [submodule "czmq-master"]
 ### In this branch, we try to use upstream instead
 	path = czmq-master
@@ -108,6 +112,10 @@
 	path = libsodium
 	url = https://github.com/jedisct1/libsodium.git
 	branch = stable
+[submodule "libsodium-v1.0.5"]
+	path = libsodium
+	url = https://github.com/42ity/libsodium.git
+	branch = 1.0.5-FTY
 [submodule "fty-metric-snmp"]
 	path = fty-metric-snmp
 	url = https://github.com/42ity/fty-metric-snmp
