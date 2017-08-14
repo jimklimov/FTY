@@ -617,9 +617,9 @@ $(BUILD_OBJ_DIR)/$(COMPONENT_LIBZMQ)/.memchecked: $(BUILD_OBJ_DIR)/$(COMPONENT_L
 
 # There is something fishy at this time when running code against libzmq.so
 # built with ASAN (unresolved symbols are reported).
-CONFIG_OPTS_libzmq ?=
+CONFIG_OPTS_$(COMPONENT_LIBZMQ) ?=
 ifeq ($(strip $(ADDRESS_SANITIZER)),enabled)
-CONFIG_OPTS_libzmq += --enable-address-sanitizer=no
+CONFIG_OPTS_$(COMPONENT_LIBZMQ) += --enable-address-sanitizer=no
 endif
 
 ifeq ($(strip $(CI_CZMQ_VER)),3)
