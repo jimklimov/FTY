@@ -789,10 +789,6 @@ web-test-bios: web-test-bios-deps $(BUILD_OBJ_DIR)/fty-rest/.installed
 	@cd $(<D) && \
 	    echo "TRYING TO STOP tntnet@bios systemd service to avoid conflicts..." >&2 && \
 	    { sudo systemctl stop tntnet@bios.service || echo "FAILED TO STOP tntnet@bios systemd service, maybe it is already down?" >&2 ; } && \
-	    { if test -s $(BUILD_OBJ_DIR)/fty-rest/bios.env ; then \
-	        echo "READING ennvars that configure systemd service tntnet@bios..." >&2 && \
-	        cat $(BUILD_OBJ_DIR)/fty-rest/bios.env ; \
-	      fi ; } && \
 	    if ! test -e /var/lib/bios/license && ! test -e /var/lib/fty/license ; then \
 	        echo "WARNING: Starting $@ while the FTY license is not accepted yet" >&2 ; \
 	    fi && \
@@ -800,7 +796,14 @@ web-test-bios: web-test-bios-deps $(BUILD_OBJ_DIR)/fty-rest/.installed
 	        echo "WARNING: Starting $@ while the FTY database is not in a known-ready state" >&2 ; \
 	    fi && \
 	    echo "STARTING custom tntnet daemon with custom fty-rest and adapted system bios.xml..." >&2 && \
-	    sudo /bin/sh -c ". $(BUILD_OBJ_DIR)/fty-rest/bios.env || true; tntnet $(BUILD_OBJ_DIR)/fty-rest/bios.xml"
+	    sudo /bin/sh -c "\
+	    { if test -s $(BUILD_OBJ_DIR)/fty-rest/bios.env ; then \
+	        echo "READING ennvars that configure systemd service tntnet@bios..." >&2 && \
+	        . $(BUILD_OBJ_DIR)/fty-rest/bios.env && \
+	        while IFS='=' read K V ; do echo "===== export $$K = $$V"; \
+	            eval export $$K ; \
+	        done < $(BUILD_OBJ_DIR)/fty-rest/bios.env || exit ; \
+	       fi; } && tntnet $(BUILD_OBJ_DIR)/fty-rest/bios.xml"
 
 COMPONENTS_FTY += fty-nut
 $(BUILD_OBJ_DIR)/fty-nut/.configured: $(BUILD_OBJ_DIR)/fty-proto/.installed $(BUILD_OBJ_DIR)/libcidr/.installed $(BUILD_OBJ_DIR)/cxxtools/.installed $(BUILD_OBJ_DIR)/nut/.installed
