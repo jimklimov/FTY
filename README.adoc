@@ -401,6 +401,11 @@ for this job. In particular, take care to not add to the git-submodule
 tracking the commit IDs not pointing to the latest `X.Y(.Z)-FTY(-master)`
 state. The `./git-sub-branch-list` can speed up such verification.
 
+When updating the FTY repo itself and transplanting changes between the
+repositories, make sure that the `FTY` and `master` branches keep pointing
+where they should have (do not merge unexpected changes to `.gitmodules`).
+The `git checkout master && git diff FTY .gitmodules` trick can help here.
+
 == Adding new FTY components
 
 When starting a new component, don't hesitate to start with `fty-example` and
