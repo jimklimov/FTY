@@ -399,7 +399,7 @@ Do not forget to `git checkout X.Y(.Z)-FTY-master` after doing this, or
 perhaps keep aside a workspace with a checkout of the FTY repository just
 for this job. In particular, take care to not add to the git-submodule
 tracking the commit IDs not pointing to the latest `X.Y(.Z)-FTY(-master)`
-state.
+state. The `./git-sub-branch-list` can speed up such verification.
 
 == Adding new FTY components
 
