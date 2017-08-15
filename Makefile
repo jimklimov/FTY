@@ -788,13 +788,13 @@ $(BUILD_OBJ_DIR)/fty-rest/bios.env: $(TNTNET_BIOS_UNIT) FORCE
 # TODO: Rather than allowing ALL, adapt the
 #     $(BUILD_OBJ_DIR)/fty-core/docs/examples/sudoers.d/fty_00_base
 #   but take care to rename the CMDNAME macros inside, and the file.
-$(BUILD_OBJ_DIR)/fty-rest/bios.sudoer: $(BUILD_OBJ_DIR)/fty-rest/bios.xml  $(BUILD_OBJ_DIR)/fty-core/.installed
+$(BUILD_OBJ_DIR)/fty-rest/90make-web-test-bios-sudoers: $(BUILD_OBJ_DIR)/fty-rest/bios.xml  $(BUILD_OBJ_DIR)/fty-core/.installed
 	@U="`grep '<user>' "$<" | head -1 | grep -v '<!--' | sed 's,^.*>\([^\<\>\t ]*\)<.*$$,\1,'`" ; \
 	 if [ -n "$$U" ] ; then \
-	    echo "$$U   ALL=(ALL) NOPASSWD: ALL" ; \
+	    echo "$$U   ALL=(ALL:ALL) NOPASSWD: ALL" ; \
 	 fi > "$@"
 
-web-test-bios-deps: $(BUILD_OBJ_DIR)/fty-rest/.installed web-test-deps $(BUILD_OBJ_DIR)/fty-rest/bios.xml $(BUILD_OBJ_DIR)/fty-rest/bios.env $(BUILD_OBJ_DIR)/fty-rest/bios.sudoer
+web-test-bios-deps: $(BUILD_OBJ_DIR)/fty-rest/.installed web-test-deps $(BUILD_OBJ_DIR)/fty-rest/bios.xml $(BUILD_OBJ_DIR)/fty-rest/bios.env $(BUILD_OBJ_DIR)/fty-rest/90make-web-test-bios-sudoers
 	@true
 
 web-test-bios: web-test-bios-deps
@@ -809,9 +809,9 @@ web-test-bios: web-test-bios-deps
 	    fi && \
 	    echo "STARTING custom tntnet daemon with custom fty-rest and adapted system bios.xml..." >&2 && \
 	    sudo /bin/sh -c "\
-	    cp $(BUILD_OBJ_DIR)/fty-rest/bios.sudoer /etc/sudoers.d && \
-	    chown 0:0 /etc/sudoers.d/bios.sudoer && \
-	    chmod 640 /etc/sudoers.d/bios.sudoer && \
+	    cp $(BUILD_OBJ_DIR)/fty-rest/90make-web-test-bios-sudoers /etc/sudoers.d && \
+	    chown 0:0 /etc/sudoers.d/90make-web-test-bios-sudoers && \
+	    chmod 644 /etc/sudoers.d/90make-web-test-bios-sudoers && \
 	    { if test -s $(BUILD_OBJ_DIR)/fty-rest/bios.env ; then \
 	        echo 'READING envvars that configure systemd service tntnet@bios...' >&2 && \
 	        . $(BUILD_OBJ_DIR)/fty-rest/bios.env && \
