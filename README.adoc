@@ -421,9 +421,9 @@ because of initial-setup errors, such as that a different remote repository
 or default branch must be tracked, you may want to edit the `.gitmodules`
 file directly to set the details you need. It may be required to `git deinit`
 an existing working copy of the submodule and check it out again, to use the
-new repository tracking metadata - so before such operations do not forget
-to commit your changes and push them out into the github fork. Alternately,
-local copies of repositories are just directories with special files - so
+new repository tracking metadata -- so before such operations do not forget
+to commit your changes and push them out into the GitHub fork. Alternately,
+local copies of repositories are just directories with special files -- so
 you can just rename them to sit nearby, and as far as the Git software is
 concerned, by this action you've just nuked a checked out submodule and
 should simply re-init it again.
