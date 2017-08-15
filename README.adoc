@@ -297,6 +297,104 @@ component directories). Don't forget to `git add` both the updated `Makefile`
 and the new component directory, and to set up your own developer fork for it
 as detailed below.
 
+To maintain a repository that was forked off an original and actively developed
+third-party project, you may want to locally define another remote reference so
+as to track the upstream evolution. For this to work reliably, the 42ITy fork
+should use different branch names which are not equal to names or tags used by
+the original repository.
+
+=== Adding a tracked repository for a fork of third-party project
+
+At this time the convention for settling on a certain release of the upstream
+project is to (assuming you have the admin rights for 42ITy org on GitHub):
+
+* Fork it on GitHub under the 42ITy org;
+* Go to Travis CI web interface at https://travis-ci.org/profile/42ity/, click
+  to "Sync account" and enable the new fork in sliders below;
+* Fork the 42ITy replica to your developer account (you can also use a fork of
+  original upstream repository -- but then take extra care about pull request
+  targeting later on);
+* Clone it to a temporary local workspace, outside the `FTY` directory;
+* Check out the commit we settled on as the current baseline, usually some
+  `X.Y(.Z)` release: `git checkout 123cafe` or `git checkout release/1.2.3`;
+* Nail it down for easier later comparisons or merging as we'd decide to move
+  on to a new baseline: `git checkout -b 1.2.3-release`;
+* Branch off a stable line we'd use to cut an end-user release at some point:
+  `git checkout -b 1.2.3-FTY`;
+* Branch off a "master-like" line we'd use to develop and stage improvements
+  to this fork, like backported bugfixes or updated Travis integration recipes:
+  `git checkout -b 1.2.3-FTY-master` -- this stuff would be used in daily OS
+  images and eventually passes from here to the `X.Y(.Z)-FTY` branch;
+* Put the new branching info to the 42ITy fork: `git push --all origin`
+* Go to GitHub web interface, select the new 42ITy component and go
+  Settings / Branches, e.g.: https://github.com/42ity/libzmq/settings/branches
+* Pick the `X.Y(.Z)-FTY-master` branch as the default, click accept;
+* Prevent inadvertent changes to the non-`master` branches:
+** Under Protected branches, choose the `X.Y(.Z)-FTY` and click that we want
+  to "Protect this branch", "Require pull request reviews before merging"
+  (and "Dismiss stale pull request approvals when new commits are pushed"
+  under that), "Require status checks to pass before merging" (and "Require
+  branches to be up to date before merging" as well as CI tests where defined)
+  and finally "Include administrators".
+** Repeat for `X.Y(.Z)-release`.
+** Do not protect the branches we'd want to track from the original project,
+  like the `master` for most of them, as you'd pull-push these occasionally
+  (or even automatics would).
+* Finally, set up git submodule tracking (e.g. using the `sync-repos.sh`) in
+  your checkout of the FTY repo;
+* Revise that the appropriate `X.Y(.Z)-FTY-master` is the default tracking
+  branch in `.gitmodules` for FTY `master` branch, and `X.Y(.Z)-FTY` is for
+  the FTY `FTY` branch;
+* Add corresponding commits to the FTY repos to begin tracking the project
+  as submodule;
+* Update `Makefile` etc. as may be needed to track this component and maybe
+  its build variants (like we have done to test various CZMQ versions);
+* Possibly update our other projects (`project.xml` files and Travis recipes)
+  to build by default against our specified fork and branch, rather than the
+  upstream master repositories which may e.g. no longer expose bugs that can
+  plague our builds... or vice versa (new bugs are introduced by upstreams
+  from time to time, that we don't see in our OS images).
+* Push back the updates to the FTY repository on GitHub.
+
+To use your local workspace for occasional synchronization from the original
+project, run the `git-myorigin` script detailed below to ensure that your
+`upstream` refers to the 42ITy fork, and `origin` is your own private fork.
+Then add tracking for the `opensource` reference to the original project and
+specify that you want certain branches (like `master`) to come from there:
+
+----
+:; cd <newfork>
+:; git remote add opensource https://github.com/someorg/somerepo
+:; git remote set-url --push opensource no_push
+:; git branch --set-upstream-to=opensource/master master
+----
+
+While here, you can also make sure to push the `*FTY*` branches to your
+private repository, to use for PRs later on:
+
+----
+:; git branch --set-upstream-to=origin/1.0-FTY-master 1.0-FTY-master
+:; git branch --set-upstream-to=origin/1.0-FTY-master 1.0-FTY-master
+----
+
+For projects (currently `czmq`) where branch and tag naming use the same
+string values, which is valid but confuses some `git` operations including
+checkouts, you might want to forbid pulling remote tags:
+
+----
+:; git config remote.opensource.tagOpt --no-tags
+----
+
+Given sufficient rights in the 42ITy org, you can later synchronize the
+`master` branch upstream changes, so we can keep track of all changes
+there (and of how far ahead/behind is our forked project), with:
+
+----
+:; cd <newfork>
+:; git checkout master && git pull --all && \
+   git merge opensource/master && git push upstream
+----
+
 == Adding new FTY components
 
 When starting a new component, don't hesitate to start with `fty-example` and
