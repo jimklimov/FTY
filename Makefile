@@ -813,9 +813,9 @@ web-test-bios: web-test-bios-deps $(BUILD_OBJ_DIR)/fty-rest/.installed
 	    chown 0:0 /etc/sudoers.d/bios.sudoer && \
 	    chmod 640 /etc/sudoers.d/bios.sudoer && \
 	    { if test -s $(BUILD_OBJ_DIR)/fty-rest/bios.env ; then \
-	        echo "READING ennvars that configure systemd service tntnet@bios..." >&2 && \
+	        echo 'READING envvars that configure systemd service tntnet@bios...' >&2 && \
 	        . $(BUILD_OBJ_DIR)/fty-rest/bios.env && \
-	        while IFS='=' read K V ; do echo "===== export $$K = $$V"; \
+	        while IFS='=' read K V ; do echo \"===== export $$K = $$V\" >&2; \
 	            eval export $$K ; \
 	        done < $(BUILD_OBJ_DIR)/fty-rest/bios.env || exit ; \
 	       fi; } && tntnet $(BUILD_OBJ_DIR)/fty-rest/bios.xml"
