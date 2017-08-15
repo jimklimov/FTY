@@ -794,10 +794,10 @@ $(BUILD_OBJ_DIR)/fty-rest/bios.sudoer: $(BUILD_OBJ_DIR)/fty-rest/bios.xml  $(BUI
 	    echo "$$U   ALL=(ALL) NOPASSWD: ALL" ; \
 	 fi > "$@"
 
-web-test-bios-deps: $(BUILD_OBJ_DIR)/fty-rest/.built web-test-deps $(BUILD_OBJ_DIR)/fty-rest/bios.xml $(BUILD_OBJ_DIR)/fty-rest/bios.env $(BUILD_OBJ_DIR)/fty-rest/bios.sudoer
+web-test-bios-deps: $(BUILD_OBJ_DIR)/fty-rest/.installed web-test-deps $(BUILD_OBJ_DIR)/fty-rest/bios.xml $(BUILD_OBJ_DIR)/fty-rest/bios.env $(BUILD_OBJ_DIR)/fty-rest/bios.sudoer
 	@true
 
-web-test-bios: web-test-bios-deps $(BUILD_OBJ_DIR)/fty-rest/.installed
+web-test-bios: web-test-bios-deps
 	@cd $(<D) && \
 	    echo "TRYING TO STOP tntnet@bios systemd service to avoid conflicts..." >&2 && \
 	    { sudo systemctl stop tntnet@bios.service || echo "FAILED TO STOP tntnet@bios systemd service, maybe it is already down?" >&2 ; } && \
@@ -815,8 +815,8 @@ web-test-bios: web-test-bios-deps $(BUILD_OBJ_DIR)/fty-rest/.installed
 	    { if test -s $(BUILD_OBJ_DIR)/fty-rest/bios.env ; then \
 	        echo 'READING envvars that configure systemd service tntnet@bios...' >&2 && \
 	        . $(BUILD_OBJ_DIR)/fty-rest/bios.env && \
-	        while IFS='=' read K V ; do echo \"===== export $$K = $$V\" >&2; \
-	            eval export $$K ; \
+	        while IFS='=' read K V ; do case \"\$$K\" in \#*) ;; *) echo \"===== export \$$K = \$$V\" >&2; \
+	            eval export \$$K ; esac; \
 	        done < $(BUILD_OBJ_DIR)/fty-rest/bios.env || exit ; \
 	       fi; } && tntnet $(BUILD_OBJ_DIR)/fty-rest/bios.xml"
 
