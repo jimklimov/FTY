@@ -127,6 +127,7 @@ COMPONENTS_FTY =
 COMPONENTS_FTY_EXPERIMENTAL =
 
 # https://www.gnu.org/software/make/manual/html_node/Force-Targets.html
+.PHONY: FORCE
 FORCE:
 	@true
 
