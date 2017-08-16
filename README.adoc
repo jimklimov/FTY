@@ -335,7 +335,9 @@ project is to (assuming you have the admin rights for 42ITy org on GitHub):
   (and "Dismiss stale pull request approvals when new commits are pushed"
   under that), "Require status checks to pass before merging" (and "Require
   branches to be up to date before merging" as well as CI tests where defined)
-  and finally "Include administrators".
+  and finally "Include administrators" so at least two people are needed to
+  push the changes to these branches (an admin can also unset this protection,
+  when in a pinch).
 ** Repeat for `X.Y(.Z)-release`.
 ** Do not protect the branches we'd want to track from the original project,
   like the `master` for most of them, as you'd pull-push these occasionally
