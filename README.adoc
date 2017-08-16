@@ -406,6 +406,9 @@ repositories, make sure that the `FTY` and `master` branches keep pointing
 where they should have (do not merge unexpected changes to `.gitmodules`).
 The `git checkout master && git diff FTY .gitmodules` trick can help here.
 
+Generally a `git checkout master && git diff FTY` should only show the
+`.gitmodules` file and some different submodule references (commit IDs).
+
 == Adding new FTY components
 
 When starting a new component, don't hesitate to start with `fty-example` and
