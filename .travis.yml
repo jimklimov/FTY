@@ -33,8 +33,8 @@ os:
 sudo: false
 #sudo: required
 
-#dist:
-#- trusty
+dist:
+- trusty
 
 services:
 - docker
@@ -131,7 +131,7 @@ pkg_src_zeromq_ubuntu14: &pkg_src_zeromq_ubuntu14
 # Note: refer to ubuntu14 if you use dist==Trusty for default platform and packaged ZMQ
 addons:
   apt:
-#    sources: *pkg_src_zeromq_ubuntu12
+#    sources: *pkg_src_zeromq_ubuntu14
     packages: &pkg_deps_common
     - *pkg_deps_devtools
     - *pkg_deps_prereqs_fty_overall
@@ -185,7 +185,7 @@ matrix:
     sudo: false
     addons:
       apt:
-        sources: *pkg_src_zeromq_ubuntu12
+        sources: *pkg_src_zeromq_ubuntu14
         packages:
         - *pkg_deps_common
         - *pkg_deps_doctools
@@ -218,7 +218,7 @@ matrix:
     sudo: false
     addons:
       apt:
-        sources: *pkg_src_zeromq_ubuntu12
+        sources: *pkg_src_zeromq_ubuntu14
         packages:
         - *pkg_deps_common
         - valgrind
@@ -338,7 +338,7 @@ matrix:
     sudo: false
     addons:
       apt:
-        sources: *pkg_src_zeromq_ubuntu12
+        sources: *pkg_src_zeromq_ubuntu14
         packages:
         - *pkg_deps_common
         - *pkg_deps_prereqs_zmq_master
@@ -348,7 +348,7 @@ matrix:
     sudo: false
     addons:
       apt:
-        sources: *pkg_src_zeromq_ubuntu12
+        sources: *pkg_src_zeromq_ubuntu14
         packages:
         - *pkg_deps_common
         - *pkg_deps_prereqs_zmq_master
@@ -358,7 +358,7 @@ matrix:
     sudo: false
     addons:
       apt:
-        sources: *pkg_src_zeromq_ubuntu12
+        sources: *pkg_src_zeromq_ubuntu14
         packages:
         - *pkg_deps_common
         - *pkg_deps_doctools
@@ -369,7 +369,7 @@ matrix:
     sudo: false
     addons:
       apt:
-        sources: *pkg_src_zeromq_ubuntu12
+        sources: *pkg_src_zeromq_ubuntu14
         packages:
         - *pkg_deps_common
         - *pkg_deps_doctools
