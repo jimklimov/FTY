@@ -30,8 +30,9 @@ os:
 # in the default container with sudo==false, consider requiring a docker
 # image and/or a newer Ubuntu Trusty baseline VM, by uncommenting below.
 # See the current docs on http://travis-ci.org for up-to-date options.
-sudo: false
-#sudo: required
+#sudo: false
+# Note: Since fall'2017, "sudo" seems required to pass "pip install" below.
+sudo: required
 
 dist:
 - trusty
@@ -162,7 +163,7 @@ matrix:
   - env: CI_CZMQ_VER=3 BUILD_TYPE=default-tgt:install-all
     os: linux
     services: docker
-    sudo: false
+    sudo: required
     addons:
       apt:
         packages:
@@ -172,7 +173,7 @@ matrix:
   - env: CI_CZMQ_VER=4 BUILD_TYPE=default-tgt:install-all
     os: linux
     services: docker
-    sudo: false
+    sudo: required
     addons:
       apt:
         packages:
@@ -182,7 +183,7 @@ matrix:
   - env: CI_CZMQ_VER=pkg BUILD_TYPE=default-tgt:install-all
     os: linux
     services: docker
-    sudo: false
+    sudo: required
     addons:
       apt:
         sources: *pkg_src_zeromq_ubuntu14
@@ -195,7 +196,7 @@ matrix:
   - env: CI_CZMQ_VER=3 BUILD_TYPE=default-tgt:memcheck
     os: linux
     services: docker
-    sudo: false
+    sudo: required
     addons:
       apt:
         packages:
@@ -205,7 +206,7 @@ matrix:
   - env: CI_CZMQ_VER=4 BUILD_TYPE=default-tgt:memcheck
     os: linux
     services: docker
-    sudo: false
+    sudo: required
     addons:
       apt:
         packages:
@@ -215,7 +216,7 @@ matrix:
   - env: CI_CZMQ_VER=pkg BUILD_TYPE=default-tgt:memcheck
     os: linux
     services: docker
-    sudo: false
+    sudo: required
     addons:
       apt:
         sources: *pkg_src_zeromq_ubuntu14
@@ -228,7 +229,7 @@ matrix:
   - env: CI_CZMQ_VER=3 ADDRESS_SANITIZER=enabled BUILD_TYPE=default-tgt:check
     os: linux
     dist: trusty
-    sudo: false
+    sudo: required
     addons:
       apt:
         packages:
@@ -238,7 +239,7 @@ matrix:
   - env: CI_CZMQ_VER=4 ADDRESS_SANITIZER=enabled BUILD_TYPE=default-tgt:check
     os: linux
     dist: trusty
-    sudo: false
+    sudo: required
     addons:
       apt:
         packages:
@@ -250,7 +251,7 @@ matrix:
 #  - env: CI_CZMQ_VER=pkg ADDRESS_SANITIZER=enabled BUILD_TYPE=default-tgt:check
 #    os: linux
 #    dist: trusty
-#    sudo: false
+#    sudo: required
 #    addons:
 #      apt:
 #        sources: *pkg_src_zeromq_ubuntu14
@@ -263,7 +264,7 @@ matrix:
   - env: CI_CZMQ_VER=3 BUILD_TYPE=default-tgt:check
     os: linux
     services: docker
-    sudo: false
+    sudo: required
     addons:
       apt:
         packages:
@@ -271,7 +272,7 @@ matrix:
   - env: CI_CZMQ_VER=3 BUILD_TYPE=default-tgt:dist
     os: linux
     services: docker
-    sudo: false
+    sudo: required
     addons:
       apt:
         packages:
@@ -279,7 +280,7 @@ matrix:
   - env: CI_CZMQ_VER=3 BUILD_TYPE=default-tgt:distcheck
     os: linux
     services: docker
-    sudo: false
+    sudo: required
     addons:
       apt:
         packages:
@@ -288,7 +289,7 @@ matrix:
   - env: CI_CZMQ_VER=3 BUILD_TYPE=default-tgt:experimental
     os: linux
     services: docker
-    sudo: false
+    sudo: required
     addons:
       apt:
         packages:
@@ -299,7 +300,7 @@ matrix:
   - env: CI_CZMQ_VER=4 BUILD_TYPE=default-tgt:check
     os: linux
     services: docker
-    sudo: false
+    sudo: required
     addons:
       apt:
         packages:
@@ -307,7 +308,7 @@ matrix:
   - env: CI_CZMQ_VER=4 BUILD_TYPE=default-tgt:dist
     os: linux
     services: docker
-    sudo: false
+    sudo: required
     addons:
       apt:
         packages:
@@ -315,7 +316,7 @@ matrix:
   - env: CI_CZMQ_VER=4 BUILD_TYPE=default-tgt:distcheck
     os: linux
     services: docker
-    sudo: false
+    sudo: required
     addons:
       apt:
         packages:
@@ -324,7 +325,7 @@ matrix:
   - env: CI_CZMQ_VER=4 BUILD_TYPE=default-tgt:experimental
     os: linux
     services: docker
-    sudo: false
+    sudo: required
     addons:
       apt:
         packages:
@@ -335,7 +336,7 @@ matrix:
   - env: CI_CZMQ_VER=pkg BUILD_TYPE=default-tgt:check
     os: linux
     services: docker
-    sudo: false
+    sudo: required
     addons:
       apt:
         sources: *pkg_src_zeromq_ubuntu14
@@ -345,7 +346,7 @@ matrix:
   - env: CI_CZMQ_VER=pkg BUILD_TYPE=default-tgt:dist
     os: linux
     services: docker
-    sudo: false
+    sudo: required
     addons:
       apt:
         sources: *pkg_src_zeromq_ubuntu14
@@ -355,7 +356,7 @@ matrix:
   - env: CI_CZMQ_VER=pkg BUILD_TYPE=default-tgt:distcheck
     os: linux
     services: docker
-    sudo: false
+    sudo: required
     addons:
       apt:
         sources: *pkg_src_zeromq_ubuntu14
@@ -366,7 +367,7 @@ matrix:
   - env: CI_CZMQ_VER=pkg BUILD_TYPE=default-tgt:experimental
     os: linux
     services: docker
-    sudo: false
+    sudo: required
     addons:
       apt:
         sources: *pkg_src_zeromq_ubuntu14
@@ -388,7 +389,7 @@ before_install:
 
 install:
 - date; echo Installing pycparser...
-- pip install pycparser
+- sudo pip install pycparser
 
 before_script:
 - if [ -n "$CI_TIME" ] ; then export CI_TIME="$DEFAULT_CI_TIME" ; fi
