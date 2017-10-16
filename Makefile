@@ -947,7 +947,7 @@ $(BUILD_OBJ_DIR)/%/.prep-builtgitindex: $(BUILD_OBJ_DIR)/%/.prep-newestfetch
 
 # Make sure to both run after the .git directory is available,
 # and to force evaluation of this recipe every time
-$(BUILD_OBJ_DIR)/%/.prep-builtcommit: $(BUILD_OBJ_DIR)/%/.prep-newestfetch FORCE
+$(BUILD_OBJ_DIR)/%/.prep-builtcommit: $(BUILD_OBJ_DIR)/%/.prep-builtgitindex FORCE
 	@$(MKDIR) "$(@D)"
 	@cd "$(@D)" && \
 	    CURRENT_COMMIT_DATA="`cd $(ORIGIN_SRC_DIR)/$(notdir $(@D)) && git rev-parse --verify HEAD && git status -s | sort -n`" && \
