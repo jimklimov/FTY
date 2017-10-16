@@ -966,7 +966,7 @@ $(BUILD_OBJ_DIR)/%/.prep-builtcommit: $(BUILD_OBJ_DIR)/%/.prep-builtgitindex FOR
 	    fi || exit 1
 
 # Note: during prepping, we generally remove and recreate the OBJ_DIR
-# which contains the input file. So we stash and recreate it mid-way.
+# which contains the input files. So we stash and recreate them mid-way.
 $(BUILD_OBJ_DIR)/%/.prepped: $(BUILD_OBJ_DIR)/%/.prep-newestfetch $(BUILD_OBJ_DIR)/%/.prep-builtcommit $(BUILD_OBJ_DIR)/%/.prep-builtgitindex $(ORIGIN_SRC_DIR)/%/.git
 	@$(MKDIR) "$(@D)"
 	@if test ! -s "$@" || ! diff "$@" "$<" > /dev/null 2>&1 ; then \
@@ -976,8 +976,10 @@ $(BUILD_OBJ_DIR)/%/.prepped: $(BUILD_OBJ_DIR)/%/.prep-newestfetch $(BUILD_OBJ_DI
 	  fi; \
 	 fi
 	@$(RMFILE) "$(@D)"/.*-failed
-	@PREPDATA="`LANG=C cat "$<"`" && \
-	 case "x$(PREP_TYPE_$(notdir $(@D)))" in \
+	@$(RMDIR) "$(@D).tmp"
+	@$(MKDIR) "$(@D).tmp"
+	@for F in $^ ; do case "$$F" in "$(@D)/".prep*) $(MV) "$$F" "$(@D).tmp/" || exit ;; esac
+	@case "x$(PREP_TYPE_$(notdir $(@D)))" in \
 	 xnone) \
 	    echo "Nothing special to prep for $(notdir $(@D))..." ;; \
 	 xcloneln-obj) \
@@ -992,8 +994,9 @@ $(BUILD_OBJ_DIR)/%/.prepped: $(BUILD_OBJ_DIR)/%/.prep-newestfetch $(BUILD_OBJ_DI
 	 xclonetar-src|*) \
 	    echo "CLONE sources of $(notdir $(@D)) via tarballs under common BUILD_SRC_DIR while prepping..." ; \
 	    $(call clone_tar,$(ORIGIN_SRC_DIR)/$(notdir $(@D)),$(BUILD_SRC_DIR)/$(notdir $(@D))) ;; \
-	 esac && \
-	 echo "$$PREPDATA" > "$<"
+	 esac
+	@$(MV) "$(@D).tmp/".prep* "$(@D)"
+	@$(RMDIR) "$(@D).tmp"
 	@if test -n "$(PREP_ACTION_BEFORE_PATCHING_$(notdir $(@D)))" ; then \
 	    case "x$(PREP_TYPE_$(notdir $(@D)))" in \
 	     xnone) echo "SKIP PREP_ACTION_BEFORE_PATCHING sources for $(notdir $(@D))..." ; exit 0 ;; \
