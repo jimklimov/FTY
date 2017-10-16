@@ -917,15 +917,15 @@ COMPONENTS_ALL += $(COMPONENTS_FTY)
 # FETCH_HEAD file), but does not necessarily update the local workspace
 # with checked-out sources, nor picks a branch. By default codebase stays
 # at the commit-id pointed to by git submodule for each component.
-$(abs_srcdir)/.git/modules/%/FETCH_HEAD $(abs_srcdir)/.git/modules/%/index $(abs_srcdir)/%/.git:
+$(ORIGIN_SRC_DIR)/.git/modules/%/FETCH_HEAD $(ORIGIN_SRC_DIR)/.git/modules/%/index $(ORIGIN_SRC_DIR)/%/.git:
 	@if [ ! -s "$@" ] ; then \
 	    echo "FETCHING component '$(notdir $(@D))' from Git"; \
 	    git submodule init $(notdir $(@D)) && \
 	    git submodule update $(notdir $(@D)) && \
-	    ( cd $(notdir $(@D)) && git fetch --all ) ; \
+	    ( cd $(ORIGIN_SRC_DIR)/$(notdir $(@D)) && git fetch --all ) ; \
 	 fi
 
-$(BUILD_OBJ_DIR)/%/.prep-newestfetch: $(abs_srcdir)/.git/modules/%/FETCH_HEAD $(abs_srcdir)/.git/modules/%/index
+$(BUILD_OBJ_DIR)/%/.prep-newestfetch: $(ORIGIN_SRC_DIR)/.git/modules/%/FETCH_HEAD $(ORIGIN_SRC_DIR)/.git/modules/%/index
 	@$(MKDIR) "$(@D)"
 	@if test -s "$@" && test -s "$<" && diff "$@" "$<" >/dev/null 2>&1 ; then \
 	    echo "ROLLBACK TIMESTAMP of $< to that of existing $@ because this commit is already prepped" ; \
@@ -935,7 +935,7 @@ $(BUILD_OBJ_DIR)/%/.prep-newestfetch: $(abs_srcdir)/.git/modules/%/FETCH_HEAD $(
 	    cat "$<" > "$@" ; \
 	 fi
 
-$(BUILD_OBJ_DIR)/%/.prep-builtgitindex: $(abs_srcdir)/.git/modules/%/index
+$(BUILD_OBJ_DIR)/%/.prep-builtgitindex: $(ORIGIN_SRC_DIR)/.git/modules/%/index
 	@$(MKDIR) "$(@D)"
 	@if test -s "$@" && test -s "$<" && diff "$@" "$<" >/dev/null 2>&1 ; then \
 	    echo "ROLLBACK TIMESTAMP of $< to that of existing $@ because this commit is already prepped" ; \
@@ -947,7 +947,7 @@ $(BUILD_OBJ_DIR)/%/.prep-builtgitindex: $(abs_srcdir)/.git/modules/%/index
 
 # Make sure to both run after the .git directory is available,
 # and to force evaluation of this recipe every time
-$(BUILD_OBJ_DIR)/%/.prep-builtcommit: $(abs_srcdir)/.git/modules/%/index FORCE
+$(BUILD_OBJ_DIR)/%/.prep-builtcommit: $(ORIGIN_SRC_DIR)/.git/modules/%/index FORCE
 	@$(MKDIR) "$(@D)"
 	@cd "$(@D)" && \
 	    CURRENT_COMMIT_DATA="`cd $(ORIGIN_SRC_DIR)/$(notdir $(@D)) && git rev-parse --verify HEAD && git status -s | sort -n`" && \
@@ -967,7 +967,7 @@ $(BUILD_OBJ_DIR)/%/.prep-builtcommit: $(abs_srcdir)/.git/modules/%/index FORCE
 
 # Note: during prepping, we generally remove and recreate the OBJ_DIR
 # which contains the input file. So we stash and recreate it mid-way.
-$(BUILD_OBJ_DIR)/%/.prepped: $(BUILD_OBJ_DIR)/%/.prep-newestfetch $(BUILD_OBJ_DIR)/%/.prep-builtcommit $(BUILD_OBJ_DIR)/%/.prep-builtgitindex $(abs_srcdir)/%/.git
+$(BUILD_OBJ_DIR)/%/.prepped: $(BUILD_OBJ_DIR)/%/.prep-newestfetch $(BUILD_OBJ_DIR)/%/.prep-builtcommit $(BUILD_OBJ_DIR)/%/.prep-builtgitindex $(ORIGIN_SRC_DIR)/%/.git
 	@$(MKDIR) "$(@D)"
 	@if test ! -s "$@" || ! diff "$@" "$<" > /dev/null 2>&1 ; then \
 	  if test -f "$(@D)/.installed" || test -f "$(@D)/.install-failed" ; then \
@@ -1183,7 +1183,7 @@ reinstall/%:
 
 ### Use currently developed zproject to regenerate a project
 regenerate/%: $(BUILD_OBJ_DIR)/zproject/.installed
-	@( cd "$(abs_srcdir)/$(@F)" && \
+	@( cd "$(ORIGIN_SRC_DIR)/$(@F)" && \
 	    echo "REGENERATING ZPROJECT for $(@F)..." && \
 	    gsl project.xml && \
 	    ./autogen.sh && \
@@ -1199,10 +1199,10 @@ regenerate/%: $(BUILD_OBJ_DIR)/zproject/.installed
 ### follows the configured default branch. Simple "git-resync"
 ### stays in developer's current branch and merges it with
 ### changes trickling down from upstream default branch.
-git-resync/% git-resync-auto/%: $(abs_srcdir)/%/.git
-	@( BASEBRANCH="`git config -f $(abs_srcdir)/.gitmodules submodule.$(@F).branch`" || BASEBRANCH="" ; \
+git-resync/% git-resync-auto/%: $(ORIGIN_SRC_DIR)/%/.git
+	@( BASEBRANCH="`git config -f $(ORIGIN_SRC_DIR)/.gitmodules submodule.$(@F).branch`" || BASEBRANCH="" ; \
 	  test -n "$$BASEBRANCH" || BASEBRANCH=master ; \
-	  cd "$(abs_srcdir)/$(@F)" && \
+	  cd "$(ORIGIN_SRC_DIR)/$(@F)" && \
 	    { git remote -v | grep upstream && BASEREPO="upstream" || BASEREPO="origin" ; } && \
 	    case "$@" in \
 	      *git-resync-auto/*) git checkout -f "$$BASEBRANCH" ;; \
