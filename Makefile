@@ -950,7 +950,7 @@ $(BUILD_OBJ_DIR)/%/.prep-builtgitindex: $(abs_srcdir)/.git/modules/%/index
 $(BUILD_OBJ_DIR)/%/.prep-builtcommit: $(abs_srcdir)/.git/modules/%/index FORCE
 	@$(MKDIR) "$(@D)"
 	@cd "$(@D)" && \
-	    CURRENT_COMMIT_DATA="`cd $(ORIGIN_SRC_DIR) && git rev-parse --verify HEAD && git status -s | sort -n`" && \
+	    CURRENT_COMMIT_DATA="`cd $(ORIGIN_SRC_DIR)/$(notdir $(@D)) && git rev-parse --verify HEAD && git status -s | sort -n`" && \
 	    [ -n "$$CURRENT_COMMIT_DATA" ] && \
 	    if test -s "$@" ; then \
 	        SAVED_COMMIT_DATA="`cat "$@"`" && \
