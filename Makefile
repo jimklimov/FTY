@@ -935,7 +935,7 @@ $(BUILD_OBJ_DIR)/%/.prep-newestfetch: $(ORIGIN_SRC_DIR)/.git/modules/%/FETCH_HEA
 	    cat "$<" > "$@" ; \
 	 fi
 
-$(BUILD_OBJ_DIR)/%/.prep-builtgitindex: $(ORIGIN_SRC_DIR)/.git/modules/%/index
+$(BUILD_OBJ_DIR)/%/.prep-builtgitindex: $(BUILD_OBJ_DIR)/%/.prep-newestfetch
 	@$(MKDIR) "$(@D)"
 	@if test -s "$@" && test -s "$<" && diff "$@" "$<" >/dev/null 2>&1 ; then \
 	    echo "ROLLBACK TIMESTAMP of $< to that of existing $@ because this commit is already prepped" ; \
@@ -947,7 +947,7 @@ $(BUILD_OBJ_DIR)/%/.prep-builtgitindex: $(ORIGIN_SRC_DIR)/.git/modules/%/index
 
 # Make sure to both run after the .git directory is available,
 # and to force evaluation of this recipe every time
-$(BUILD_OBJ_DIR)/%/.prep-builtcommit: $(ORIGIN_SRC_DIR)/.git/modules/%/index FORCE
+$(BUILD_OBJ_DIR)/%/.prep-builtcommit: $(BUILD_OBJ_DIR)/%/.prep-newestfetch FORCE
 	@$(MKDIR) "$(@D)"
 	@cd "$(@D)" && \
 	    CURRENT_COMMIT_DATA="`cd $(ORIGIN_SRC_DIR)/$(notdir $(@D)) && git rev-parse --verify HEAD && git status -s | sort -n`" && \
