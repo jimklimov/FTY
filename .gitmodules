@@ -24,7 +24,7 @@
 	branch = 1.0.5-FTY-master
 [submodule "gsl"]
 	path = gsl
-	url = https://github.com/imatix/gsl
+	url = https://github.com/zeromq/gsl
 [submodule "zproject"]
 	path = zproject
 	url = https://github.com/zeromq/zproject
