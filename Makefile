@@ -978,7 +978,7 @@ $(BUILD_OBJ_DIR)/%/.prepped: $(BUILD_OBJ_DIR)/%/.prep-newestfetch $(BUILD_OBJ_DI
 	@$(RMFILE) "$(@D)"/.*-failed
 	@$(RMDIR) "$(@D).tmp"
 	@$(MKDIR) "$(@D).tmp"
-	@for F in $^ ; do case "$$F" in "$(@D)/".prep*) $(MV) "$$F" "$(@D).tmp/" || exit ;; esac
+	@for F in $^ ; do case "$$F" in "$(@D)/".prep*) $(MV) "$$F" "$(@D).tmp/" || exit ;; esac ; done
 	@case "x$(PREP_TYPE_$(notdir $(@D)))" in \
 	 xnone) \
 	    echo "Nothing special to prep for $(notdir $(@D))..." ;; \
