@@ -957,11 +957,11 @@ $(BUILD_OBJ_DIR)/%/.prep-builtcommit: $(BUILD_OBJ_DIR)/%/.prep-builtgitindex FOR
 	        if test x"$$CURRENT_COMMIT_DATA" = x"$$SAVED_COMMIT_DATA" ; then \
 	            exit 0 ; \
 	        else \
-	            echo "Seems a NEW COMMIT of $(notdir $(@D)) has landed (compared to last build), updating $@" ; \
+	            echo "Seems a NEW COMMIT of $(notdir $(@D)) has landed (compared to last build), updating $@" ; echo "NEW: $$CURRENT_COMMIT_DATA"; echo "OLD: $$SAVED_COMMIT_DATA"; \
 	            echo "$$CURRENT_COMMIT_DATA" > "$@" ; \
 	        fi || exit 1 ; \
 	    else \
-	        echo "Seems a NEW COMMIT of $(notdir $(@D)) has landed (compared to last build), updating $@" ; \
+	        echo "Seems a NEW COMMIT of $(notdir $(@D)) has landed (compared to last build), creating $@" ; echo "NEW: $$CURRENT_COMMIT_DATA"; \
 	        echo "$$CURRENT_COMMIT_DATA" > "$@" ; \
 	    fi || exit 1
 
