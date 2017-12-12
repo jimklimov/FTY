@@ -378,11 +378,11 @@ matrix:
         - valgrind
 
 before_install:
-- if [ -n "$CI_TIME" ] ; then export CI_TIME="$DEFAULT_CI_TIME" ; fi
-- if [ -n "$CI_TRACE" ] ; then export CI_TRACE="$DEFAULT_CI_TRACE" ; fi
-- if [ -n "$CI_QUIET" ] ; then export CI_QUIET="$DEFAULT_CI_QUIET" ; fi
-- if [ -n "$CI_GIT_RESYNC" ] ; then export CI_GIT_RESYNC="$DEFAULT_CI_GIT_RESYNC" ; fi
-- if [ -n "$CI_WIPE_FIRST" ] ; then export CI_WIPE_FIRST="$DEFAULT_CI_WIPE_FIRST" ; fi
+- if [ -z "$CI_TIME" ] ; then export CI_TIME="$DEFAULT_CI_TIME" ; fi
+- if [ -z "$CI_TRACE" ] ; then export CI_TRACE="$DEFAULT_CI_TRACE" ; fi
+- if [ -z "$CI_QUIET" ] ; then export CI_QUIET="$DEFAULT_CI_QUIET" ; fi
+- if [ -z "$CI_GIT_RESYNC" ] ; then export CI_GIT_RESYNC="$DEFAULT_CI_GIT_RESYNC" ; fi
+- if [ -z "$CI_WIPE_FIRST" ] ; then export CI_WIPE_FIRST="$DEFAULT_CI_WIPE_FIRST" ; fi
 - date; echo Syncing Git submodule repos...
 - if [ "$CI_GIT_RESYNC" == true ] ; then DO_BUMP=no time ./sync.sh ; else git submodule init && { git submodule update --depth 3 || git submodule update ; } ; fi
 - if [ $TRAVIS_OS_NAME == "osx" ] ; then brew update; brew install binutils asciidoc docbook-xsl ; XML_CATALOG_FILES=/usr/local/etc/xml/catalog ; export XML_CATALOG_FILES ; fi
@@ -392,11 +392,11 @@ install:
 - sudo pip install pycparser
 
 before_script:
-- if [ -n "$CI_TIME" ] ; then export CI_TIME="$DEFAULT_CI_TIME" ; fi
-- if [ -n "$CI_TRACE" ] ; then export CI_TRACE="$DEFAULT_CI_TRACE" ; fi
-- if [ -n "$CI_QUIET" ] ; then export CI_QUIET="$DEFAULT_CI_QUIET" ; fi
-- if [ -n "$CI_GIT_RESYNC" ] ; then export CI_GIT_RESYNC="$DEFAULT_CI_GIT_RESYNC" ; fi
-- if [ -n "$CI_WIPE_FIRST" ] ; then export CI_WIPE_FIRST="$DEFAULT_CI_WIPE_FIRST" ; fi
+- if [ -z "$CI_TIME" ] ; then export CI_TIME="$DEFAULT_CI_TIME" ; fi
+- if [ -z "$CI_TRACE" ] ; then export CI_TRACE="$DEFAULT_CI_TRACE" ; fi
+- if [ -z "$CI_QUIET" ] ; then export CI_QUIET="$DEFAULT_CI_QUIET" ; fi
+- if [ -z "$CI_GIT_RESYNC" ] ; then export CI_GIT_RESYNC="$DEFAULT_CI_GIT_RESYNC" ; fi
+- if [ -z "$CI_WIPE_FIRST" ] ; then export CI_WIPE_FIRST="$DEFAULT_CI_WIPE_FIRST" ; fi
 - date; echo Fixing up SASL...
 - ./.travis.fixsasl
 
