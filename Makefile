@@ -696,6 +696,8 @@ COMPONENTS_FTY += nut
 CONFIG_OPTS_nut ?=
 CONFIG_OPTS_nut += --with-doc=skip
 CONFIG_OPTS_nut += --with-dev
+CONFIG_OPTS_nut += --with-neon
+CONFIG_OPTS_nut += --with-snmp
 CONFIG_OPTS_nut += --with-dmf
 CONFIG_OPTS_nut += --with-libltdl
 CONFIG_OPTS_nut += --with-augeas-lenses-dir="$(DESTDIR)$(PREFIX)/share/augeas/lenses/dist"
