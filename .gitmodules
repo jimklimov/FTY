@@ -134,3 +134,7 @@
 [submodule "fty-sensor-gpio"]
 	path = fty-sensor-gpio
 	url = https://github.com/42ity/fty-sensor-gpio
+[submodule "JSON.sh"]
+	path = JSON.sh
+	branch = FTY-master
+	url = https://github.com/42ity/JSON.sh
