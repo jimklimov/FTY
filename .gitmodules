@@ -142,3 +142,7 @@
 	path = fty-common
 	url = https://github.com/42ity/fty-common.git
 	branch = master
+[submodule "fty-warranty"]
+	path = fty-warranty
+	url = https://github.com/42ity/fty-warranty.git
+	branch = master
