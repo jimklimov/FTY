@@ -138,3 +138,7 @@
 	path = JSON.sh
 	branch = FTY-master
 	url = https://github.com/42ity/JSON.sh
+[submodule "fty-common"]
+	path = fty-common
+	url = https://github.com/42ity/fty-common.git
+	branch = master
