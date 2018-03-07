@@ -26,9 +26,10 @@ list_tracked() {
     git submodule foreach -q --recursive 'printf "%s|%s|%s\n" "$(basename `pwd` .git)" "$(git config -f $toplevel/.gitmodules submodule.$name.url)" "$(git config -f $toplevel/.gitmodules submodule.$name.branch || echo master)"'
 }
 
-list_remote() {
+list_remote_page() {
+    # Get a pageful (30 items) from REST API
     # Can also "curl"...
-    ( wget -O - "https://api.github.com/orgs/${GITHUB_ORG}/repos" && echo "" ) \
+    ( wget -O - "https://api.github.com/orgs/${GITHUB_ORG}/repos?page=$1" && echo "" ) \
     | egrep '("clone_url".*:.*"http.*/'"${GITHUB_ORG}"'/|"default_branch")' \
     | sed -e 's,^.*"\(http[^"]*/'"${GITHUB_ORG}"'/[^"]*\)".*$,\1,' \
           -e 's,^.*"default_branch".*:.*"\([^"]*\)".*$,\1,' \
@@ -38,6 +39,16 @@ list_remote() {
                 URL="$LINE"; BRN="" ;;
             *)  BRN="$LINE" ;;
         esac; done )
+}
+
+list_remote() {
+    # Walk pages until no data comes back
+    PAGE=1
+    while : ; do
+        OUT="`list_remote_page "$PAGE"`" && [ -n "$OUT" ] || break
+        echo "$OUT"
+        PAGE="`expr "$PAGE" + 1`" || break
+    done
 }
 
 do_work() {
