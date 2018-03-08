@@ -29,7 +29,7 @@ list_tracked() {
 list_remote_page() {
     # Get a pageful (30 items) from REST API
     # Can also "curl"...
-    ( wget -O - "https://api.github.com/orgs/${GITHUB_ORG}/repos?page=$1" && echo "" ) \
+    ( wget -q -O - "https://api.github.com/orgs/${GITHUB_ORG}/repos?page=$1" 2>/dev/null && echo "" ) \
     | egrep '("clone_url".*:.*"http.*/'"${GITHUB_ORG}"'/|"default_branch"|^$)' \
     | sed -e 's,^.*"\(http[^"]*/'"${GITHUB_ORG}"'/[^"]*\)".*$,\1,' \
           -e 's,^.*"default_branch".*:.*"\([^"]*\)".*$,\1,' \
