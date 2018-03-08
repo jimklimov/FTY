@@ -911,6 +911,9 @@ $(BUILD_OBJ_DIR)/fty-sensor-gpio/.configured: $(BUILD_OBJ_DIR)/fty-proto/.instal
 COMPONENTS_FTY_EXPERIMENTAL += fty-metric-snmp
 $(BUILD_OBJ_DIR)/fty-metric-snmp/.configured: $(BUILD_OBJ_DIR)/fty-proto/.installed
 
+### TODO: does this need prometheus? what dependency pkgs is it in?
+COMPONENTS_FTY_EXPERIMENTAL += fty-prometheus-rest
+$(BUILD_OBJ_DIR)/fty-prometheus-rest/.configured:  $(BUILD_OBJ_DIR)/$(COMPONENT_MLM)/.installed $(BUILD_OBJ_DIR)/tntdb/.installed $(BUILD_OBJ_DIR)/tntnet/.installed $(BUILD_OBJ_DIR)/fty-proto/.installed $(BUILD_OBJ_DIR)/fty-core/.installed $(BUILD_OBJ_DIR)/libcidr/.installed $(BUILD_OBJ_DIR)/libmagic/.installed
 
 COMPONENTS_ALL += $(COMPONENTS_FTY)
 
