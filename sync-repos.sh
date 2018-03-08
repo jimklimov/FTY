@@ -51,7 +51,7 @@ list_remote() {
     done
 }
 
-do_work() {
+do_findmatch() {
     echo "INFO: Parsing list of locally tracked repos..." >&2
     REPOS_TRACKED="$(list_tracked | sort)" && [ -n "$REPOS_TRACKED" ] || die "Can not get local list of repos, wrong dir?"
     echo "INFO: Parsing list of remotely defined repos..." >&2
@@ -89,7 +89,9 @@ do_work() {
         echo "TRY to link developer fork of '$REPO_REMOTE', if available..." >&2
         ./git-myorigin "$REPO_REMOTE"
     done
+}
 
+do_sync() {
     echo "SYNCING currently registered remote repositories to local workspace..." >&2
     ./sync.sh
 }
@@ -97,5 +99,6 @@ do_work() {
 case "$1" in
     list_tracked|list-tracked) list_tracked ;;
     list_remote|list-remote) list_remote ;;
-    *) do_work ;;
+    find) do_findmatch ;;
+    *) do_findmatch && do_sync ;;
 esac
