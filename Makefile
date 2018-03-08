@@ -842,6 +842,9 @@ web-test-bios: web-test-bios-deps
 	        done < $(BUILD_OBJ_DIR)/fty-rest/bios.env || exit ; \
 	       fi; } && tntnet $(BUILD_OBJ_DIR)/fty-rest/bios.xml"
 
+COMPONENTS_FTY += fty-warranty
+$(BUILD_OBJ_DIR)/fty-warranty/.configured: $(BUILD_OBJ_DIR)/fty-proto/.installed $(BUILD_OBJ_DIR)/tntdb/.installed $(BUILD_OBJ_DIR)/cxxtools/.installed
+
 COMPONENTS_FTY += fty-nut
 $(BUILD_OBJ_DIR)/fty-nut/.configured: $(BUILD_OBJ_DIR)/fty-proto/.installed $(BUILD_OBJ_DIR)/libcidr/.installed $(BUILD_OBJ_DIR)/cxxtools/.installed $(BUILD_OBJ_DIR)/nut/.installed
 
