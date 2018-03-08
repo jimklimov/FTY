@@ -84,6 +84,7 @@ do_findmatch() {
 
         echo "FOUND: new remote repo '$REPO_REMOTE' at '$URL_REMOTE' - registering with default branch '$BRANCH_REMOTE'..." >&2
         git submodule add -b "$BRANCH_REMOTE" "$URL_REMOTE" "$REPO_REMOTE" || die "Can not register remote repo"
+        git submodule update --init "$REPO_REMOTE" || die "Can not init remote repo"
         git add "$REPO_REMOTE" && git commit -m "Begin tracking '$REPO_REMOTE' since `date -u`"
 
         echo "TRY to link developer fork of '$REPO_REMOTE', if available..." >&2
