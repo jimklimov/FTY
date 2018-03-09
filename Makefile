@@ -514,6 +514,12 @@ $(BUILD_OBJ_DIR)/libcidr/.checked $(BUILD_OBJ_DIR)/libcidr/.checked-verbose $(BU
 # So to take advantage of parallelization we define dependencies from the
 # earliest stage a build pipeline might have.
 
+COMPONENTS_ALL += zproto
+$(BUILD_OBJ_DIR)/zproto/.configured: $(BUILD_OBJ_DIR)/gsl/.installed
+
+$(BUILD_OBJ_DIR)/zproto/.memchecked: $(BUILD_OBJ_DIR)/zproto/.built
+	@$(call echo_noop,$@)
+
 COMPONENTS_ALL += zproject
 $(BUILD_OBJ_DIR)/zproject/.autogened: $(BUILD_OBJ_DIR)/gsl/.installed
 

@@ -150,3 +150,7 @@
 	path = fty-prometheus-rest
 	url = https://github.com/42ity/fty-prometheus-rest.git
 	branch = master
+[submodule "zproto"]
+	path = zproto
+	url = https://github.com/zeromq/zproto.git
+	branch = master
