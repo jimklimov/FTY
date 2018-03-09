@@ -730,7 +730,7 @@ $(BUILD_OBJ_DIR)/fty-core/.memchecked: $(BUILD_OBJ_DIR)/fty-core/.built
 # will then be one of such consumers.
 ### TODO: Clarify which dependencies go where? So far it is a copy of
 ### the old fty-rest's list...
-COMPONENTS_FTY += fty-common
+COMPONENTS_FTY_EXPERIMENTAL += fty-common
 $(BUILD_OBJ_DIR)/fty-common/.configured: $(BUILD_OBJ_DIR)/$(COMPONENT_MLM)/.installed $(BUILD_OBJ_DIR)/tntdb/.installed $(BUILD_OBJ_DIR)/tntnet/.installed $(BUILD_OBJ_DIR)/fty-proto/.installed $(BUILD_OBJ_DIR)/fty-core/.installed $(BUILD_OBJ_DIR)/libcidr/.installed $(BUILD_OBJ_DIR)/libmagic/.installed $(BUILD_OBJ_DIR)/cxxtools/.installed
 
 COMPONENTS_FTY += fty-rest
@@ -742,7 +742,8 @@ ifneq ($(strip $(BUILD_TYPE)),)
 CONFIG_OPTS_fty-rest += --enable-leak-sanitizer=no
 endif
 
-$(BUILD_OBJ_DIR)/fty-rest/.configured: $(BUILD_OBJ_DIR)/$(COMPONENT_MLM)/.installed $(BUILD_OBJ_DIR)/tntdb/.installed $(BUILD_OBJ_DIR)/tntnet/.installed $(BUILD_OBJ_DIR)/fty-proto/.installed $(BUILD_OBJ_DIR)/fty-core/.installed $(BUILD_OBJ_DIR)/fty-common/.installed $(BUILD_OBJ_DIR)/libcidr/.installed $(BUILD_OBJ_DIR)/libmagic/.installed
+$(BUILD_OBJ_DIR)/fty-rest/.configured: $(BUILD_OBJ_DIR)/$(COMPONENT_MLM)/.installed $(BUILD_OBJ_DIR)/tntdb/.installed $(BUILD_OBJ_DIR)/tntnet/.installed $(BUILD_OBJ_DIR)/fty-proto/.installed $(BUILD_OBJ_DIR)/fty-core/.installed $(BUILD_OBJ_DIR)/libcidr/.installed $(BUILD_OBJ_DIR)/libmagic/.installed
+#   $(BUILD_OBJ_DIR)/fty-common/.installed
 # For now the fty-rest memchecked target program is unreliable at best, and
 # documented so in the component's Makefile. So we do not call it for now.
 # TODO: Make it somehow an experimental-build toggle?
