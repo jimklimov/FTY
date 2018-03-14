@@ -41,7 +41,9 @@ components in order (this is automated by the accompanying `Makefile`):
 * `malamute`
 * `cxxtools`
 * `tntdb`
+* `log4cplus`
 * `fty-proto`
+* `fty-common`
 * other `fty-*` components as needed and possibly with dependencies on
   each other as defined in their `profile.xml` manifests for `zproject`
 * `fty-core` and `fty-rest` possibly come last

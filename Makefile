@@ -698,6 +698,8 @@ $(BUILD_OBJ_DIR)/$(COMPONENT_MLM)/.configured: $(BUILD_OBJ_DIR)/$(COMPONENT_CZMQ
 
 endif
 
+COMPONENTS_FTY += log4cplus
+
 COMPONENTS_FTY += nut
 CONFIG_OPTS_nut ?=
 CONFIG_OPTS_nut += --with-doc=skip
@@ -731,7 +733,7 @@ $(BUILD_OBJ_DIR)/fty-core/.memchecked: $(BUILD_OBJ_DIR)/fty-core/.built
 ### TODO: Clarify which dependencies go where? So far it is a copy of
 ### the old fty-rest's list...
 COMPONENTS_FTY += fty-common
-$(BUILD_OBJ_DIR)/fty-common/.configured: $(BUILD_OBJ_DIR)/$(COMPONENT_MLM)/.installed $(BUILD_OBJ_DIR)/tntdb/.installed $(BUILD_OBJ_DIR)/tntnet/.installed $(BUILD_OBJ_DIR)/fty-proto/.installed $(BUILD_OBJ_DIR)/fty-core/.installed $(BUILD_OBJ_DIR)/libcidr/.installed $(BUILD_OBJ_DIR)/libmagic/.installed $(BUILD_OBJ_DIR)/cxxtools/.installed
+$(BUILD_OBJ_DIR)/fty-common/.configured: $(BUILD_OBJ_DIR)/$(COMPONENT_MLM)/.installed $(BUILD_OBJ_DIR)/tntdb/.installed $(BUILD_OBJ_DIR)/tntnet/.installed $(BUILD_OBJ_DIR)/fty-proto/.installed $(BUILD_OBJ_DIR)/fty-core/.installed $(BUILD_OBJ_DIR)/libcidr/.installed $(BUILD_OBJ_DIR)/libmagic/.installed $(BUILD_OBJ_DIR)/cxxtools/.installed $(BUILD_OBJ_DIR)/log4cplus/.installed
 
 COMPONENTS_FTY += fty-rest
 PREP_TYPE_fty-rest = clonetar-src

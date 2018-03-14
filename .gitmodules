@@ -154,3 +154,7 @@
 	path = zproto
 	url = https://github.com/zeromq/zproto.git
 	branch = master
+[submodule "log4cplus"]
+	path = log4cplus
+	url = https://github.com/log4cplus/log4cplus.git
+	branch = REL_1_1_2
