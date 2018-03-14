@@ -76,7 +76,7 @@ pkg_deps_prereqs_fty_overall: &pkg_deps_prereqs_fty_overall
     - libsasl2-dev
     - sasl2-bin
     - apport
-    - liblog4cplus-dev
+#Eubuntu-too-old#    - liblog4cplus-dev
     - libmysqlclient-dev
 #   - libsodium-dev
 #   - libsqlite3-dev
