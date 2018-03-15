@@ -395,6 +395,7 @@ define clone_cp_update
 	( if test x"$(1)" = x"$(2)" ; then exit ; fi && \
 	  $(MKDIR) "$(2)" && \
 	  SRC="`cd "$(1)" && pwd`" && DST="`cd "$(2)" && pwd`" && \
+	  if test -h "$$DST/.git" ; then $(RM) "$$DST/.git" ; fi && \
 	  ( cd "$$SRC" && $(CP) -Ppurd ./ "$$DST"/ ) \
 	)
 endef
@@ -726,6 +727,15 @@ $(BUILD_OBJ_DIR)/fty-core/.configured: $(BUILD_OBJ_DIR)/$(COMPONENT_MLM)/.instal
 $(BUILD_OBJ_DIR)/fty-core/.memchecked: $(BUILD_OBJ_DIR)/fty-core/.built
 	@$(call echo_noop,$@)
 
+$(BUILD_OBJ_DIR)/fty-core/.configured: $(BUILD_OBJ_DIR)/fty-core/.git $(BUILD_SRC_DIR)/fty-core/.git
+
+$(BUILD_OBJ_DIR)/fty-core/.git: $(BUILD_OBJ_DIR)/fty-core/.prepped $(BUILD_OBJ_DIR)/.git
+	$(LN_S_R) $(ORIGIN_SRC_DIR)/fty-core/.git $(BUILD_OBJ_DIR)/fty-core/
+
+$(BUILD_SRC_DIR)/fty-core/.git: $(BUILD_OBJ_DIR)/fty-core/.prepped $(BUILD_SRC_DIR)/.git
+	$(LN_S_R) $(ORIGIN_SRC_DIR)/fty-core/.git $(BUILD_SRC_DIR)/fty-core/
+
+
 # Note: over early 2018, the old big fty-rest is breaking up into smaller,
 # better reusable components. Much of the shareable payload goes into the
 # fty-common project, to be linked as a shared library for the benefit of
@@ -738,6 +748,19 @@ $(BUILD_OBJ_DIR)/fty-common/.configured: $(BUILD_OBJ_DIR)/$(COMPONENT_MLM)/.inst
 
 COMPONENTS_FTY += fty-rest
 PREP_TYPE_fty-rest = clonetar-src
+$(BUILD_OBJ_DIR)/fty-rest/.configured: $(BUILD_OBJ_DIR)/fty-rest/.git $(BUILD_SRC_DIR)/fty-rest/.git
+
+$(BUILD_OBJ_DIR)/fty-rest/.git: $(BUILD_OBJ_DIR)/fty-rest/.prepped $(BUILD_OBJ_DIR)/.git
+	$(LN_S_R) $(ORIGIN_SRC_DIR)/fty-rest/.git $(BUILD_OBJ_DIR)/fty-rest/
+
+$(BUILD_SRC_DIR)/fty-rest/.git: $(BUILD_OBJ_DIR)/fty-rest/.prepped $(BUILD_SRC_DIR)/.git
+	$(LN_S_R) $(ORIGIN_SRC_DIR)/fty-rest/.git $(BUILD_SRC_DIR)/fty-rest/
+
+$(BUILD_OBJ_DIR)/.git: $(ORIGIN_SRC_DIR)/.git
+	$(LN_S_R) $< $@
+
+$(BUILD_SRC_DIR)/.git: $(ORIGIN_SRC_DIR)/.git
+	$(LN_S_R) $< $@
 
 # No -llsan on Travis
 CONFIG_OPTS_fty-rest ?=
