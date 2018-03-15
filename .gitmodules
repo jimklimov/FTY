@@ -141,15 +141,12 @@
 [submodule "fty-common"]
 	path = fty-common
 	url = https://github.com/42ity/fty-common.git
-	branch = master
 [submodule "fty-warranty"]
 	path = fty-warranty
 	url = https://github.com/42ity/fty-warranty.git
-	branch = master
 [submodule "fty-prometheus-rest"]
 	path = fty-prometheus-rest
 	url = https://github.com/42ity/fty-prometheus-rest.git
-	branch = master
 [submodule "zproto"]
 	path = zproto
 	url = https://github.com/zeromq/zproto.git
@@ -161,4 +158,4 @@
 [submodule "log4cplus-v1.1.2"]
 	path = log4cplus-v1.1.2
 	url = https://github.com/42ity/log4cplus.git
-	branch = 1.1.2-FTY
+	branch = 1.1.2-FTY-master
