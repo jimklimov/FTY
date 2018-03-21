@@ -756,10 +756,8 @@ $(BUILD_OBJ_DIR)/fty-rest/.git: $(BUILD_OBJ_DIR)/fty-rest/.prepped $(BUILD_OBJ_D
 $(BUILD_SRC_DIR)/fty-rest/.git: $(BUILD_OBJ_DIR)/fty-rest/.prepped $(BUILD_SRC_DIR)/.git
 	$(LN_S_R) $(ORIGIN_SRC_DIR)/fty-rest/.git $(BUILD_SRC_DIR)/fty-rest/
 
-$(BUILD_OBJ_DIR)/.git: $(ORIGIN_SRC_DIR)/.git
-	$(LN_S_R) $< $@
-
-$(BUILD_SRC_DIR)/.git: $(ORIGIN_SRC_DIR)/.git
+$(BUILD_OBJ_DIR)/.git $(BUILD_SRC_DIR)/.git: $(ORIGIN_SRC_DIR)/.git
+	$(MKDIR) $(@D)
 	$(LN_S_R) $< $@
 
 # No -llsan on Travis
