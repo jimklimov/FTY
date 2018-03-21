@@ -103,7 +103,7 @@ default|"default-tgt:"*)
       echo "`date`: Starting the sequential build attempt..."
       # Avoiding travis_wait() and build timeouts during tests
       # thanks to comments in Travis-CI issue #4190
-      $CI_TIME make --trace V=1 VERBOSE=1 "$BUILD_TGT" &
+      $CI_TIME make V=1 VERBOSE=1 "$BUILD_TGT" &
       PID_MAKE=$!
       ( minutes=0
         ticks=0
