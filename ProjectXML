@@ -15,14 +15,15 @@
 [ -s project.xml ] || { echo "FATAL: Your current directory must be the root of a component managed by zproject (project.xml not found in `pwd`)" >&2; exit 1; }
 export PATH=/usr/local/bin:$PATH
 
-#REMAKE=yes
-#ZPROJECT_SRC=/home/jim/shared/eaton-deps/zeromq/zproject
-REMAKE=no
-ZPROJECT_SRC="`dirname $0`/zproject"
+### Note : you can set your default preference in a shell profile
+#ZPROJECT_REMAKE=yes
+#ZPROJECT_SRC="$HOME/zeromq/zproject"
+[ -n "$ZPROJECT_REMAKE" ] || ZPROJECT_REMAKE=no
+[ -n "$ZPROJECT_SRC" ] || ZPROJECT_SRC="`dirname $0`/zproject"
 while [ $# -gt 0 ]; do
     case "$1" in
-        -q) REMAKE=no ;;
-        -r) REMAKE=yes ;;
+        -q) ZPROJECT_REMAKE=no ;;
+        -r) ZPROJECT_REMAKE=yes ;;
         -d) ZPROJECT_SRC="$2"; shift ;;
         -J) rm -f Jenkinsfile ;;
         -T) rm -f .travis.yml ;;
@@ -34,7 +35,7 @@ done
 
 if [ -n "$ZPROJECT_SRC" ]; then
     [ -d "$ZPROJECT_SRC" ] || { echo "FATAL: ZPROJECT_SRC='$ZPROJECT_SRC' was not found" >&2; exit 1; }
-    if [ "$REMAKE" = yes ]; then
+    if [ "$ZPROJECT_REMAKE" = yes ]; then
         echo "NOTE: Updating system installation of zproject from custom sources at $ZPROJECT_SRC"
         ( cd "$ZPROJECT_SRC" && make || exit
           sudo make install || exit ) || exit
