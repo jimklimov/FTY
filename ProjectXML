@@ -6,7 +6,8 @@
 # By default uses the currently checked-out workspace under FTY dispatcher repo
 # and can use another (-d) or even update the system installation (-r vs. -q)
 # if your "sudo" setup permits that; and to use the current system installation
-# of zproject pass the -d "" option.
+# of zproject pass the -d " " option. You can pre-export a ZPROJECT_SRC value
+# in your shell profile, to use some custom path or the system installation.
 # To update a Jenkinsfile (not overwritten by default) use -J
 # To update a .travis.yml (not overwritten by default) use -T
 # To update git/IDE/clang configs (not overwritten by default) use -G
@@ -33,8 +34,11 @@ while [ $# -gt 0 ]; do
     shift
 done
 
-if [ -n "$ZPROJECT_SRC" ]; then
-    [ -d "$ZPROJECT_SRC" ] || { echo "FATAL: ZPROJECT_SRC='$ZPROJECT_SRC' was not found" >&2; exit 1; }
+if [ -n "$ZPROJECT_SRC" ] && [ "$ZPROJECT_SRC" != " " ]; then
+    if [ ! -d "$ZPROJECT_SRC" ]; then
+        echo "FATAL: ZPROJECT_SRC='$ZPROJECT_SRC' was not found. Use an empty argument -d '' to use the system installation" >&2
+        exit 1
+    fi
     if [ "$ZPROJECT_REMAKE" = yes ]; then
         echo "NOTE: Updating system installation of zproject from custom sources at $ZPROJECT_SRC"
         ( cd "$ZPROJECT_SRC" && make || exit
