@@ -4,7 +4,8 @@
 # including removal of CMake recipes we do not use, and starts "git difftool"
 # so you can revise the templated changes. The "gsl" tool should be installed.
 # By default uses the currently checked-out workspace under FTY dispatcher repo
-# and can use another (-d) or even update the system installation (-r vs. -q)
+# if present, or the system installation if used as a standalone script; also
+# can use another (-d) or even update the system installation (see -r vs. -q)
 # if your "sudo" setup permits that; and to use the current system installation
 # of zproject pass the -d " " option. You can pre-export a ZPROJECT_SRC value
 # in your shell profile, to use some custom path or the system installation.
@@ -20,7 +21,7 @@ export PATH=/usr/local/bin:$PATH
 #ZPROJECT_REMAKE=yes
 #ZPROJECT_SRC="$HOME/zeromq/zproject"
 [ -n "$ZPROJECT_REMAKE" ] || ZPROJECT_REMAKE=no
-[ -n "$ZPROJECT_SRC" ] || ZPROJECT_SRC="`dirname $0`/zproject"
+[ -n "$ZPROJECT_SRC" ] || { [ -d "`dirname $0`/zproject" ] && ZPROJECT_SRC="`dirname $0`/zproject" ; }
 while [ $# -gt 0 ]; do
     case "$1" in
         -q) ZPROJECT_REMAKE=no ;;
