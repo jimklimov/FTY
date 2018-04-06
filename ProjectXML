@@ -12,6 +12,7 @@
 # To update a Jenkinsfile (not overwritten by default) use -J
 # To update a .travis.yml (not overwritten by default) use -T
 # To update git/IDE/clang configs (not overwritten by default) use -G
+# Update all files above with -A
 # (C) 2015-2018 by Eaton
 
 [ -s project.xml ] || { echo "FATAL: Your current directory must be the root of a component managed by zproject (project.xml not found in `pwd`)" >&2; exit 1; }
@@ -22,18 +23,27 @@ export PATH=/usr/local/bin:$PATH
 #ZPROJECT_SRC="$HOME/zeromq/zproject"
 [ -n "$ZPROJECT_REMAKE" ] || ZPROJECT_REMAKE=no
 [ -n "$ZPROJECT_SRC" ] || { [ -d "`dirname $0`/zproject" ] && ZPROJECT_SRC="`dirname $0`/zproject" ; }
+[ -n "$ZPROJECT_UPDATE_TRAVIS_FILE" ] || ZPROJECT_UPDATE_TRAVIS_FILE=no
+[ -n "$ZPROJECT_UPDATE_JENKINSFILE" ] || ZPROJECT_UPDATE_JENKINSFILE=no
+[ -n "$ZPROJECT_UPDATE_HELPER_FILE" ] || ZPROJECT_UPDATE_HELPER_FILE=no
+
 while [ $# -gt 0 ]; do
     case "$1" in
         -q) ZPROJECT_REMAKE=no ;;
         -r) ZPROJECT_REMAKE=yes ;;
         -d) ZPROJECT_SRC="$2"; shift ;;
-        -J) rm -f Jenkinsfile ;;
-        -T) rm -f .travis.yml ;;
-        -G) rm -f .gitignore .gitattributes .editorconfig .clang-format ;;
+        -J) ZPROJECT_UPDATE_JENKINSFILE=yes ;;
+        -T) ZPROJECT_UPDATE_TRAVIS_FILE=yes ;;
+        -G) ZPROJECT_UPDATE_HELPER_FILE=yes ;;
+        -A) ZPROJECT_UPDATE_JENKINSFILE=yes ; ZPROJECT_UPDATE_TRAVIS_FILE=yes ; ZPROJECT_UPDATE_HELPER_FILE=yes ;;
         *) echo "Unknown param: '$1'" >&2 ; exit 1 ;;
     esac
     shift
 done
+
+[ "$ZPROJECT_UPDATE_TRAVIS_FILE" = no ] || rm -f .travis.yml
+[ "$ZPROJECT_UPDATE_JENKINSFILE" = no ] || rm -f Jenkinsfile
+[ "$ZPROJECT_UPDATE_HELPER_FILE" = no ] || rm -f .gitignore .gitattributes .editorconfig .clang-format
 
 if [ -n "$ZPROJECT_SRC" ] && [ "$ZPROJECT_SRC" != " " ]; then
     if [ ! -d "$ZPROJECT_SRC" ]; then
