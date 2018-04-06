@@ -610,25 +610,10 @@ $(BUILD_OBJ_DIR)/malamute/.disted $(BUILD_OBJ_DIR)/malamute/.memchecked :
 else
     # CI_CZMQ_VER not specified, or "3" (or "4" quietly)
 
-    COMPONENT_LIBZMQ=libzmq
 
     COMPONENTS_FTY += libsodium
 $(BUILD_OBJ_DIR)/libsodium/.memchecked: $(BUILD_OBJ_DIR)/libsodium/.built
 	@$(call echo_noop,$@)
-
-    COMPONENTS_FTY += $(COMPONENT_LIBZMQ)
-    PREP_TYPE_$(COMPONENT_LIBZMQ) = clonetar-src
-$(BUILD_OBJ_DIR)/$(COMPONENT_LIBZMQ)/.configured: $(BUILD_OBJ_DIR)/libsodium/.installed
-# TODO: It was called "make check-valgrind-memcheck" back then
-$(BUILD_OBJ_DIR)/$(COMPONENT_LIBZMQ)/.memchecked: $(BUILD_OBJ_DIR)/$(COMPONENT_LIBZMQ)/.built
-	@$(call echo_noop,$@)
-
-# There is something fishy at this time when running code against libzmq.so
-# built with ASAN (unresolved symbols are reported).
-CONFIG_OPTS_$(COMPONENT_LIBZMQ) ?=
-ifeq ($(strip $(ADDRESS_SANITIZER)),enabled)
-CONFIG_OPTS_$(COMPONENT_LIBZMQ) += --enable-address-sanitizer=no
-endif
 
 ifeq ($(strip $(CI_CZMQ_VER)),3)
 
@@ -651,16 +636,35 @@ $(BUILD_OBJ_DIR)/$(COMPONENT_CZMQ)/.autogened: $(BUILD_OBJ_DIR)/$(COMPONENT_CZMQ
 $(BUILD_OBJ_DIR)/$(COMPONENT_CZMQ)/.checked $(BUILD_OBJ_DIR)/$(COMPONENT_CZMQ)/.distchecked $(BUILD_OBJ_DIR)/$(COMPONENT_CZMQ)/.memchecked: $(BUILD_OBJ_DIR)/$(COMPONENT_CZMQ)/.built
 	@$(call echo_noop,$@)
 
-#    COMPONENT_MLM=malamute-v1.0
-    COMPONENT_MLM=malamute
+    COMPONENT_LIBZMQ=libzmq-v4.2.0
+
+    COMPONENT_MLM=malamute-v1.0
+#    COMPONENT_MLM=malamute
 
 else
     # Note: this currently assumes that "CI_CZMQ_VER=4" means upstream/master
     COMPONENT_CZMQ=czmq-master
 
+#    COMPONENT_LIBZMQ=libzmq-master
+    COMPONENT_LIBZMQ=libzmq
+
 #    COMPONENT_MLM=malamute-master
     COMPONENT_MLM=malamute
 
+endif
+
+    COMPONENTS_FTY += $(COMPONENT_LIBZMQ)
+    PREP_TYPE_$(COMPONENT_LIBZMQ) = clonetar-src
+$(BUILD_OBJ_DIR)/$(COMPONENT_LIBZMQ)/.configured: $(BUILD_OBJ_DIR)/libsodium/.installed
+# TODO: It was called "make check-valgrind-memcheck" back then
+$(BUILD_OBJ_DIR)/$(COMPONENT_LIBZMQ)/.memchecked: $(BUILD_OBJ_DIR)/$(COMPONENT_LIBZMQ)/.built
+	@$(call echo_noop,$@)
+
+# There is something fishy at this time when running code against libzmq.so
+# built with ASAN (unresolved symbols are reported).
+CONFIG_OPTS_$(COMPONENT_LIBZMQ) ?=
+ifeq ($(strip $(ADDRESS_SANITIZER)),enabled)
+CONFIG_OPTS_$(COMPONENT_LIBZMQ) += --enable-address-sanitizer=no
 endif
 
     COMPONENTS_FTY += $(COMPONENT_CZMQ)
