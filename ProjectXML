@@ -1,19 +1,29 @@
 #!/bin/sh
 
-# Quick regenerator of zproject templates as used by 42ity ecosystem workflow,
-# including removal of CMake recipes we do not use, and starts "git difftool"
-# so you can revise the templated changes. The "gsl" tool should be installed.
-# By default uses the currently checked-out workspace under FTY dispatcher repo
-# if present, or the system installation if used as a standalone script; also
-# can use another (-d) or even update the system installation (see -r vs. -q)
-# if your "sudo" setup permits that; and to use the current system installation
-# of zproject pass the -d " " option. You can pre-export a ZPROJECT_SRC value
-# in your shell profile, to use some custom path or the system installation.
-# To update a Jenkinsfile (not overwritten by default) use -J
-# To update a .travis.yml (not overwritten by default) use -T
-# To update git/IDE/clang configs (not overwritten by default) use -G
-# Update all files above with -A
-# (C) 2015-2018 by Eaton
+usage() {
+cat < EOF
+Quick regenerator of zproject templates as used by 42ity ecosystem workflow,
+including removal of CMake recipes we do not use in our common components
+(see --kill-cmake|--keep-cmake for definitive behavior).
+After the job is done, it verifies the recipes by running autogen, and then
+starts "git difftool" and "git status" so you can revise the templated changes
+The "gsl" tool should be installed (from zeromq repo, not older imatix one).
+
+By default uses the currently checked-out workspace under FTY dispatcher repo
+if present, or the system installation if used as a standalone script; also
+can use another (-d) or even update the system installation (see -r vs. -q)
+if your "sudo" setup permits that; and to use the current system installation
+of zproject pass the -d " " option. You can pre-export a ZPROJECT_SRC value
+in your shell profile, to use some custom path or the system installation.
+
+To update a Jenkinsfile (not overwritten by default) use -J
+To update a .travis.yml (not overwritten by default) use -T
+To update git/IDE/clang configs (not overwritten by default) use -G
+Update all files above with -A
+
+(C) 2015-2018 by Eaton
+EOF
+}
 
 [ -s project.xml ] || { echo "FATAL: Your current directory must be the root of a component managed by zproject (project.xml not found in `pwd`)" >&2; exit 1; }
 export PATH=/usr/local/bin:$PATH
@@ -26,12 +36,17 @@ export PATH=/usr/local/bin:$PATH
 [ -n "$ZPROJECT_UPDATE_TRAVIS_FILE" ] || ZPROJECT_UPDATE_TRAVIS_FILE=no
 [ -n "$ZPROJECT_UPDATE_JENKINSFILE" ] || ZPROJECT_UPDATE_JENKINSFILE=no
 [ -n "$ZPROJECT_UPDATE_HELPER_FILE" ] || ZPROJECT_UPDATE_HELPER_FILE=no
+[ -n "$ZPROJECT_REMOVE_CMAKE" ] || ZPROJECT_REMOVE_CMAKE=auto
 
 while [ $# -gt 0 ]; do
     case "$1" in
+        -h|-help|--help) usage; exit 0 ;;
         -q) ZPROJECT_REMAKE=no ;;
         -r) ZPROJECT_REMAKE=yes ;;
         -d) ZPROJECT_SRC="$2"; shift ;;
+        --auto-cmake) ZPROJECT_REMOVE_CMAKE=auto ;;
+        --keep-cmake) ZPROJECT_REMOVE_CMAKE=no ;;
+        --kill-cmake) ZPROJECT_REMOVE_CMAKE=yes ;;
         -J) ZPROJECT_UPDATE_JENKINSFILE=yes ;;
         -T) ZPROJECT_UPDATE_TRAVIS_FILE=yes ;;
         -G) ZPROJECT_UPDATE_HELPER_FILE=yes ;;
@@ -64,11 +79,19 @@ else
 fi
 
 gsl project.xml || exit
+
+[ "$ZPROJECT_REMOVE_CMAKE" = auto ] && \
 case "`pwd`" in
     */fty-*|*/etn-*|/ipm-*)
-        echo "REMOVING CMAKE files from fty-* sources..."
-        rm -f CMake* *.cmake || true
-        rm -rf builds/cmake || true
-        ;;
+        echo "REMOVING CMAKE files from fty-* sources by default"
+        ZPROJECT_REMOVE_CMAKE=yes ;;
+    *)  ZPROJECT_REMOVE_CMAKE=no ;;
 esac
+
+if [ "$ZPROJECT_REMOVE_CMAKE" = yes ]; then
+    echo "REMOVING CMAKE files from `pwd` zproject..."
+    rm -f CMake* *.cmake || true
+    rm -rf builds/cmake || true
+fi
+
 ./autogen.sh && git difftool -y && git status
