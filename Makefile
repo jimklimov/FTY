@@ -573,49 +573,47 @@ ifeq ($(strip $(CI_CZMQ_VER)),pkg)
     # pre-installed in system areas. If they mismatch our expectations,
     # this means the env is obsolete... or too far in the future ;)
 
+COMPONENT_LIBSODIUM=libsodium
 COMPONENT_CZMQ=czmq
 COMPONENT_LIBZMQ=libzmq
 COMPONENT_MLM=malamute
 
-$(BUILD_OBJ_DIR)/libsodium/.prep-newestfetch $(BUILD_OBJ_DIR)/libsodium/.prepped \
-$(BUILD_OBJ_DIR)/libsodium/.prep-builtgitindex $(BUILD_OBJ_DIR)/libsodium/.prepped \
-$(BUILD_OBJ_DIR)/libsodium/.prep-builtcommit $(BUILD_OBJ_DIR)/libsodium/.prepped \
-$(BUILD_OBJ_DIR)/libsodium/.autogened $(BUILD_OBJ_DIR)/libsodium/.configured \
-$(BUILD_OBJ_DIR)/libsodium/.built $(BUILD_OBJ_DIR)/libsodium/.installed \
-$(BUILD_OBJ_DIR)/libsodium/.checked $(BUILD_OBJ_DIR)/libsodium/.distchecked \
-$(BUILD_OBJ_DIR)/libsodium/.disted $(BUILD_OBJ_DIR)/libsodium/.memchecked \
-$(BUILD_OBJ_DIR)/libzmq/.prep-newestfetch $(BUILD_OBJ_DIR)/libzmq/.prepped \
-$(BUILD_OBJ_DIR)/libzmq/.prep-builtgitindex $(BUILD_OBJ_DIR)/libzmq/.prepped \
-$(BUILD_OBJ_DIR)/libzmq/.prep-builtcommit $(BUILD_OBJ_DIR)/libzmq/.prepped \
-$(BUILD_OBJ_DIR)/libzmq/.autogened $(BUILD_OBJ_DIR)/libzmq/.configured \
-$(BUILD_OBJ_DIR)/libzmq/.built $(BUILD_OBJ_DIR)/libzmq/.installed \
-$(BUILD_OBJ_DIR)/libzmq/.checked $(BUILD_OBJ_DIR)/libzmq/.distchecked \
-$(BUILD_OBJ_DIR)/libzmq/.disted $(BUILD_OBJ_DIR)/libzmq/.memchecked \
-$(BUILD_OBJ_DIR)/czmq/.prep-newestfetch $(BUILD_OBJ_DIR)/czmq/.prepped \
-$(BUILD_OBJ_DIR)/czmq/.prep-builtgitindex $(BUILD_OBJ_DIR)/czmq/.prepped \
-$(BUILD_OBJ_DIR)/czmq/.prep-builtcommit $(BUILD_OBJ_DIR)/czmq/.prepped \
-$(BUILD_OBJ_DIR)/czmq/.autogened $(BUILD_OBJ_DIR)/czmq/.configured \
-$(BUILD_OBJ_DIR)/czmq/.built $(BUILD_OBJ_DIR)/czmq/.installed \
-$(BUILD_OBJ_DIR)/czmq/.checked $(BUILD_OBJ_DIR)/czmq/.distchecked \
-$(BUILD_OBJ_DIR)/czmq/.disted $(BUILD_OBJ_DIR)/czmq/.memchecked \
-$(BUILD_OBJ_DIR)/malamute/.prep-newestfetch $(BUILD_OBJ_DIR)/malamute/.prepped \
-$(BUILD_OBJ_DIR)/malamute/.prep-builtgitindex $(BUILD_OBJ_DIR)/malamute/.prepped \
-$(BUILD_OBJ_DIR)/malamute/.prep-builtcommit $(BUILD_OBJ_DIR)/malamute/.prepped \
-$(BUILD_OBJ_DIR)/malamute/.autogened $(BUILD_OBJ_DIR)/malamute/.configured \
-$(BUILD_OBJ_DIR)/malamute/.built $(BUILD_OBJ_DIR)/malamute/.installed \
-$(BUILD_OBJ_DIR)/malamute/.checked $(BUILD_OBJ_DIR)/malamute/.distchecked \
-$(BUILD_OBJ_DIR)/malamute/.disted $(BUILD_OBJ_DIR)/malamute/.memchecked :
+$(BUILD_OBJ_DIR)/$(COMPONENT_LIBSODIUM)/.prep-newestfetch $(BUILD_OBJ_DIR)/$(COMPONENT_LIBSODIUM)/.prepped \
+$(BUILD_OBJ_DIR)/$(COMPONENT_LIBSODIUM)/.prep-builtgitindex $(BUILD_OBJ_DIR)/$(COMPONENT_LIBSODIUM)/.prepped \
+$(BUILD_OBJ_DIR)/$(COMPONENT_LIBSODIUM)/.prep-builtcommit $(BUILD_OBJ_DIR)/$(COMPONENT_LIBSODIUM)/.prepped \
+$(BUILD_OBJ_DIR)/$(COMPONENT_LIBSODIUM)/.autogened $(BUILD_OBJ_DIR)/$(COMPONENT_LIBSODIUM)/.configured \
+$(BUILD_OBJ_DIR)/$(COMPONENT_LIBSODIUM)/.built $(BUILD_OBJ_DIR)/$(COMPONENT_LIBSODIUM)/.installed \
+$(BUILD_OBJ_DIR)/$(COMPONENT_LIBSODIUM)/.checked $(BUILD_OBJ_DIR)/$(COMPONENT_LIBSODIUM)/.distchecked \
+$(BUILD_OBJ_DIR)/$(COMPONENT_LIBSODIUM)/.disted $(BUILD_OBJ_DIR)/$(COMPONENT_LIBSODIUM)/.memchecked \
+$(BUILD_OBJ_DIR)/$(COMPONENT_LIBZMQ)/.prep-newestfetch $(BUILD_OBJ_DIR)/$(COMPONENT_LIBZMQ)/.prepped \
+$(BUILD_OBJ_DIR)/$(COMPONENT_LIBZMQ)/.prep-builtgitindex $(BUILD_OBJ_DIR)/$(COMPONENT_LIBZMQ)/.prepped \
+$(BUILD_OBJ_DIR)/$(COMPONENT_LIBZMQ)/.prep-builtcommit $(BUILD_OBJ_DIR)/$(COMPONENT_LIBZMQ)/.prepped \
+$(BUILD_OBJ_DIR)/$(COMPONENT_LIBZMQ)/.autogened $(BUILD_OBJ_DIR)/$(COMPONENT_LIBZMQ)/.configured \
+$(BUILD_OBJ_DIR)/$(COMPONENT_LIBZMQ)/.built $(BUILD_OBJ_DIR)/$(COMPONENT_LIBZMQ)/.installed \
+$(BUILD_OBJ_DIR)/$(COMPONENT_LIBZMQ)/.checked $(BUILD_OBJ_DIR)/$(COMPONENT_LIBZMQ)/.distchecked \
+$(BUILD_OBJ_DIR)/$(COMPONENT_LIBZMQ)/.disted $(BUILD_OBJ_DIR)/$(COMPONENT_LIBZMQ)/.memchecked \
+$(BUILD_OBJ_DIR)/$(COMPONENT_CZMQ)/.prep-newestfetch $(BUILD_OBJ_DIR)/$(COMPONENT_CZMQ)/.prepped \
+$(BUILD_OBJ_DIR)/$(COMPONENT_CZMQ)/.prep-builtgitindex $(BUILD_OBJ_DIR)/$(COMPONENT_CZMQ)/.prepped \
+$(BUILD_OBJ_DIR)/$(COMPONENT_CZMQ)/.prep-builtcommit $(BUILD_OBJ_DIR)/$(COMPONENT_CZMQ)/.prepped \
+$(BUILD_OBJ_DIR)/$(COMPONENT_CZMQ)/.autogened $(BUILD_OBJ_DIR)/$(COMPONENT_CZMQ)/.configured \
+$(BUILD_OBJ_DIR)/$(COMPONENT_CZMQ)/.built $(BUILD_OBJ_DIR)/$(COMPONENT_CZMQ)/.installed \
+$(BUILD_OBJ_DIR)/$(COMPONENT_CZMQ)/.checked $(BUILD_OBJ_DIR)/$(COMPONENT_CZMQ)/.distchecked \
+$(BUILD_OBJ_DIR)/$(COMPONENT_CZMQ)/.disted $(BUILD_OBJ_DIR)/$(COMPONENT_CZMQ)/.memchecked \
+$(BUILD_OBJ_DIR)/$(COMPONENT_MALAMUTE)/.prep-newestfetch $(BUILD_OBJ_DIR)/$(COMPONENT_MALAMUTE)/.prepped \
+$(BUILD_OBJ_DIR)/$(COMPONENT_MALAMUTE)/.prep-builtgitindex $(BUILD_OBJ_DIR)/$(COMPONENT_MALAMUTE)/.prepped \
+$(BUILD_OBJ_DIR)/$(COMPONENT_MALAMUTE)/.prep-builtcommit $(BUILD_OBJ_DIR)/$(COMPONENT_MALAMUTE)/.prepped \
+$(BUILD_OBJ_DIR)/$(COMPONENT_MALAMUTE)/.autogened $(BUILD_OBJ_DIR)/$(COMPONENT_MALAMUTE)/.configured \
+$(BUILD_OBJ_DIR)/$(COMPONENT_MALAMUTE)/.built $(BUILD_OBJ_DIR)/$(COMPONENT_MALAMUTE)/.installed \
+$(BUILD_OBJ_DIR)/$(COMPONENT_MALAMUTE)/.checked $(BUILD_OBJ_DIR)/$(COMPONENT_MALAMUTE)/.distchecked \
+$(BUILD_OBJ_DIR)/$(COMPONENT_MALAMUTE)/.disted $(BUILD_OBJ_DIR)/$(COMPONENT_MALAMUTE)/.memchecked :
 	@$(call echo_noop_pkg,$@)
 
 else
     # CI_CZMQ_VER not specified, or "3" (or "4" quietly)
 
-
-    COMPONENTS_FTY += libsodium
-$(BUILD_OBJ_DIR)/libsodium/.memchecked: $(BUILD_OBJ_DIR)/libsodium/.built
-	@$(call echo_noop,$@)
-
 ifeq ($(strip $(CI_CZMQ_VER)),3)
+
+    COMPONENT_LIBSODIUM=libsodium-v1.0.5
 
     COMPONENT_CZMQ=czmq-v3.0.2
 
@@ -642,20 +640,24 @@ $(BUILD_OBJ_DIR)/$(COMPONENT_CZMQ)/.checked $(BUILD_OBJ_DIR)/$(COMPONENT_CZMQ)/.
 #    COMPONENT_MLM=malamute
 
 else
-    # Note: this currently assumes that "CI_CZMQ_VER=4" means upstream/master
+    # Note: this currently assumes that "CI_CZMQ_VER=4" means upstream/master of the whole stack
+    COMPONENT_LIBSODIUM=libsodium-master
+
     COMPONENT_CZMQ=czmq-master
 
-#    COMPONENT_LIBZMQ=libzmq-master
-    COMPONENT_LIBZMQ=libzmq
+    COMPONENT_LIBZMQ=libzmq-master
 
-#    COMPONENT_MLM=malamute-master
-    COMPONENT_MLM=malamute
+    COMPONENT_MLM=malamute-master
 
 endif
 
+    COMPONENTS_FTY += $(COMPONENT_LIBSODIUM)
+$(BUILD_OBJ_DIR)/$(COMPONENT_LIBSODIUM)/.memchecked: $(BUILD_OBJ_DIR)/$(COMPONENT_LIBSODIUM)/.built
+	@$(call echo_noop,$@)
+
     COMPONENTS_FTY += $(COMPONENT_LIBZMQ)
     PREP_TYPE_$(COMPONENT_LIBZMQ) = clonetar-src
-$(BUILD_OBJ_DIR)/$(COMPONENT_LIBZMQ)/.configured: $(BUILD_OBJ_DIR)/libsodium/.installed
+$(BUILD_OBJ_DIR)/$(COMPONENT_LIBZMQ)/.configured: $(BUILD_OBJ_DIR)/$(COMPONENT_LIBSODIUM)/.installed
 # TODO: It was called "make check-valgrind-memcheck" back then
 $(BUILD_OBJ_DIR)/$(COMPONENT_LIBZMQ)/.memchecked: $(BUILD_OBJ_DIR)/$(COMPONENT_LIBZMQ)/.built
 	@$(call echo_noop,$@)
@@ -697,9 +699,10 @@ devel/czmq build/czmq rebuild/czmq prep/czmq configure/czmq autogen/czmq uninsta
 #	@true
 
 endif
+# ENDIF czmq is not verbatim "czmq"
 
     COMPONENTS_FTY += $(COMPONENT_MLM)
-$(BUILD_OBJ_DIR)/$(COMPONENT_MLM)/.configured: $(BUILD_OBJ_DIR)/$(COMPONENT_CZMQ)/.installed $(BUILD_OBJ_DIR)/libsodium/.installed
+$(BUILD_OBJ_DIR)/$(COMPONENT_MLM)/.configured: $(BUILD_OBJ_DIR)/$(COMPONENT_CZMQ)/.installed $(BUILD_OBJ_DIR)/$(COMPONENT_LIBSODIUM)/.installed
 
 endif
 
@@ -723,7 +726,7 @@ CONFIG_OPTS_nut += --with-devd-dir="$(DESTDIR)$(PREFIX_ETCDIR)/devd"
 CONFIG_OPTS_nut += --with-hotplug-dir="$(DESTDIR)$(PREFIX_ETCDIR)/hotplug"
 
 COMPONENTS_FTY += fty-proto
-$(BUILD_OBJ_DIR)/fty-proto/.configured: $(BUILD_OBJ_DIR)/$(COMPONENT_MLM)/.installed $(BUILD_OBJ_DIR)/libsodium/.installed
+$(BUILD_OBJ_DIR)/fty-proto/.configured: $(BUILD_OBJ_DIR)/$(COMPONENT_MLM)/.installed $(BUILD_OBJ_DIR)/$(COMPONENT_LIBSODIUM)/.installed
 # $(BUILD_OBJ_DIR)/cxxtools/.installed
 
 # Note: more and more core is a collection of scripts, so should need less deps
