@@ -14,10 +14,10 @@
 	path = nut
 	url = https://github.com/42ity/nut
 	branch = FTY
-[submodule "libsodium"]
-	path = libsodium
+[submodule "libsodium-master"]
+	path = libsodium-master
 	url = https://github.com/jedisct1/libsodium.git
-	branch = stable
+	branch = master
 [submodule "libsodium-v1.0.5"]
 	path = libsodium-v1.0.5
 	url = https://github.com/42ity/libsodium.git
@@ -28,9 +28,10 @@
 [submodule "zproject"]
 	path = zproject
 	url = https://github.com/zeromq/zproject
-[submodule "libzmq"]
-	path = libzmq
+[submodule "libzmq-master"]
+	path = libzmq-master
 	url = https://github.com/zeromq/libzmq
+	branch = master
 [submodule "libzmq-v4.2.0"]
 	path = libzmq-v4.2.0
 	url = https://github.com/42ity/libzmq
@@ -50,9 +51,10 @@
 	path = czmq-master
 	url = https://github.com/zeromq/czmq
 	branch = master
-[submodule "malamute"]
-	path = malamute
+[submodule "malamute-master"]
+	path = malamute-master
 	url = https://github.com/zeromq/malamute
+	branch = master
 [submodule "malamute-v1.0"]
 	path = malamute-v1.0
 	url = https://github.com/42ity/malamute
@@ -151,8 +153,8 @@
 	path = zproto
 	url = https://github.com/zeromq/zproto.git
 	branch = master
-[submodule "log4cplus"]
-	path = log4cplus
+[submodule "log4cplus-master"]
+	path = log4cplus-master
 	url = https://github.com/log4cplus/log4cplus.git
 	branch = master
 [submodule "log4cplus-v1.1.2"]
