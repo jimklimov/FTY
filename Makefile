@@ -639,6 +639,9 @@ $(BUILD_OBJ_DIR)/$(COMPONENT_CZMQ)/.checked $(BUILD_OBJ_DIR)/$(COMPONENT_CZMQ)/.
     COMPONENT_MLM=malamute-v1.0
 #    COMPONENT_MLM=malamute
 
+$(BUILD_OBJ_DIR)/$(COMPONENT_MLM)/.memchecked: $(BUILD_OBJ_DIR)/$(COMPONENT_MLM)/.built
+	@$(call echo_noop,$@)
+
 else
     # Note: this currently assumes that "CI_CZMQ_VER=4" means upstream/master of the whole stack
     COMPONENT_LIBSODIUM=libsodium-master
