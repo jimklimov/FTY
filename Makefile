@@ -815,7 +815,7 @@ $(BUILD_OBJ_DIR)/fty-rest/bios.xml: $(BUILD_OBJ_DIR)/fty-rest/.built $(BUILD_OBJ
 	 $(RM) "$@" "$@.tmp" && \
 	 cd $(<D) && \
 	    $(SED) -e 's|^.*<compPath>.*</compPath>.*$$||' \
-	           -e 's|^\(.*</dir>.*\)$$|\1\n<compPath><entry>$(BUILD_OBJ_DIR)/fty-rest/.libs</entry></compPath>|' \
+	           -e 's|^\(.*</dir>.*\)$$|\1\n<compPath><entry>$(BUILD_OBJ_DIR)/fty-rest/src/.libs</entry><entry>$(BUILD_OBJ_DIR)/fty-rest/.libs</entry></compPath>|' \
 	        < $(TNTNET_BIOS_XML) > "$@.tmp" && \
 	    $(MV) "$@.tmp" "$@"
 
