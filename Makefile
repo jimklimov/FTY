@@ -804,7 +804,7 @@ $(BUILD_OBJ_DIR)/fty-rest/tntnet.xml: web-test-deps
 # We depend on built tntnet.xml to ensure presence of a recent build of
 # fty-rest right now, and to maybe use that file's contents later.
 TNTNET_BIOS_XML =	/etc/tntnet/bios.xml
-TNTNET_BIOS_UNIT =	/etc/systemd/system/tntnet@bios.service
+TNTNET_BIOS_UNIT =	/etc/systemd/system/bios.target.wants/tntnet@bios.service
 TNTNET_BIOS_ENV =	/run/tntnet-bios.env
 
 $(BUILD_OBJ_DIR)/fty-rest/bios.xml: $(BUILD_OBJ_DIR)/fty-rest/.built $(BUILD_OBJ_DIR)/fty-rest/tntnet.xml $(TNTNET_BIOS_XML)
