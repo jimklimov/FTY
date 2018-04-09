@@ -724,6 +724,8 @@ CONFIG_OPTS_nut += --with-augeas-lenses-dir="$(DESTDIR)$(PREFIX)/share/augeas/le
 CONFIG_OPTS_nut += --with-udev-dir="$(DESTDIR)$(PREFIX_ETCDIR)/udev"
 CONFIG_OPTS_nut += --with-devd-dir="$(DESTDIR)$(PREFIX_ETCDIR)/devd"
 CONFIG_OPTS_nut += --with-hotplug-dir="$(DESTDIR)$(PREFIX_ETCDIR)/hotplug"
+CONFIG_OPTS_nut += --with-systemdsystemunitdir="$(DESTDIR)/lib/systemd/system"
+CONFIG_OPTS_nut += --with-systemdsystemshutdowndir="$(DESTDIR)/lib/systemd/system-shutdown"
 
 COMPONENTS_FTY += fty-proto
 $(BUILD_OBJ_DIR)/fty-proto/.configured: $(BUILD_OBJ_DIR)/$(COMPONENT_MLM)/.installed $(BUILD_OBJ_DIR)/$(COMPONENT_LIBSODIUM)/.installed
