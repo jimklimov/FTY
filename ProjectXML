@@ -1,7 +1,7 @@
 #!/bin/sh
 
 usage() {
-cat < EOF
+cat << EOF
 Quick regenerator of zproject templates as used by 42ity ecosystem workflow,
 including removal of CMake recipes we do not use in our common components
 (see --kill-cmake|--keep-cmake for definitive behavior).
