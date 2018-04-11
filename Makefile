@@ -807,6 +807,7 @@ $(BUILD_OBJ_DIR)/fty-rest/tntnet.xml: web-test-deps
 TNTNET_BIOS_XML =	/etc/tntnet/bios.xml
 TNTNET_BIOS_UNIT =	/etc/systemd/system/bios.target.wants/tntnet@bios.service
 TNTNET_BIOS_ENV =	/run/tntnet-bios.env
+FTY_COMMON_ENV =	/run/fty-envvars.env
 
 $(BUILD_OBJ_DIR)/fty-rest/bios.xml: $(BUILD_OBJ_DIR)/fty-rest/.built $(BUILD_OBJ_DIR)/fty-rest/tntnet.xml $(TNTNET_BIOS_XML)
 	@echo "CUSTOMIZING tntnet configuration from system-provided bios.xml..." >&2 && \
@@ -832,6 +833,9 @@ $(BUILD_OBJ_DIR)/fty-rest/bios.env: $(TNTNET_BIOS_UNIT) FORCE
 	      fi; } >> "$@.tmp" && \
 	    { if test -s $(TNTNET_BIOS_ENV) ; then \
 	        echo "### $(TNTNET_BIOS_ENV)" && sudo grep = $(TNTNET_BIOS_ENV) ; \
+	      fi; } >> "$@.tmp" && \
+	    { if test -s $(FTY_COMMON_ENV) ; then \
+	        echo "### $(FTY_COMMON_ENV)" && sudo grep = $(FTY_COMMON_ENV) ; \
 	      fi; } >> "$@.tmp" && \
 	    echo 'PATH="$(PATH)"' >> "$@.tmp" && \
 	    $(MV) "$@.tmp" "$@"
