@@ -37,6 +37,9 @@ memcheck: memcheck-all
 experimental: build-fty-experimental
 all-experimental: build-fty-experimental
 
+BIOS_LOG_LEVEL ?= LOG_DEBUG
+export BIOS_LOG_LEVEL
+
 BUILD_OS ?= $(shell uname -s)
 BUILD_ARCH ?= $(shell uname -m)
 ARCH=$(BUILD_ARCH)
