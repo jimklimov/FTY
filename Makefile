@@ -860,7 +860,20 @@ $(BUILD_OBJ_DIR)/fty-rest/90make-web-test-bios-sudoers: $(BUILD_OBJ_DIR)/fty-res
 	    echo "$$U   ALL=(ALL:ALL) NOPASSWD: ALL" ; \
 	 fi > "$@"
 
-web-test-bios-deps: $(BUILD_OBJ_DIR)/fty-rest/.installed web-test-deps $(BUILD_OBJ_DIR)/fty-rest/bios.xml $(BUILD_OBJ_DIR)/fty-rest/bios.env $(BUILD_OBJ_DIR)/fty-rest/90make-web-test-bios-sudoers
+# Rule out builds done as root, with shared libs for tntnet servlets placed
+# in locations not accessible to runtime account. Note this still requires
+# that the current user (running the build) may elevate to do anything here.
+web-test-bios-rights: $(BUILD_OBJ_DIR)/fty-rest/bios.xml
+	@WWW_USER="`grep '<user>' "$<" | sed 's,^[\t ]*<user>\([^\<]*\)<\/.*,\1,' | egrep -v '^$$' | head -1`" || WWW_USER="" ; \
+	 if test -n "$$WWW_USER" ; then \
+	    sudo sudo -u "$$WWW_USER" ls -la $< >/dev/null && \
+	    if test -d $(DESTDIR)$(PREFIX)/lib/ ; then sudo sudo -u "$$WWW_USER" ls -la $(DESTDIR)$(PREFIX)/lib/ >/dev/null && exit 0 ; else exit 0; fi; \
+	    echo "FAILED: The web-server run-time account '$$WWW_USER' determined from $< FAILED sanity check $@ : this account can not access locations with files from this tested build" >&2 ; \
+	 else \
+	    echo "WARNING: Could not determine web-server run-time account from $<, SKIPPED sanity check $@" >&2 ; \
+	 fi
+
+web-test-bios-deps: $(BUILD_OBJ_DIR)/fty-rest/.installed web-test-deps $(BUILD_OBJ_DIR)/fty-rest/bios.xml $(BUILD_OBJ_DIR)/fty-rest/bios.env $(BUILD_OBJ_DIR)/fty-rest/90make-web-test-bios-sudoers web-test-bios-rights
 	@true
 
 web-test-bios: web-test-bios-deps
