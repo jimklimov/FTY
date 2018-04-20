@@ -470,7 +470,7 @@ $(BUILD_OBJ_DIR)//.prep-newestfetch $(BUILD_OBJ_DIR)//.prep-builtgitindex $(BUIL
 ########################### GSL and LIBCIDR ###############################
 # This is built in-tree, and without autoconf, so is trickier to handle
 COMPONENTS_ALL += gsl
-BUILD_SUB_DIR_gsl=src/
+#BUILD_SUB_DIR_gsl=src/
 DESTDIR_gsl=$(DESTDIR)$(PREFIX)/local
 ifeq ($strip $(MAKE_COMMON_ARGS_gsl),)
 MAKE_COMMON_ARGS_gsl=DESTDIR="$(DESTDIR_gsl)"
