@@ -809,12 +809,15 @@ TNTNET_BIOS_UNIT =	/etc/systemd/system/bios.target.wants/tntnet@bios.service
 TNTNET_BIOS_ENV =	/run/tntnet-bios.env
 FTY_COMMON_ENV =	/run/fty-envvars.env
 
+# Note: our custom configuration should still refer to system-provided
+# (or product bundled) and FTY "install" paths for REST API bits that
+# are implemented by other components: we do not have just one servlet
+# shared object anymore. We just prefer our build to be used first.
 $(BUILD_OBJ_DIR)/fty-rest/bios.xml: $(BUILD_OBJ_DIR)/fty-rest/.built $(BUILD_OBJ_DIR)/fty-rest/tntnet.xml $(TNTNET_BIOS_XML)
 	@echo "CUSTOMIZING tntnet configuration from system-provided bios.xml..." >&2 && \
 	 $(RM) "$@" "$@.tmp" && \
 	 cd $(<D) && \
-	    $(SED) -e 's|^.*<compPath>.*</compPath>.*$$||' \
-	           -e 's|^\(.*</dir>.*\)$$|\1\n<compPath><entry>$(BUILD_OBJ_DIR)/fty-rest/src/.libs</entry><entry>$(BUILD_OBJ_DIR)/fty-rest/.libs</entry></compPath>|' \
+	    $(SED) -e 's|^\(.*<compPath>\)\(.*\)$$|\1\n<entry>$(BUILD_OBJ_DIR)/fty-rest/src/.libs</entry>\n<entry>$(BUILD_OBJ_DIR)/fty-rest/.libs</entry>\n<entry>$(DESTDIR)$(PREFIX)/lib</entry>\n\2|' \
 	        < $(TNTNET_BIOS_XML) > "$@.tmp" && \
 	    $(MV) "$@.tmp" "$@"
 
