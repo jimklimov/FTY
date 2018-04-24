@@ -6,3 +6,4 @@
 # If you use a different account to run the build, adapt the name below.
 
 admin ALL=(ALL) NOPASSWD: ALL
+abuild ALL=(ALL) NOPASSWD: ALL
