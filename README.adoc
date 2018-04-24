@@ -25,6 +25,13 @@ rebuilds, as well as certain other common dependencies and tools.
 For reference, you can find a list of additional packages needed on
 Debian and Ubuntu Linux distributions in the `.travis.yml` file.
 
+Builds and tests should be executed as a non-`root` user, because:
+
+* some component self-tests expect in-accessibility of certain paths;
+* tasks such as `make web-test-bios` run daemons as a non-privileged
+  account that would not see into `root`'s home directory with build
+  artifacts.
+
 == About the FTY repository
 
 FTY is a "dispatcher" repository which links (as "git submodules") to the
