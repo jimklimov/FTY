@@ -26,6 +26,16 @@ case "$CI_TRACE" in
         set -x ;;
 esac
 
+# Set this to run the initial (parallel) "make" attempt quietly,
+# so the log only contains errors and details from sequential retry
+[ -n "${CI_PARMAKE_QUIET-}" ] || CI_PARMAKE_QUIET="yes"
+case "$CI_PARMAKE_QUIET" in
+    [Nn][Oo]|[Oo][Ff][Ff]|[Ff][Aa][Ll][Ss][Ee])
+        CI_PARMAKE_QUIET="no" ;;
+    [Yy][Ee][Ss]|[Oo][Nn]|[Tt][Rr][Uu][Ee])
+        CI_PARMAKE_QUIET="yes" ;;
+esac
+
 case "$BUILD_TYPE" in
 default|"default-tgt:"*)
     LANG=C
@@ -62,8 +72,14 @@ default|"default-tgt:"*)
 #            ;;
 #      esac
       BLDRES=255
-      $CI_TIME make VERBOSE=0 V=0 -k -j4 "$BUILD_TGT" &
-      PID_MAKE=$!
+      if [ "$CI_PARMAKE_QUIET" = "yes" ]; then
+        echo "`date`: CI_PARMAKE_QUIET says the initial parallel make attempt will hide stdout"
+        $CI_TIME make VERBOSE=0 V=0 -k -j4 "$BUILD_TGT" & 1>/dev/null
+        PID_MAKE=$!
+      else
+        $CI_TIME make VERBOSE=0 V=0 -k -j4 "$BUILD_TGT" &
+        PID_MAKE=$!
+      fi
       ( minutes=0
         ticks=0
         limit=29
