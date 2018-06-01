@@ -36,6 +36,7 @@ export PATH=/usr/local/bin:$PATH
 [ -n "$ZPROJECT_UPDATE_TRAVIS_FILE" ] || ZPROJECT_UPDATE_TRAVIS_FILE=no
 [ -n "$ZPROJECT_UPDATE_JENKINSFILE" ] || ZPROJECT_UPDATE_JENKINSFILE=no
 [ -n "$ZPROJECT_UPDATE_HELPER_FILE" ] || ZPROJECT_UPDATE_HELPER_FILE=no
+[ -n "$ZPROJECT_UPDATE_SELFTEST_FILE" ] || ZPROJECT_UPDATE_SELFTEST_FILE=no
 [ -n "$ZPROJECT_REMOVE_CMAKE" ] || ZPROJECT_REMOVE_CMAKE=auto
 
 while [ $# -gt 0 ]; do
@@ -50,7 +51,8 @@ while [ $# -gt 0 ]; do
         -J) ZPROJECT_UPDATE_JENKINSFILE=yes ;;
         -T) ZPROJECT_UPDATE_TRAVIS_FILE=yes ;;
         -G) ZPROJECT_UPDATE_HELPER_FILE=yes ;;
-        -A) ZPROJECT_UPDATE_JENKINSFILE=yes ; ZPROJECT_UPDATE_TRAVIS_FILE=yes ; ZPROJECT_UPDATE_HELPER_FILE=yes ;;
+        -S) ZPROJECT_UPDATE_SELFTEST_FILE=yes ;;
+        -A) ZPROJECT_UPDATE_JENKINSFILE=yes ; ZPROJECT_UPDATE_TRAVIS_FILE=yes ; ZPROJECT_UPDATE_HELPER_FILE=yes ; ZPROJECT_UPDATE_SELFTEST_FILE=yes ;;
         *) echo "Unknown param: '$1'" >&2 ; exit 1 ;;
     esac
     shift
@@ -59,6 +61,8 @@ done
 [ "$ZPROJECT_UPDATE_TRAVIS_FILE" = no ] || rm -f .travis.yml
 [ "$ZPROJECT_UPDATE_JENKINSFILE" = no ] || rm -f Jenkinsfile
 [ "$ZPROJECT_UPDATE_HELPER_FILE" = no ] || rm -f .gitignore .gitattributes .editorconfig .clang-format
+# Visibility of selftest functions had changed over time:
+[ "$ZPROJECT_UPDATE_SELFTEST_FILE" = no ] || rm -f src/selftest.h
 
 if [ -n "$ZPROJECT_SRC" ] && [ "$ZPROJECT_SRC" != " " ]; then
     if [ ! -d "$ZPROJECT_SRC" ]; then
