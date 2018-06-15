@@ -1,19 +1,19 @@
 [submodule "cxxtools"]
 	path = cxxtools
 	url = https://github.com/42ity/cxxtools
-	branch = 2.2-FTY
+	branch = release/IPM_Infra-1.4
 [submodule "tntdb"]
 	path = tntdb
 	url = https://github.com/42ity/tntdb
-	branch = 1.3-FTY
+	branch = release/IPM_Infra-1.4
 [submodule "tntnet"]
 	path = tntnet
 	url = https://github.com/42ity/tntnet
-	branch = 2.2-FTY
+	branch = release/IPM_Infra-1.4
 [submodule "nut"]
 	path = nut
 	url = https://github.com/42ity/nut
-	branch = FTY
+	branch = release/IPM_Infra-1.4
 [submodule "libsodium-master"]
 	path = libsodium-master
 	url = https://github.com/jedisct1/libsodium.git
@@ -21,7 +21,7 @@
 [submodule "libsodium-v1.0.5"]
 	path = libsodium-v1.0.5
 	url = https://github.com/42ity/libsodium.git
-	branch = 1.0.5-FTY
+	branch = release/IPM_Infra-1.4
 [submodule "gsl"]
 	path = gsl
 	url = https://github.com/zeromq/gsl
@@ -34,7 +34,7 @@
 [submodule "libzmq-v4.2.0"]
 	path = libzmq-v4.2.0
 	url = https://github.com/42ity/libzmq
-	branch = 4.2.0-FTY
+	branch = release/IPM_Infra-1.4
 #[submodule "czmq"]
 ### In this branch, we try to use our old frozen fork that is obsoleted in upstream
 #	path = czmq
@@ -44,7 +44,7 @@
 ### In this branch, we try to use our old frozen fork that is obsoleted in upstream
 	path = czmq-v3.0.2
 	url = https://github.com/42ity/czmq
-	branch = v3.0.2-FTY
+	branch = release/IPM_Infra-1.4
 [submodule "czmq-master"]
 ### In this branch, we try to use upstream instead
 	path = czmq-master
@@ -56,84 +56,107 @@
 [submodule "malamute-v1.0"]
 	path = malamute-v1.0
 	url = https://github.com/42ity/malamute
-	branch = 1.0-FTY
+	branch = release/IPM_Infra-1.4
 [submodule "libmagic"]
 	path = libmagic
 	url = https://github.com/42ity/libmagic
-	branch = 5.18-FTY
+	branch = release/IPM_Infra-1.4
 [submodule "libcidr"]
 	path = libcidr
 	url = https://github.com/42ity/libcidr
-	branch = 1.2.3-FTY
+	branch = release/IPM_Infra-1.4
 [submodule "fty-proto"]
 	path = fty-proto
 	url = https://github.com/42ity/fty-proto
+	branch = release/IPM_Infra-1.4
 [submodule "fty-outage"]
 	path = fty-outage
 	url = https://github.com/42ity/fty-outage
+	branch = release/IPM_Infra-1.4
 [submodule "fty-email"]
 	path = fty-email
 	url = https://github.com/42ity/fty-email
+	branch = release/IPM_Infra-1.4
 [submodule "fty-metric-cache"]
 	path = fty-metric-cache
 	url = https://github.com/42ity/fty-metric-cache
+	branch = release/IPM_Infra-1.4
 [submodule "fty-sensor-env"]
 	path = fty-sensor-env
 	url = https://github.com/42ity/fty-sensor-env
+	branch = release/IPM_Infra-1.4
 [submodule "fty-metric-store"]
 	path = fty-metric-store
 	url = https://github.com/42ity/fty-metric-store
+	branch = release/IPM_Infra-1.4
 [submodule "fty-metric-tpower"]
 	path = fty-metric-tpower
 	url = https://github.com/42ity/fty-metric-tpower
+	branch = release/IPM_Infra-1.4
 [submodule "fty-core"]
 	path = fty-core
 	url = https://github.com/42ity/fty-core
+	branch = release/IPM_Infra-1.4
 [submodule "fty-asset"]
 	path = fty-asset
 	url = https://github.com/42ity/fty-asset
+	branch = release/IPM_Infra-1.4
 [submodule "fty-alert-list"]
 	path = fty-alert-list
 	url = https://github.com/42ity/fty-alert-list
+	branch = release/IPM_Infra-1.4
 [submodule "fty-metric-compute"]
 	path = fty-metric-compute
 	url = https://github.com/42ity/fty-metric-compute
+	branch = release/IPM_Infra-1.4
 [submodule "fty-nut"]
 	path = fty-nut
 	url = https://github.com/42ity/fty-nut
+	branch = release/IPM_Infra-1.4
 [submodule "fty-alert-engine"]
 	path = fty-alert-engine
 	url = https://github.com/42ity/fty-alert-engine
+	branch = release/IPM_Infra-1.4
 [submodule "fty-metric-composite"]
 	path = fty-metric-composite
 	url = https://github.com/42ity/fty-metric-composite
+	branch = release/IPM_Infra-1.4
 [submodule "fty-rest"]
 	path = fty-rest
 	url = https://github.com/42ity/fty-rest
+	branch = release/IPM_Infra-1.4
 [submodule "fty-kpi-power-uptime"]
 	path = fty-kpi-power-uptime
 	url = https://github.com/42ity/fty-kpi-power-uptime
+	branch = release/IPM_Infra-1.4
 [submodule "fty-example"]
 	path = fty-example
 	url = https://github.com/42ity/fty-example
+	branch = master
 [submodule "fty-metric-snmp"]
 	path = fty-metric-snmp
 	url = https://github.com/42ity/fty-metric-snmp
+	branch = master
 [submodule "fty-alert-flexible"]
 	path = fty-alert-flexible
 	url = https://github.com/42ity/fty-alert-flexible
+	branch = release/IPM_Infra-1.4
 [submodule "fty-info"]
 	path = fty-info
 	url = https://github.com/42ity/fty-info
+	branch = release/IPM_Infra-1.4
 [submodule "fty-mdns-sd"]
 	path = fty-mdns-sd
 	url = https://github.com/42ity/fty-mdns-sd
+	branch = release/IPM_Infra-1.4
 [submodule "fty-discovery"]
 	path = fty-discovery
 	url = https://github.com/42ity/fty-discovery
+	branch = release/IPM_Infra-1.4
 [submodule "fty-sensor-gpio"]
 	path = fty-sensor-gpio
 	url = https://github.com/42ity/fty-sensor-gpio
+	branch = release/IPM_Infra-1.4
 [submodule "JSON.sh"]
 	path = JSON.sh
 	branch = FTY
@@ -141,12 +164,15 @@
 [submodule "fty-common"]
 	path = fty-common
 	url = https://github.com/42ity/fty-common.git
+	branch = release/IPM_Infra-1.4
 [submodule "fty-warranty"]
 	path = fty-warranty
 	url = https://github.com/42ity/fty-warranty.git
+	branch = release/IPM_Infra-1.4
 [submodule "fty-prometheus-rest"]
 	path = fty-prometheus-rest
 	url = https://github.com/42ity/fty-prometheus-rest.git
+	branch = master
 [submodule "zproto"]
 	path = zproto
 	url = https://github.com/zeromq/zproto.git
@@ -158,7 +184,7 @@
 [submodule "log4cplus-v1.1.2"]
 	path = log4cplus-v1.1.2
 	url = https://github.com/42ity/log4cplus.git
-	branch = 1.1.2-FTY
+	branch = release/IPM_Infra-1.4
 [submodule "fty-log"]
 	path = fty-log
 	url = https://github.com/42ity/fty-log.git
