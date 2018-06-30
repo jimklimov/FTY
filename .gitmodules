@@ -163,3 +163,7 @@
 	path = fty-log
 	url = https://github.com/42ity/fty-log.git
 	branch = master
+[submodule "fty-licensing"]
+	path = fty-licensing
+	url = https://github.com/42ity/fty-licensing.git
+	branch = master
