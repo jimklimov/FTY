@@ -161,10 +161,6 @@
 	path = log4cplus-v1.1.2
 	url = https://github.com/42ity/log4cplus.git
 	branch = 1.1.2-FTY-master
-[submodule "fty-log"]
-	path = fty-log
-	url = https://github.com/42ity/fty-log.git
-	branch = master
 [submodule "fty-alert-stats"]
 	path = fty-alert-stats
 	url = https://github.com/42ity/fty-alert-stats.git
