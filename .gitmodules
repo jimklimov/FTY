@@ -173,3 +173,7 @@
 	path = fty-common-db
 	url = https://github.com/42ity/fty-common-db.git
 	branch = master
+[submodule "fty-common-logging"]
+	path = fty-common-logging
+	url = https://github.com/42ity/fty-common-logging.git
+	branch = master
