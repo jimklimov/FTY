@@ -165,3 +165,7 @@
 	path = fty-log
 	url = https://github.com/42ity/fty-log.git
 	branch = master
+[submodule "fty-alert-stats"]
+	path = fty-alert-stats
+	url = https://github.com/42ity/fty-alert-stats.git
+	branch = master
