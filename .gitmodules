@@ -181,3 +181,7 @@
 	path = fty-common-mlm
 	url = https://github.com/42ity/fty-common-mlm.git
 	branch = master
+[submodule "fty-common-rest"]
+	path = fty-common-rest
+	url = https://github.com/42ity/fty-common-rest.git
+	branch = master
