@@ -177,3 +177,7 @@
 	path = fty-common-logging
 	url = https://github.com/42ity/fty-common-logging.git
 	branch = master
+[submodule "fty-common-mlm"]
+	path = fty-common-mlm
+	url = https://github.com/42ity/fty-common-mlm.git
+	branch = master
