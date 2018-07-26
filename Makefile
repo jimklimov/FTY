@@ -933,6 +933,9 @@ $(BUILD_OBJ_DIR)/fty-nut/.configured: $(BUILD_OBJ_DIR)/fty-proto/.installed $(BU
 COMPONENTS_FTY += fty-asset
 $(BUILD_OBJ_DIR)/fty-asset/.configured: $(BUILD_OBJ_DIR)/fty-proto/.installed $(BUILD_OBJ_DIR)/tntdb/.installed $(BUILD_OBJ_DIR)/cxxtools/.installed $(BUILD_OBJ_DIR)/libmagic/.installed $(BUILD_OBJ_DIR)/fty-common/.installed $(BUILD_OBJ_DIR)/fty-common-logging/.installed
 
+COMPONENTS_FTY += fty-alert-stats
+$(BUILD_OBJ_DIR)/fty-alert-stats/.configured: $(BUILD_OBJ_DIR)/fty-proto/.installed $(BUILD_OBJ_DIR)/tntdb/.installed $(BUILD_OBJ_DIR)/cxxtools/.installed $(BUILD_OBJ_DIR)/fty-common/.installed $(BUILD_OBJ_DIR)/fty-common-logging/.installed
+
 COMPONENTS_FTY += fty-metric-tpower
 $(BUILD_OBJ_DIR)/fty-metric-tpower/.configured: $(BUILD_OBJ_DIR)/fty-proto/.installed $(BUILD_OBJ_DIR)/tntdb/.installed $(BUILD_OBJ_DIR)/cxxtools/.installed $(BUILD_OBJ_DIR)/fty-common-logging/.installed
 
