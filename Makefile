@@ -1325,6 +1325,7 @@ git-resync/% git-resync-auto/%: $(ORIGIN_SRC_DIR)/%/.git
 	      *) true ;; \
 	    esac && \
 	    git pull --all && \
+	    git pull --tags && \
 	    git merge "$$BASEREPO/$$BASEBRANCH" && \
 	    case "$@" in \
 	      *git-resync-auto/*) true ;; \
