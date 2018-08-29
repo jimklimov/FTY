@@ -39,6 +39,8 @@ all-experimental: build-fty-experimental
 
 BIOS_LOG_LEVEL ?= LOG_DEBUG
 export BIOS_LOG_LEVEL
+BIOS_LOG_INIT_LEVEL ?= LOG_CRIT
+export BIOS_LOG_INIT_LEVEL
 
 BUILD_OS ?= $(shell uname -s)
 BUILD_ARCH ?= $(shell uname -m)
