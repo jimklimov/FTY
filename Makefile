@@ -737,10 +737,6 @@ CONFIG_OPTS_nut += --with-udev-dir="$(DESTDIR)$(PREFIX_ETCDIR)/udev"
 CONFIG_OPTS_nut += --with-devd-dir="$(DESTDIR)$(PREFIX_ETCDIR)/devd"
 CONFIG_OPTS_nut += --with-hotplug-dir="$(DESTDIR)$(PREFIX_ETCDIR)/hotplug"
 
-COMPONENTS_FTY += fty-proto
-$(BUILD_OBJ_DIR)/fty-proto/.configured: $(BUILD_OBJ_DIR)/$(COMPONENT_MLM)/.installed $(BUILD_OBJ_DIR)/$(COMPONENT_LIBSODIUM)/.installed
-# $(BUILD_OBJ_DIR)/cxxtools/.installed
-
 # Note: more and more core is a collection of scripts, so should need less deps
 COMPONENTS_FTY += fty-core
 PREP_TYPE_fty-core = clonetar-src
@@ -782,6 +778,10 @@ $(BUILD_OBJ_DIR)/fty-common-rest/.configured: $(BUILD_OBJ_DIR)/$(COMPONENT_MLM)/
 
 COMPONENTS_FTY += fty-common
 $(BUILD_OBJ_DIR)/fty-common/.configured: $(BUILD_OBJ_DIR)/$(COMPONENT_MLM)/.installed $(BUILD_OBJ_DIR)/tntdb/.installed $(BUILD_OBJ_DIR)/tntnet/.installed $(BUILD_OBJ_DIR)/fty-proto/.installed $(BUILD_OBJ_DIR)/fty-core/.installed $(BUILD_OBJ_DIR)/libcidr/.installed $(BUILD_OBJ_DIR)/libmagic/.installed $(BUILD_OBJ_DIR)/cxxtools/.installed $(BUILD_OBJ_DIR)/$(COMPONENT_LOG4CPLUS)/.installed
+
+COMPONENTS_FTY += fty-proto
+$(BUILD_OBJ_DIR)/fty-proto/.configured: $(BUILD_OBJ_DIR)/$(COMPONENT_MLM)/.installed $(BUILD_OBJ_DIR)/$(COMPONENT_LIBSODIUM)/.installed $(BUILD_OBJ_DIR)/fty-common-logging/.installed
+# $(BUILD_OBJ_DIR)/cxxtools/.installed
 
 COMPONENTS_FTY += fty-rest
 PREP_TYPE_fty-rest = clonetar-src
