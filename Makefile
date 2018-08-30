@@ -757,54 +757,31 @@ $(BUILD_SRC_DIR)/fty-core/.git: $(BUILD_OBJ_DIR)/fty-core/.prepped $(BUILD_SRC_D
 
 # Note: over early 2018, the old big fty-rest is breaking up into smaller,
 # better reusable components. Much of the shareable payload goes into the
-# fty-common project, to be linked as a shared library for the benefit of
-# other REST API implementations and other components. The new fty-rest
-# will then be one of such consumers.
+# fty-common project and a number of thematic components, to be linked as
+# a shared library for the benefit of other REST API implementations and
+# other components. The new fty-rest will then be one of such consumers.
 
 COMPONENTS_FTY += fty-common-logging
 $(BUILD_OBJ_DIR)/fty-common-logging/.configured: \
     $(BUILD_OBJ_DIR)/$(COMPONENT_LOG4CPLUS)/.installed
 
-### TODO: Clarify which dependencies go where? So far it is a copy of
-### the old fty-rest's list...
-### NOTE: Currently, as of late July 2018, the fty-common-(db|mlm|rest) are
-### so much an early work in progress that even the names did not change
-### after cloning the repos and so cause conflicts ;)
-COMPONENTS_FTY += fty-common-db
-$(BUILD_OBJ_DIR)/fty-common-db/.configured: \
-    $(BUILD_OBJ_DIR)/$(COMPONENT_MLM)/.installed \
-    $(BUILD_OBJ_DIR)/tntdb/.installed \
-    $(BUILD_OBJ_DIR)/tntnet/.installed \
-    $(BUILD_OBJ_DIR)/fty-proto/.installed \
-    $(BUILD_OBJ_DIR)/fty-core/.installed \
-    $(BUILD_OBJ_DIR)/libcidr/.installed \
-    $(BUILD_OBJ_DIR)/libmagic/.installed \
-    $(BUILD_OBJ_DIR)/cxxtools/.installed \
-    $(BUILD_OBJ_DIR)/fty-common/.installed \
-    $(BUILD_OBJ_DIR)/fty-common-logging/.installed
-
-COMPONENTS_FTYL += fty-common-mlm
+COMPONENTS_FTY += fty-common-mlm
 $(BUILD_OBJ_DIR)/fty-common-mlm/.configured: \
     $(BUILD_OBJ_DIR)/$(COMPONENT_MLM)/.installed \
-    $(BUILD_OBJ_DIR)/tntdb/.installed \
-    $(BUILD_OBJ_DIR)/tntnet/.installed \
-    $(BUILD_OBJ_DIR)/fty-proto/.installed \
-    $(BUILD_OBJ_DIR)/fty-core/.installed \
-    $(BUILD_OBJ_DIR)/libcidr/.installed \
-    $(BUILD_OBJ_DIR)/libmagic/.installed \
+    $(BUILD_OBJ_DIR)/$(COMPONENT_LIBSODIUM)/.installed \
     $(BUILD_OBJ_DIR)/cxxtools/.installed \
+    $(BUILD_OBJ_DIR)/fty-common-logging/.installed
+
+COMPONENTS_FTY += fty-common-db
+$(BUILD_OBJ_DIR)/fty-common-db/.configured: \
+    $(BUILD_OBJ_DIR)/tntdb/.installed \
     $(BUILD_OBJ_DIR)/fty-common/.installed \
+    $(BUILD_OBJ_DIR)/fty-common-mlm/.installed \
     $(BUILD_OBJ_DIR)/fty-common-logging/.installed
 
 COMPONENTS_FTY += fty-common-rest
 $(BUILD_OBJ_DIR)/fty-common-rest/.configured: \
-    $(BUILD_OBJ_DIR)/$(COMPONENT_MLM)/.installed \
-    $(BUILD_OBJ_DIR)/tntdb/.installed \
     $(BUILD_OBJ_DIR)/tntnet/.installed \
-    $(BUILD_OBJ_DIR)/fty-proto/.installed \
-    $(BUILD_OBJ_DIR)/fty-core/.installed \
-    $(BUILD_OBJ_DIR)/libcidr/.installed \
-    $(BUILD_OBJ_DIR)/libmagic/.installed \
     $(BUILD_OBJ_DIR)/cxxtools/.installed \
     $(BUILD_OBJ_DIR)/fty-common/.installed \
     $(BUILD_OBJ_DIR)/fty-common-logging/.installed \
@@ -813,22 +790,16 @@ $(BUILD_OBJ_DIR)/fty-common-rest/.configured: \
 
 COMPONENTS_FTY += fty-common
 $(BUILD_OBJ_DIR)/fty-common/.configured: \
-    $(BUILD_OBJ_DIR)/$(COMPONENT_MLM)/.installed \
-    $(BUILD_OBJ_DIR)/tntdb/.installed \
-    $(BUILD_OBJ_DIR)/tntnet/.installed \
-    $(BUILD_OBJ_DIR)/fty-proto/.installed \
-    $(BUILD_OBJ_DIR)/fty-core/.installed \
-    $(BUILD_OBJ_DIR)/libcidr/.installed \
     $(BUILD_OBJ_DIR)/libmagic/.installed \
     $(BUILD_OBJ_DIR)/cxxtools/.installed \
-    $(BUILD_OBJ_DIR)/$(COMPONENT_LOG4CPLUS)/.installed
+    $(BUILD_OBJ_DIR)/fty-common-logging/.installed
 
 COMPONENTS_FTY += fty-proto
 $(BUILD_OBJ_DIR)/fty-proto/.configured: \
-    $(BUILD_OBJ_DIR)/$(COMPONENT_MLM)/.installed \
-    $(BUILD_OBJ_DIR)/$(COMPONENT_LIBSODIUM)/.installed \
+    $(BUILD_OBJ_DIR)/fty-common-mlm/.installed \
     $(BUILD_OBJ_DIR)/fty-common-logging/.installed
 # $(BUILD_OBJ_DIR)/cxxtools/.installed
+
 
 COMPONENTS_FTY += fty-rest
 PREP_TYPE_fty-rest = clonetar-src
