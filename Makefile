@@ -853,7 +853,19 @@ endif
 
 # FIXME: for now, this dependency definition and similar ones below may be
 # an overkill and should be revised when fty-common* split is completed!
-$(BUILD_OBJ_DIR)/fty-rest/.configured: $(BUILD_OBJ_DIR)/$(COMPONENT_MLM)/.installed $(BUILD_OBJ_DIR)/tntdb/.installed $(BUILD_OBJ_DIR)/tntnet/.installed $(BUILD_OBJ_DIR)/fty-proto/.installed $(BUILD_OBJ_DIR)/fty-core/.installed $(BUILD_OBJ_DIR)/libcidr/.installed $(BUILD_OBJ_DIR)/libmagic/.installed $(BUILD_OBJ_DIR)/fty-common/.installed $(BUILD_OBJ_DIR)/fty-common-logging/.installed $(BUILD_OBJ_DIR)/fty-common-db/.installed $(BUILD_OBJ_DIR)/fty-common-rest/.installed $(BUILD_OBJ_DIR)/fty-common-mlm/.installed
+$(BUILD_OBJ_DIR)/fty-rest/.configured: \
+    $(BUILD_OBJ_DIR)/$(COMPONENT_MLM)/.installed \
+    $(BUILD_OBJ_DIR)/tntdb/.installed \
+    $(BUILD_OBJ_DIR)/tntnet/.installed \
+    $(BUILD_OBJ_DIR)/fty-proto/.installed \
+    $(BUILD_OBJ_DIR)/fty-core/.installed \
+    $(BUILD_OBJ_DIR)/libcidr/.installed \
+    $(BUILD_OBJ_DIR)/libmagic/.installed \
+    $(BUILD_OBJ_DIR)/fty-common/.installed \
+    $(BUILD_OBJ_DIR)/fty-common-logging/.installed \
+    $(BUILD_OBJ_DIR)/fty-common-db/.installed \
+    $(BUILD_OBJ_DIR)/fty-common-rest/.installed \
+    $(BUILD_OBJ_DIR)/fty-common-mlm/.installed
 
 # For now the fty-rest memchecked target program is unreliable at best, and
 # documented so in the component's Makefile. So we do not call it for now.
