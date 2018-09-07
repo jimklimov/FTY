@@ -184,6 +184,7 @@ matrix:
 
   - env: CI_CZMQ_VER=pkg BUILD_TYPE=default-tgt:install-all
     os: linux
+    dist: trusty
     services: docker
     sudo: required
     addons:
@@ -217,6 +218,7 @@ matrix:
 
   - env: CI_CZMQ_VER=pkg BUILD_TYPE=default-tgt:memcheck
     os: linux
+    dist: trusty
     services: docker
     sudo: required
     addons:
@@ -337,6 +339,7 @@ matrix:
 
   - env: CI_CZMQ_VER=pkg BUILD_TYPE=default-tgt:check
     os: linux
+    dist: trusty
     services: docker
     sudo: required
     addons:
@@ -347,6 +350,7 @@ matrix:
         - *pkg_deps_prereqs_zmq_master
   - env: CI_CZMQ_VER=pkg BUILD_TYPE=default-tgt:dist
     os: linux
+    dist: trusty
     services: docker
     sudo: required
     addons:
@@ -357,6 +361,7 @@ matrix:
         - *pkg_deps_prereqs_zmq_master
   - env: CI_CZMQ_VER=pkg BUILD_TYPE=default-tgt:distcheck
     os: linux
+    dist: trusty
     services: docker
     sudo: required
     addons:
@@ -368,6 +373,7 @@ matrix:
         - *pkg_deps_prereqs_zmq_master
   - env: CI_CZMQ_VER=pkg BUILD_TYPE=default-tgt:experimental
     os: linux
+    dist: trusty
     services: docker
     sudo: required
     addons:
