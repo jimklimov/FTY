@@ -10,7 +10,7 @@ set -o pipefail
 GITHUB_ORG="42ity"
 
 # Repo names we know we do not want added to tracking
-REPOS_EXCLUDE="FTY 42ity.github.io 42ity-org-website" # czmq
+REPOS_EXCLUDE="FTY 42ity.github.io 42ity-org-website fty-log" # czmq
 
 LANG=C
 LC_ALL=C
