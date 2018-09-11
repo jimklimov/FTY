@@ -1072,16 +1072,19 @@ $(ORIGIN_SRC_DIR)/.git/modules/%/FETCH_HEAD $(ORIGIN_SRC_DIR)/.git/modules/%/ind
 	    ( cd $(ORIGIN_SRC_DIR)/$(notdir $(@D)) && git fetch --all ) ; \
 	 fi
 
+# Note use of $< : we change the touch-file if FETCH_HEAD is different,
+# otherwise we fix up the timestamp of the git metadata files in $^
 $(BUILD_OBJ_DIR)/%/.prep-newestfetch: $(ORIGIN_SRC_DIR)/.git/modules/%/FETCH_HEAD $(ORIGIN_SRC_DIR)/.git/modules/%/index
 	@$(MKDIR) "$(@D)"
 	@if test -s "$@" && test -s "$<" && diff "$@" "$<" >/dev/null 2>&1 ; then \
 	    echo "ROLLBACK TIMESTAMP of $< to that of existing $@ because this commit is already prepped" ; \
-	    $(TOUCH) -r "$@" "$<" || true ; \
+	    $(TOUCH) -r "$@" $^ || true ; \
 	 else \
 	    echo "Seems a NEW COMMIT of $(notdir $(@D)) has landed (compared to last build), updating $@" ; \
 	    cat "$<" > "$@" ; \
 	 fi
 
+# Note: second layer of insulation for git metadata vs make touch-files
 $(BUILD_OBJ_DIR)/%/.prep-builtgitindex: $(BUILD_OBJ_DIR)/%/.prep-newestfetch
 	@$(MKDIR) "$(@D)"
 	@if test -s "$@" && test -s "$<" && diff "$@" "$<" >/dev/null 2>&1 ; then \
