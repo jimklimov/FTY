@@ -1338,6 +1338,7 @@ reinstall/%:
 regenerate/%: $(BUILD_OBJ_DIR)/zproject/.installed
 	@( cd "$(ORIGIN_SRC_DIR)/$(@F)" && \
 	    echo "REGENERATING ZPROJECT for $(@F)..." && \
+	    echo "    See also ./ProjectXML for smarter activity about this subject" && \
 	    gsl project.xml && \
 	    ./autogen.sh && \
 	    case "$(@F)" in \
