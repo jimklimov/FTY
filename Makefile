@@ -20,22 +20,48 @@
 # POC1 : manual naming and ordering
 # POC2 : parse project.xml's to build an included Makefile
 
+### NOTE: Each HELP_* entry is a double-quoted string (or chain of strings)
+### that are eventually passed to a shell `echo` command
+# Standalone keywords
+HELP_BASETGT = "Common targets include :"
+# "Percented" target patterns that act on components
+HELP_COMPTGT = "The following pattern-targets can be called for each component, like" \
+               "running a 'make rebuild/fty-rest' or 'make distcheck/fty-example':"
+# Explanation of touch-files used in build
+HELP_TOUCHFILES = "The following 'touch-files' are tracked under BUILD_OBJ_DIR for each" \
+                  "component and chain by dependency order to check out, build and test." \
+                  "This detail is primarily provided to clarify dependency tree for other targets:"
+HELP_SPECIALDEVTGT = "The following (pattern-)targets are special for development activity in" \
+                     "a workspace made with the FTY dispatcher repo:"
+HELP_SPECIALTGT = "The following targets are special for maintenance of the workspace, etc:"
+
 # Details defined below
 #.PHONY: all install clean
 all: build-fty
+HELP_BASETGT += "    all	Builds all stable fty components and their 3rd party deps"
 install: install-fty
+HELP_BASETGT += "    install	(Builds and) Installs all stable fty components"
 uninstall: uninstall-all uninstall-fty-experimental
+HELP_BASETGT += "    uninstall	Uninstalls all stable and experimental fty components"
 clean: clean-all clean-fty-experimental
+HELP_BASETGT += "    clean	Cleans all stable and experimental fty components and deps"
 check: check-all
+HELP_BASETGT += "    check	Checks all stable fty components and their 3rd party deps"
 check-verbose: check-verbose-all
+HELP_BASETGT += "    check-verbose	Checks all stable fty components and deps verbosely"
 dist: dist-all
+HELP_BASETGT += "    dist	Dist's all stable fty components and deps"
 distclean: distclean-all
+HELP_BASETGT += "    distclean	Distclean's all stable fty components and deps"
 distcheck: distcheck-all
+HELP_BASETGT += "    distcheck	Distcheck's all stable fty components and deps"
 valgrind: memcheck
 memcheck: memcheck-all
+HELP_BASETGT += "    valgrind / memcheck	Checks all stable fty components and deps with valgrind"
 
 experimental: build-fty-experimental
 all-experimental: build-fty-experimental
+HELP_BASETGT += "    (all-)experimental	Builds all experimental fty components (and deps)"
 
 BIOS_LOG_LEVEL ?= LOG_DEBUG
 export BIOS_LOG_LEVEL
@@ -931,6 +957,11 @@ web-test-bios-rights: $(BUILD_OBJ_DIR)/fty-rest/bios.xml
 web-test-bios-deps: $(BUILD_OBJ_DIR)/fty-rest/.installed web-test-deps $(BUILD_OBJ_DIR)/fty-rest/bios.xml $(BUILD_OBJ_DIR)/fty-rest/bios.env $(BUILD_OBJ_DIR)/fty-rest/90make-web-test-bios-sudoers web-test-bios-rights
 	@true
 
+HELP_BASETGT += "    web-test-bios-deps	Create files needed for development web-test"
+HELP_BASETGT += "    web-test-bios	Run a development web-test by starting tntnet" \
+                "        with as similar settings as possible for current system's" \
+                "        BIOS env and using a freshly compiled fty-rest library"
+
 web-test-bios: web-test-bios-deps
 	@cd $(<D) && \
 	    echo "TRYING TO STOP tntnet@bios systemd service to avoid conflicts..." >&2 && \
@@ -1064,6 +1095,9 @@ COMPONENTS_ALL += $(COMPONENTS_FTY)
 # FETCH_HEAD file), but does not necessarily update the local workspace
 # with checked-out sources, nor picks a branch. By default codebase stays
 # at the commit-id pointed to by git submodule for each component.
+HELP_TOUCHFILES += "    .git/modules/%/FETCH_HEAD .git/modules/%/index %/.git" \
+                   "        files in current workspace(s) under ORIGIN_SRC_DIR" \
+                   "        that are updated by a git pull with new commits"
 $(ORIGIN_SRC_DIR)/.git/modules/%/FETCH_HEAD $(ORIGIN_SRC_DIR)/.git/modules/%/index $(ORIGIN_SRC_DIR)/%/.git:
 	@if [ ! -s "$@" ] ; then \
 	    echo "FETCHING component '$(notdir $(@D))' from Git"; \
@@ -1072,8 +1106,11 @@ $(ORIGIN_SRC_DIR)/.git/modules/%/FETCH_HEAD $(ORIGIN_SRC_DIR)/.git/modules/%/ind
 	    ( cd $(ORIGIN_SRC_DIR)/$(notdir $(@D)) && git fetch --all ) ; \
 	 fi
 
+
 # Note use of $< : we change the touch-file if FETCH_HEAD is different,
 # otherwise we fix up the timestamp of the git metadata files in $^
+HELP_TOUCHFILES += "    %/.prep-newestfetch	Single timestamp file for 'make' to compare" \
+                   "        that we have new code fetched since last build"
 $(BUILD_OBJ_DIR)/%/.prep-newestfetch: $(ORIGIN_SRC_DIR)/.git/modules/%/FETCH_HEAD $(ORIGIN_SRC_DIR)/.git/modules/%/index
 	@$(MKDIR) "$(@D)"
 	@if test -s "$@" && test -s "$<" && diff "$@" "$<" >/dev/null 2>&1 ; then \
@@ -1084,7 +1121,10 @@ $(BUILD_OBJ_DIR)/%/.prep-newestfetch: $(ORIGIN_SRC_DIR)/.git/modules/%/FETCH_HEA
 	    cat "$<" > "$@" ; \
 	 fi
 
+
 # Note: second layer of insulation for git metadata vs make touch-files
+HELP_TOUCHFILES += "    %/.prep-builtgitindex	Second layer of touch-files for 'make'" \
+                   "        to compare that we have built latest checked-out code or not"
 $(BUILD_OBJ_DIR)/%/.prep-builtgitindex: $(BUILD_OBJ_DIR)/%/.prep-newestfetch
 	@$(MKDIR) "$(@D)"
 	@if test -s "$@" && test -s "$<" && diff "$@" "$<" >/dev/null 2>&1 ; then \
@@ -1095,8 +1135,11 @@ $(BUILD_OBJ_DIR)/%/.prep-builtgitindex: $(BUILD_OBJ_DIR)/%/.prep-newestfetch
 	    cat "$<" > "$@" ; \
 	 fi
 
+
 # Make sure to both run after the .git directory is available,
 # and to force evaluation of this recipe every time
+HELP_TOUCHFILES += "    %/.prep-builtcommit	Single timestamp+content file for 'make' to" \
+                   "        verify that we have last built this particular commit or not"
 $(BUILD_OBJ_DIR)/%/.prep-builtcommit: $(BUILD_OBJ_DIR)/%/.prep-builtgitindex FORCE
 	@$(MKDIR) "$(@D)"
 	@cd "$(@D)" && \
@@ -1115,8 +1158,13 @@ $(BUILD_OBJ_DIR)/%/.prep-builtcommit: $(BUILD_OBJ_DIR)/%/.prep-builtgitindex FOR
 	        echo "$$CURRENT_COMMIT_DATA" > "$@" ; \
 	    fi || exit 1
 
+
 # Note: during prepping, we generally remove and recreate the OBJ_DIR
 # which contains the input files. So we stash and recreate them mid-way.
+HELP_TOUCHFILES += "    %/.prepped	Clones sources of the checked-out component from" \
+                   "        ORIGIN_SRC_DIR to BUILD_OBJ_DIR, and applies patches if told" \
+                   "        to (if required by some target OS per .hacks directory and/or" \
+                   "        additional includable Makefiles)"
 $(BUILD_OBJ_DIR)/%/.prepped: $(BUILD_OBJ_DIR)/%/.prep-newestfetch $(BUILD_OBJ_DIR)/%/.prep-builtcommit $(BUILD_OBJ_DIR)/%/.prep-builtgitindex $(ORIGIN_SRC_DIR)/%/.git
 	@$(MKDIR) "$(@D)"
 	@if test ! -s "$@" || ! diff "$@" "$<" > /dev/null 2>&1 ; then \
@@ -1168,39 +1216,62 @@ $(BUILD_OBJ_DIR)/%/.prepped: $(BUILD_OBJ_DIR)/%/.prep-newestfetch $(BUILD_OBJ_DI
 	 fi
 	@cat "$<" > "$@"
 
+
+HELP_TOUCHFILES += "    %/.autogened	After prepping, calls autogen.sh or equivalent to" \
+                   "        generate target-dependent files in the cloned source directory"
 $(BUILD_OBJ_DIR)/%/.autogened: $(BUILD_OBJ_DIR)/%/.prepped
 	+$(call autogen_sub,$(notdir $(@D)))
 
+
+HELP_TOUCHFILES += "    %/.configured	After autogen, calls configure or equivalent to" \
+                   "        get ready for building the objects (in object dir)"
 $(BUILD_OBJ_DIR)/%/.configured: $(BUILD_OBJ_DIR)/%/.autogened
 	+$(call configure_sub,$(notdir $(@D)))
 
+
+HELP_TOUCHFILES += "    %/.built	After configure, builds the sources (usually 'make all')"
 $(BUILD_OBJ_DIR)/%/.built: $(BUILD_OBJ_DIR)/%/.configured
 	+$(call build_sub,$(notdir $(@D)))
 
+
+HELP_TOUCHFILES += "    %/.disted	After configure, makes a distribution (make dist)"
 $(BUILD_OBJ_DIR)/%/.disted: $(BUILD_OBJ_DIR)/%/.configured
 	+$(call dist_sub,$(notdir $(@D)))
 
+
 # Technically, build and install may pursue different targets
 # so maybe this should depend on just .configured
+HELP_TOUCHFILES += "    %/.installed	After build, installs to common proto area"
 $(BUILD_OBJ_DIR)/%/.installed: $(BUILD_OBJ_DIR)/%/.built
 	+$(call install_sub,$(notdir $(@D)))
 
+
+HELP_TOUCHFILES += "    %/.checked	After build, runs self-tests (make check)"
 $(BUILD_OBJ_DIR)/%/.checked: $(BUILD_OBJ_DIR)/%/.built
 	+$(call check_sub,$(notdir $(@D)))
 
+
+HELP_TOUCHFILES += "    %/.checked-verbose	After build, runs verbose self-tests"
 $(BUILD_OBJ_DIR)/%/.checked-verbose: $(BUILD_OBJ_DIR)/%/.built
 	+$(call check_verbose_sub,$(notdir $(@D)))
 
+
+HELP_TOUCHFILES += "    %/.distchecked	After build, runs dist, sub-build and the" \
+                   "        self-tests in that copy of codebase (make distcheck)"
 $(BUILD_OBJ_DIR)/%/.distchecked: $(BUILD_OBJ_DIR)/%/.built
 	+$(call distcheck_sub,$(notdir $(@D)))
 
+
+HELP_TOUCHFILES += "    %/.memchecked	After build, runs self-tests under valgrind"
 $(BUILD_OBJ_DIR)/%/.memchecked: $(BUILD_OBJ_DIR)/%/.built
 	+$(call memcheck_sub,$(notdir $(@D)))
+
 
 # Phony targets to make or clean up a build of components
 # Also note rules must be not empty to actually run something
 # NOTE: The use of $(@F) in the rules assumes submodules are not nested
 #       otherwise text conversions are needed to chomp until first slash
+HELP_COMPTGT += "    clean-obj/%	Remove the built-object directory for component"
 clean-obj/%:
 	@if test -d "$(BUILD_OBJ_DIR)" && \
 	   test x"$(BUILD_OBJ_DIR)" != x"$(ORIGIN_SRC_DIR)" ; then\
@@ -1210,6 +1281,7 @@ clean-obj/%:
 	    echo "  NOOP    Generally $@ has nothing to do for now"; \
 	 fi
 
+HELP_COMPTGT += "    clean-src/%	Remove the source-replica directory for component"
 clean-src/%:
 	@if test -d "$(BUILD_SRC_DIR)" && \
 	   test x"$(BUILD_SRC_DIR)" != x"$(ORIGIN_SRC_DIR)" ; then\
@@ -1222,19 +1294,26 @@ clean-src/%:
 	    $(RM) "$(ORIGIN_SRC_DIR)/$(@F)" ; \
 	 else true; fi
 
+HELP_COMPTGT += "    (dist)clean/%	Run clean-obj and clean-src (above) on the component"
 distclean/% clean/%:
 	$(MAKE) clean-obj/$(@F)
 	$(MAKE) clean-src/$(@F)
 
+HELP_COMPTGT += "    prep/%	Prep the component (create a %/.prepped for it)"
 prep/%: $(BUILD_OBJ_DIR)/%/.prepped
 	@true
 
+HELP_COMPTGT += "    autogen/%	Generate files for the component (create a" \
+                "       %/.autogened for it)"
 autogen/%: $(BUILD_OBJ_DIR)/%/.autogened
 	@true
 
+HELP_COMPTGT += "    configure/%	Configure sources to build the component" \
+                "       (create a %/.configured for it)"
 configure/%: $(BUILD_OBJ_DIR)/%/.configured
 	@true
 
+HELP_COMPTGT += "    build/%	Build the configured component (%/.built)"
 build/%: $(BUILD_OBJ_DIR)/%/.built
 	@true
 
@@ -1242,6 +1321,9 @@ build/%: $(BUILD_OBJ_DIR)/%/.built
 # Requires cloneln-src to be in effect for the component
 # Can not guarantee consistency of codebase in automated builds -
 # this option is here only to speed up manual development iterations.
+HELP_SPECIALDEVTGT += "    devel/%	Special rule for building the configured component" \
+                      "       during development cycles, bringing edited source files into" \
+                      "       the source-replica and remaking just whatever depends on them"
 devel/%:
 	@case "x$(PREP_TYPE_$(@F))" in \
 	 xcloneln-*) ;; \
@@ -1268,31 +1350,43 @@ devel/%:
 	    fi && \
 	    $(MAKE) $(BUILD_OBJ_DIR)/$(@F)/.built
 
+HELP_COMPTGT += "    install/%	Install the configured component (%/.installed)"
 install/%: $(BUILD_OBJ_DIR)/%/.installed
 	@true
 
+HELP_COMPTGT += "    check/%	'make check' the component (%/.checked)"
 check/%: $(BUILD_OBJ_DIR)/%/.checked
 	@true
 
+HELP_COMPTGT += "    check-verbose/%	Verbosely 'make check' the component" \
+                "       (%/.checked-verbose)"
 check-verbose/%: $(BUILD_OBJ_DIR)/%/.checked-verbose
 	@true
 
+HELP_COMPTGT += "    distcheck/%	'make distcheck' the component (%/.distchecked)"
 distcheck/%: $(BUILD_OBJ_DIR)/%/.distchecked
 	@true
 
+HELP_COMPTGT += "    dist/%	'make dist' the component (%/.disted)"
 dist/%: $(BUILD_OBJ_DIR)/%/.disted
 	@true
 
+HELP_COMPTGT += "    redist/%	'make clean' and then dist the component (%/.disted)"
 redist/%:
 	$(MAKE) clean/$(@F)
 	$(MAKE) $(BUILD_OBJ_DIR)/$(@F)/.disted
 
+HELP_COMPTGT += "    valgrind/% or memcheck/%	Run 'make check' under valgrind" \
+                "       for the component (%/.memchecked)"
 valgrind/% memcheck/%: $(BUILD_OBJ_DIR)/%/.memchecked
 	@true
 
 # This is a sort of torture test for components that fail, but not
 # consistently (e.g. due to race conditions, phase of moon, etc.)
 # Run the memcheck for the component indefinitely, until it fails.
+HELP_SPECIALDEVTGT += "    valgrind-loop/% or memcheck-loop/%	Special stress-testing target" \
+                      "       to run the memcheck in an infinite loop until it fails for the" \
+                      "       previously checked component"
 valgrind-loop/% memcheck-loop/%: $(BUILD_OBJ_DIR)/%/.checked
 	@echo "Looping indefinitely until memcheck of $(@F) fails..."
 	+N=1; while $(call memcheck_sub,$(@F)) ; do \
@@ -1304,37 +1398,51 @@ valgrind-loop/% memcheck-loop/%: $(BUILD_OBJ_DIR)/%/.checked
 	 echo "The $$N run of memcheck of $(@F) FAILED with code $$RES" >&2 ; \
 	 exit $$RES
 
+HELP_SPECIALDEVTGT += "    assume/%	Special target to claim that development dependency files" \
+                      "       provided by this component are available somehow outside this" \
+                      "       dispatcher repo, so it should not be rebuit (creates %/.installed)." \
+                      "       Note that subsequent git-pull updates can override this touchfile"
 assume/%:
 	@echo "ASSUMING that $(@F) is available through means other than building from sources"
 	@$(MKDIR) $(BUILD_OBJ_DIR)/$(@F)
 	@$(TOUCH) $(BUILD_OBJ_DIR)/$(@F)/.installed
 
+HELP_SPECIALDEVTGT += "    nowarn/%	Special target to build with -Wall -Werror (%/.built)"
 nowarn/%:
 	$(MAKE) clean/$(@F)
 	$(MAKE) CFLAGS="$(CFLAGS) -Wall -Werror" CPPFLAGS="$(CPPFLAGS) -Wall -Werror" CXXFLAGS="$(CXXFLAGS) -Wall -Werror" $(BUILD_OBJ_DIR)/$(@F)/.built
 
+HELP_COMPTGT += "    rebuild/%	'make clean' and then build the component (%/.built)"
 rebuild/%:
 	$(MAKE) clean/$(@F)
 	$(MAKE) $(BUILD_OBJ_DIR)/$(@F)/.built
 
+HELP_COMPTGT += "    recheck/%	'make clean' and then check the component (%/.checked)"
 recheck/%:
 	$(MAKE) clean/$(@F)
 	$(MAKE) $(BUILD_OBJ_DIR)/$(@F)/.checked
 
+HELP_COMPTGT += "    recheck-verbose/%	'make clean' and then check-verbose the component"
 recheck-verbose/%:
 	$(MAKE) clean/$(@F)
 	$(MAKE) $(BUILD_OBJ_DIR)/$(@F)/.checked-verbose
 
+HELP_COMPTGT += "    redistcheck/%	'make clean' and then distcheck the component"
 redistcheck/%:
 	$(MAKE) clean/$(@F)
 	$(MAKE) $(BUILD_OBJ_DIR)/$(@F)/.distchecked
 
+HELP_COMPTGT += "    reinstall/%	Uninstall (if needed), 'make clean' and then install" \
+                "       the component (%/.installed)"
 reinstall/%:
 	if test -f $(BUILD_OBJ_DIR)/$(@F)/.installed ; then $(call uninstall_lax_sub,$(@F)) ; fi
 	$(MAKE) clean/$(@F)
 	$(MAKE) $(BUILD_OBJ_DIR)/$(@F)/.installed
 
 ### Use currently developed zproject to regenerate a project
+HELP_SPECIALDEVTGT += "    regenerate/%	Special target to regenerate zproject files per" \
+                      "       project.xml and start 'git difftool -y' to put back customizations" \
+                      "       See also ./ProjectXML for smarter activity about this subject"
 regenerate/%: $(BUILD_OBJ_DIR)/zproject/.installed
 	@( cd "$(ORIGIN_SRC_DIR)/$(@F)" && \
 	    echo "REGENERATING ZPROJECT for $(@F)..." && \
@@ -1353,6 +1461,12 @@ regenerate/%: $(BUILD_OBJ_DIR)/zproject/.installed
 ### follows the configured default branch. Simple "git-resync"
 ### stays in developer's current branch and merges it with
 ### changes trickling down from upstream default branch.
+HELP_SPECIALTGT += "    git-resync/%	Special target to pull newest code from remote git" \
+                   "       and rebase the currently checked-out branch over the default" \
+                   "       master/release/... branch as configured by git submodules in" \
+                   "       this branch of the FTY dispatcher repo"
+HELP_SPECIALTGT += "    git-resync-auto/%	Special target to pull newest code from remote git" \
+                   "       and force-checkout the default master/release/... branch (see above)"
 git-resync/% git-resync-auto/%: $(ORIGIN_SRC_DIR)/%/.git
 	@( BASEBRANCH="`git config -f $(ORIGIN_SRC_DIR)/.gitmodules submodule.$(@F).branch`" || BASEBRANCH="" ; \
 	  test -n "$$BASEBRANCH" || BASEBRANCH=master ; \
@@ -1372,46 +1486,61 @@ git-resync/% git-resync-auto/%: $(ORIGIN_SRC_DIR)/%/.git
 	)
 
 # Note this one would trigger a (re)build run
+HELP_COMPTGT += "    uninstall/%	Uninstall the previously configured component" \
+                "       (might trigger a rebuild to get the Makefiles available)"
 uninstall/%: $(BUILD_OBJ_DIR)/%/.configured
 	$(call uninstall_sub,$(@F))
 
+HELP_COMPTGT += "    uninstall_lax/%	Relaxed uninstall (do not fail this 'make'" \
+                "       if the uninstall activity does not succeed)"
 uninstall_lax/%:
 	$(call uninstall_lax_sub,$(@F))
 
 # Rule-them-all rules! e.g. build-all install-all uninstall-all clean-all
+HELP_BASETGT += "    rebuild-all	Cleans and builds all components"
 rebuild-all:
 	$(MAKE) $(addprefix clean/,$(COMPONENTS_ALL))
 	$(MAKE) $(addprefix build/,$(COMPONENTS_ALL))
 
+HELP_BASETGT += "    rebuild-fty	Cleans and builds FTY components"
 rebuild-fty:
 	$(MAKE) $(addprefix clean/,$(COMPONENTS_FTY))
 	$(MAKE) $(addprefix build/,$(COMPONENTS_FTY))
 
+HELP_BASETGT += "    rebuild-fty-experimental	Cleans and builds FTY-experimental components"
 rebuild-fty-experimental:
 	$(MAKE) $(addprefix clean/,$(COMPONENTS_FTY_EXPERIMENTAL))
 	$(MAKE) $(addprefix build/,$(COMPONENTS_FTY_EXPERIMENTAL))
 
+HELP_BASETGT += "    reinstall-all	Cleans and installs all components"
 reinstall-all:
 	$(MAKE) $(addprefix clean/,$(COMPONENTS_ALL))
 	$(MAKE) $(addprefix install/,$(COMPONENTS_ALL))
 
+HELP_BASETGT += "    reinstall-fty	Cleans and installs FTY components"
 reinstall-fty:
 	$(MAKE) $(addprefix clean/,$(COMPONENTS_FTY))
 	$(MAKE) $(addprefix install/,$(COMPONENTS_FTY))
 
+HELP_BASETGT += "    reinstall-fty-experimental	Cleans and installs FTY-experimental components"
 reinstall-fty-experimental:
 	$(MAKE) $(addprefix clean/,$(COMPONENTS_FTY_EXPERIMENTAL))
 	$(MAKE) $(addprefix install/,$(COMPONENTS_FTY_EXPERIMENTAL))
 
+HELP_BASETGT += "    %-all	Does the '%' action for all components"
 %-all: $(addprefix %/,$(COMPONENTS_ALL))
 	@echo "COMPLETED $@ : made '$^'"
 
+HELP_BASETGT += "    %-fty	Does the '%' action for FTY components"
 %-fty: $(addprefix %/,$(COMPONENTS_FTY))
 	@echo "COMPLETED $@ : made '$^'"
 
+HELP_BASETGT += "    %-fty-experimental	Does the '%' action for FTY-experimental components"
 %-fty-experimental: $(addprefix %/,$(COMPONENTS_FTY_EXPERIMENTAL))
 	@echo "COMPLETED $@ : made '$^'"
 
+HELP_SPECIALTGT += "    wipe / mrproper	Remove all build workspaces and intermediate" \
+                   "       source locations (leave git checkouts in place) to start anew"
 wipe mrproper:
 	if [ -d $(BUILD_SRC_DIR) ] ; then chmod -R u+w $(BUILD_SRC_DIR) || true ; fi
 	if [ -d $(BUILD_OBJ_DIR) ] ; then chmod -R u+w $(BUILD_OBJ_DIR) || true ; fi
@@ -1420,13 +1549,43 @@ wipe mrproper:
 	    $(abs_builddir)/.install/*)  $(RMDIR) $(INSTDIR) ;; \
 	esac
 
+
 # Speak BSDisch?
+HELP_SPECIALTGT += "    emerge	Does a 'make git-resync-auto-all' to (forcefully!) checkout" \
+                   "        the default branches as configured by git submodules in this" \
+                   "        branch of the FTY dispatcher repo and update to newest remote" \
+                   "        codebases from GitHub"
 emerge: git-resync-auto-all
 	@echo "COMPLETED $@ : made '$^'"
 
+HELP_SPECIALTGT += "    rebase	Does a 'make git-resync-all' to pull newest remote codebases" \
+                   "        from GitHub and interactively rebase the developer's currently" \
+                   "        checked out branch over the default branch as configured by git" \
+                   "        submodules in this branch of the FTY dispatcher, for each component"
 rebase: git-resync-all
 	@echo "COMPLETED $@ : made '$^'"
 
+HELP_SPECIALDEVTGT += "    world	Does an 'emerge' and then 'install-all install-fty-experimental'" \
+                      "        so you have the whole ecosystem built and ready to develop in as" \
+                      "        far as development dependencies go, all by one simple command"
 world:
 	$(MAKE) emerge
 	$(MAKE) install-all install-fty-experimental
+
+HELP_LIST_COMPONENTS ?= no
+help:
+	@echo "This Makefile automates the FTY dispatcher repository builds for multiple" ; \
+	 echo "use-cases in the same development cycle (editing sources in one place)." ; \
+	 echo "See https://github.com/42ity/FTY.git and the README for more details." ; \
+	 echo ""; for LINE in $(HELP_BASETGT) ; do echo "$$LINE"; done ; \
+	 echo ""; for LINE in $(HELP_TOUCHFILES) ; do echo "$$LINE"; done; \
+	 echo ""; for LINE in $(HELP_SPECIALTGT) ; do echo "$$LINE"; done ; \
+	 echo ""; for LINE in $(HELP_COMPTGT) ; do echo "$$LINE"; done ; \
+	 echo ""; for LINE in $(HELP_SPECIALDEVTGT) ; do echo "$$LINE"; done ; \
+	 echo ""; if [ "$(HELP_LIST_COMPONENTS)" = yes ] ; then \
+	    echo "The following component lists (referenced by some rules above) are now known:"; \
+	    echo "    COMPONENTS_ALL = $(COMPONENTS_ALL)" ; \
+	    echo "    COMPONENTS_FTY = $(COMPONENTS_FTY)" ; \
+	    echo "    COMPONENTS_FTY_EXPERIMENTAL = $(COMPONENTS_FTY_EXPERIMENTAL)" ; \
+	  else echo "Use 'make help HELP_LIST_COMPONENTS=yes' to also detail the component lists"; fi; \
+	 echo ""; echo "Again, see https://github.com/42ity/FTY.git and the README for more details."

@@ -32,6 +32,8 @@ Builds and tests should be executed as a non-`root` user, because:
   account that would not see into `root`'s home directory with build
   artifacts.
 
+You can run `make help` for an overview of currently supported targets.
+
 == About the FTY repository
 
 FTY is a "dispatcher" repository which links (as "git submodules") to the
