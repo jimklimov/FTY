@@ -14,7 +14,7 @@
 # providing simple rules to sync the current subcomponent workspace to its
 # relevant upstream default branch, and to regenerate zproject-based source.
 #
-# Copyright (C) 2017 by Eaton
+# Copyright (C) 2017-2018 by Eaton
 # Authors: Jim Klimov <EvgenyKlimov@eaton.com>
 #
 # POC1 : manual naming and ordering
@@ -1421,6 +1421,9 @@ wipe mrproper:
 
 # Speak BSDisch?
 emerge: git-resync-auto-all
+	@echo "COMPLETED $@ : made '$^'"
+
+rebase: git-resync-all
 	@echo "COMPLETED $@ : made '$^'"
 
 world:
