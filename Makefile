@@ -34,6 +34,9 @@ HELP_TOUCHFILES = "The following 'touch-files' are tracked under BUILD_OBJ_DIR f
 HELP_SPECIALDEVTGT = "The following (pattern-)targets are special for development activity in" \
                      "a workspace made with the FTY dispatcher repo:"
 HELP_SPECIALTGT = "The following targets are special for maintenance of the workspace, etc:"
+# The Makefile supports including additional ones to customize its behavior
+# for non-default use-cases. Those files can add their help to this variable:
+HELP_ADDONS =
 
 # Details defined below
 #.PHONY: all install clean
@@ -1588,4 +1591,5 @@ help:
 	    echo "    COMPONENTS_FTY = $(COMPONENTS_FTY)" ; \
 	    echo "    COMPONENTS_FTY_EXPERIMENTAL = $(COMPONENTS_FTY_EXPERIMENTAL)" ; \
 	  else echo "Use 'make help HELP_LIST_COMPONENTS=yes' to also detail the component lists"; fi; \
+	 if [ -n "$(HELP_ADDONS)" ] ; then echo ""; for LINE in $(HELP_ADDONS) ; do echo "$$LINE"; done ; fi; \
 	 echo ""; echo "Again, see https://github.com/42ity/FTY.git and the README for more details."
