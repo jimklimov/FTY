@@ -1,4 +1,6 @@
 # CUSTOM OPTIONS FOR SOLARIS/ILLUMOS (developed on OpenIndiana Hipster)
+HELP_ADDONS += "Makefile-local note: This build scenario is customized for"
+HELP_ADDONS += "Solaris/illumos builds"
 
 # For consistency, Sun LD is very much preferable on SunOS platforms
 LD=/usr/ccs/bin/ld

@@ -11,12 +11,15 @@
 
 OE_ARCH:=$(strip $(shell uname -m))
 
+HELP_ADDONS += "Makefile-local note: This build scenario is customized for"
 ifeq ($(OE_ARCH),armv7l)
+HELP_ADDONS += "Native ARM builds, OE_ARCH='$(OE_ARCH)'"
 arm:
 	@echo "Native ARM: OE_ARCH='$(OE_ARCH)'"
 else
+HELP_ADDONS += "Crosslink ARM builds, OE_ARCH='$(OE_ARCH)'"
 arm:
-	@echo "Crosslink ARM OE_ARCH='$(OE_ARCH)'"
+	@echo "Crosslink ARM: OE_ARCH='$(OE_ARCH)'"
 
 
 BUILD_ARCH = armv7l
