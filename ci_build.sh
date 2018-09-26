@@ -174,6 +174,13 @@ default|"default-tgt:"*)
     echo "=== `date`: Exiting after the custom-build target 'make $BUILD_TGT' FAILED with code $BLDRES" >&2
     exit $BLDRES
     ;;
+help)
+    BLDRES=0
+    make help HELP_LIST_COMPONENTS=yes || BLDRES=$?
+    echo "=== Currently registered submodule references:"
+    git submodule || BLDRES=$?
+    exit $BLDRES
+    ;;
 bindings)
     pushd "./bindings/${BINDING}" && ./ci_build.sh
     ;;
