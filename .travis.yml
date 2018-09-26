@@ -162,7 +162,7 @@ env:
 # We group the most informative builds first so they complete (or fail) early.
 matrix:
   include:
-  - env: BUILD_TYPE=help CI_GIT_RESYNC=false
+  - env: BUILD_TYPE=help CI_GIT_SUBMODULES=false
     os: linux
     services: docker
   - env: CI_CZMQ_VER=3 BUILD_TYPE=default-tgt:install-all
@@ -396,8 +396,7 @@ before_install:
 - if [ -z "$CI_WIPE_FIRST" ] ; then export CI_WIPE_FIRST="$DEFAULT_CI_WIPE_FIRST" ; fi
 - if [ -z "$CI_PARMAKE_QUIET" ] ; then export CI_PARMAKE_QUIET="$DEFAULT_CI_PARMAKE_QUIET" ; fi
 - if [ "$TRAVIS_PULL_REQUEST" = "false" ]; then echo "NON-PR BUILD Detected, assuming a montly build from scratch + most recent codebase"; export CI_WIPE_FIRST="true" ; export CI_GIT_RESYNC="true"; fi
-- date; echo Syncing Git submodule repos...
-- if [ "$CI_GIT_RESYNC" == true ] ; then DO_BUMP=no time ./sync.sh ; else git submodule init && { git submodule update --depth 3 || git submodule update ; } ; fi
+- if [ "$CI_GIT_SUBMODULES" != false ]; then date; echo Syncing Git submodule repos... ; if [ "$CI_GIT_RESYNC" == true ] ; then DO_BUMP=no time ./sync.sh ; else git submodule init && { git submodule update --depth 3 || git submodule update ; } ; fi ; fi
 - if [ $TRAVIS_OS_NAME == "osx" ] ; then brew update; brew install binutils asciidoc docbook-xsl ; XML_CATALOG_FILES=/usr/local/etc/xml/catalog ; export XML_CATALOG_FILES ; fi
 
 install:
