@@ -162,6 +162,9 @@ env:
 # We group the most informative builds first so they complete (or fail) early.
 matrix:
   include:
+  - env: BUILD_TYPE=help CI_GIT_RESYNC=false
+    os: linux
+    services: docker
   - env: CI_CZMQ_VER=3 BUILD_TYPE=default-tgt:install-all
     os: linux
     services: docker
