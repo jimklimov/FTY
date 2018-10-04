@@ -179,3 +179,7 @@
 	path = fty-common-rest
 	url = https://github.com/42ity/fty-common-rest.git
 	branch = master
+[submodule "fty-common-translation"]
+	path = fty-common-translation
+	url = https://github.com/42ity/fty-common-translation.git
+	branch = master
