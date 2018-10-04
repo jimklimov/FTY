@@ -19,7 +19,7 @@ change_upstream() (
     DIR_NAME="$1"
     [ -z "$DIR_NAME" ] && echo "ERROR: Could not get DIR_NAME" >&2 && return 1
     # Note: .git is a file for submodules, a dir for non-bare repos with a workspace
-    [ -e "$DIR_NAME/.git" ] && echo "ERROR: $DIR_NAME/.git does not exist" >&2 && return 1
+    [ -e "$DIR_NAME/.git" ] || { echo "ERROR: $DIR_NAME/.git does not exist" >&2 && return 1 ; }
     REPO_NAME="`echo "$1" | sed -e 's,/*$,,' -e 's,^.*/\([^/]*\)$,\1,'`" || REPO_NAME=""
     [ -z "$REPO_NAME" ] && echo "ERROR: Could not get REPO_NAME from DIR_NAME='$DIR_NAME'" >&2 && return 1
     REPO_URL="https://github.com/${GITHUB_USER}/${REPO_NAME}/"
