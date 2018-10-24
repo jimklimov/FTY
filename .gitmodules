@@ -183,3 +183,7 @@
 	path = fty-common-translation
 	url = https://github.com/42ity/fty-common-translation.git
 	branch = master
+[submodule "fty-scripts-rest"]
+	path = fty-scripts-rest
+	url = https://github.com/42ity/fty-scripts-rest.git
+	branch = master
