@@ -1059,6 +1059,9 @@ $(BUILD_OBJ_DIR)/fty-sensor-gpio/.configured: $(BUILD_OBJ_DIR)/fty-proto/.instal
 COMPONENTS_FTY += fty-common-translation
 $(BUILD_OBJ_DIR)/fty-common-translation/.configured: $(BUILD_OBJ_DIR)/fty-common-mlm/.installed
 
+COMPONENTS_FTY += fty-scripts-rest
+$(BUILD_OBJ_DIR)/fty-scripts-rest/.configured: $(BUILD_OBJ_DIR)/fty-common-rest/.installed $(BUILD_OBJ_DIR)/fty-common-mlm/.installed $(BUILD_OBJ_DIR)/tntnet/.installed $(BUILD_OBJ_DIR)/cxxtools/.installed
+
 ### Note: The following components are experimental recent additions,
 ### and in their current state they break FTY builds (and they do not
 ### yet do anything useful). So while this Makefile supports a basic
