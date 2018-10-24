@@ -1056,6 +1056,9 @@ $(BUILD_OBJ_DIR)/fty-discovery/.configured: $(BUILD_OBJ_DIR)/fty-proto/.installe
 COMPONENTS_FTY += fty-sensor-gpio
 $(BUILD_OBJ_DIR)/fty-sensor-gpio/.configured: $(BUILD_OBJ_DIR)/fty-proto/.installed $(BUILD_OBJ_DIR)/fty-common-logging/.installed
 
+COMPONENTS_FTY += fty-common-translation
+$(BUILD_OBJ_DIR)/fty-common-translation/.configured: $(BUILD_OBJ_DIR)/fty-common-mlm/.installed
+
 ### Note: The following components are experimental recent additions,
 ### and in their current state they break FTY builds (and they do not
 ### yet do anything useful). So while this Makefile supports a basic
@@ -1063,9 +1066,6 @@ $(BUILD_OBJ_DIR)/fty-sensor-gpio/.configured: $(BUILD_OBJ_DIR)/fty-proto/.instal
 ### Not built by default... but if we do - it's covered
 COMPONENTS_FTY_EXPERIMENTAL += fty-metric-snmp
 $(BUILD_OBJ_DIR)/fty-metric-snmp/.configured: $(BUILD_OBJ_DIR)/fty-proto/.installed $(BUILD_OBJ_DIR)/fty-common-logging/.installed
-
-COMPONENTS_FTY_EXPERIMENTAL += fty-common-translation
-$(BUILD_OBJ_DIR)/fty-common-translation/.configured: $(BUILD_OBJ_DIR)/fty-common-mlm/.installed
 
 ### TODO: does this need prometheus? what dependency pkgs is it in?
 COMPONENTS_FTY_EXPERIMENTAL += fty-prometheus-rest
