@@ -74,10 +74,10 @@ default|"default-tgt:"*)
       BLDRES=255
       if [ "$CI_PARMAKE_QUIET" = "yes" ]; then
         echo "`date`: CI_PARMAKE_QUIET says the initial parallel make attempt will hide stdout"
-        $CI_TIME BIOS_LOG_LEVEL=LOG_INFO make VERBOSE=0 V=0 -k -j4 "$BUILD_TGT" & 1>/dev/null
+        BIOS_LOG_LEVEL=LOG_INFO $CI_TIME make VERBOSE=0 V=0 -k -j4 "$BUILD_TGT" & 1>/dev/null
         PID_MAKE=$!
       else
-        $CI_TIME BIOS_LOG_LEVEL=LOG_INFO make VERBOSE=0 V=0 -k -j4 "$BUILD_TGT" &
+        BIOS_LOG_LEVEL=LOG_INFO $CI_TIME make VERBOSE=0 V=0 -k -j4 "$BUILD_TGT" &
         PID_MAKE=$!
       fi
       ( minutes=0
@@ -119,7 +119,7 @@ default|"default-tgt:"*)
       echo "`date`: Starting the sequential build attempt..."
       # Avoiding travis_wait() and build timeouts during tests
       # thanks to comments in Travis-CI issue #4190
-      $CI_TIME BIOS_LOG_LEVEL=LOG_DEBUG make V=1 VERBOSE=1 "$BUILD_TGT" &
+      BIOS_LOG_LEVEL=LOG_DEBUG $CI_TIME make V=1 VERBOSE=1 "$BUILD_TGT" &
       PID_MAKE=$!
       ( minutes=0
         ticks=0
