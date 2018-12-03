@@ -189,3 +189,7 @@
 	path = fty-scripts-rest
 	url = https://github.com/42ity/fty-scripts-rest.git
 	branch = master
+[submodule "fty-shm"]
+	path = fty-shm
+	url = https://github.com/42ity/fty-shm.git
+	branch = master
