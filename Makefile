@@ -1014,7 +1014,14 @@ COMPONENTS_FTY += fty-metric-composite
 $(BUILD_OBJ_DIR)/fty-metric-composite/.configured: $(BUILD_OBJ_DIR)/fty-proto/.installed $(BUILD_OBJ_DIR)/cxxtools/.installed $(BUILD_OBJ_DIR)/fty-common-logging/.installed $(BUILD_OBJ_DIR)/fty-common-mlm/.installed
 
 COMPONENTS_FTY += fty-email
-$(BUILD_OBJ_DIR)/fty-email/.configured: $(BUILD_OBJ_DIR)/fty-proto/.installed $(BUILD_OBJ_DIR)/cxxtools/.installed $(BUILD_OBJ_DIR)/libmagic/.installed $(BUILD_OBJ_DIR)/fty-common/.installed $(BUILD_OBJ_DIR)/fty-common-logging/.installed $(BUILD_OBJ_DIR)/fty-common-mlm/.installed
+$(BUILD_OBJ_DIR)/fty-email/.configured: \
+    $(BUILD_OBJ_DIR)/fty-proto/.installed \
+    $(BUILD_OBJ_DIR)/cxxtools/.installed \
+    $(BUILD_OBJ_DIR)/libmagic/.installed \
+    $(BUILD_OBJ_DIR)/fty-common/.installed \
+    $(BUILD_OBJ_DIR)/fty-common-logging/.installed \
+    $(BUILD_OBJ_DIR)/fty-common-mlm/.installed \
+    $(BUILD_OBJ_DIR)/fty-common-translation/.installed
 
 COMPONENTS_FTY += fty-alert-engine
 $(BUILD_OBJ_DIR)/fty-alert-engine/.configured: $(BUILD_OBJ_DIR)/fty-proto/.installed $(BUILD_OBJ_DIR)/cxxtools/.installed $(BUILD_OBJ_DIR)/fty-common/.installed $(BUILD_OBJ_DIR)/fty-common-logging/.installed
