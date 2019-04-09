@@ -193,3 +193,7 @@
 	path = fty-shm
 	url = https://github.com/42ity/fty-shm.git
 	branch = master
+[submodule "fty-metric-ambient-location"]
+	path = fty-metric-ambient-location
+	url = https://github.com/42ity/fty-metric-ambient-location.git
+	branch = master
