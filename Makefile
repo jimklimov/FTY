@@ -1032,8 +1032,8 @@ $(BUILD_OBJ_DIR)/fty-alert-list/.configured: $(BUILD_OBJ_DIR)/fty-proto/.install
 COMPONENTS_FTY += fty-kpi-power-uptime
 $(BUILD_OBJ_DIR)/fty-kpi-power-uptime/.configured: $(BUILD_OBJ_DIR)/fty-proto/.installed $(BUILD_OBJ_DIR)/fty-common-logging/.installed
 
-COMPONENTS_FTY += fty-metric-cache
-$(BUILD_OBJ_DIR)/fty-metric-cache/.configured: $(BUILD_OBJ_DIR)/fty-proto/.installed $(BUILD_OBJ_DIR)/fty-common-logging/.installed
+COMPONENTS_FTY += fty-metric-ambient-location
+$(BUILD_OBJ_DIR)/fty-metric-ambient-location/.configured: $(BUILD_OBJ_DIR)/fty-proto/.installed $(BUILD_OBJ_DIR)/fty-common-logging/.installed
 
 COMPONENTS_FTY += fty-metric-compute
 $(BUILD_OBJ_DIR)/fty-metric-compute/.configured: $(BUILD_OBJ_DIR)/fty-proto/.installed $(BUILD_OBJ_DIR)/fty-common-logging/.installed
@@ -1083,6 +1083,11 @@ $(BUILD_OBJ_DIR)/fty-shm/.configured: $(BUILD_OBJ_DIR)/fty-proto/.installed $(BU
 ### TODO: does this need prometheus? what dependency pkgs is it in?
 COMPONENTS_FTY_EXPERIMENTAL += fty-prometheus-rest
 $(BUILD_OBJ_DIR)/fty-prometheus-rest/.configured:  $(BUILD_OBJ_DIR)/$(COMPONENT_MLM)/.installed $(BUILD_OBJ_DIR)/tntdb/.installed $(BUILD_OBJ_DIR)/tntnet/.installed $(BUILD_OBJ_DIR)/fty-proto/.installed $(BUILD_OBJ_DIR)/fty-core/.installed $(BUILD_OBJ_DIR)/libcidr/.installed $(BUILD_OBJ_DIR)/libmagic/.installed $(BUILD_OBJ_DIR)/fty-common-logging/.installed
+
+### Heading to obsoletion; now fty-metric-ambient-location
+### is becoming part of replacement for fty-metric-cache
+COMPONENTS_FTY_EXPERIMENTAL += fty-metric-cache
+$(BUILD_OBJ_DIR)/fty-metric-cache/.configured: $(BUILD_OBJ_DIR)/fty-proto/.installed $(BUILD_OBJ_DIR)/fty-common-logging/.installed
 
 COMPONENTS_ALL += $(COMPONENTS_FTY)
 
