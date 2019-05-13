@@ -203,3 +203,7 @@
 	path = fty-common-nut
 	url = https://github.com/42ity/fty-common-nut.git
 	branch = master
+[submodule "fty-security-wallet-rest"]
+	path = fty-security-wallet-rest
+	url = https://github.com/42ity/fty-security-wallet-rest.git
+	branch = master
