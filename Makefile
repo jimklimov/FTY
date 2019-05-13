@@ -1072,6 +1072,14 @@ $(BUILD_OBJ_DIR)/fty-scripts-rest/.configured: $(BUILD_OBJ_DIR)/fty-common-rest/
 COMPONENTS_FTY += fty-security-wallet
 $(BUILD_OBJ_DIR)/fty-security-wallet/.configured: $(BUILD_OBJ_DIR)/fty-proto/.installed $(BUILD_OBJ_DIR)/fty-common-logging/.installed $(BUILD_OBJ_DIR)/fty-common-mlm/.installed $(BUILD_OBJ_DIR)/cxxtools/.installed
 
+COMPONENTS_FTY += fty-security-wallet-rest
+$(BUILD_OBJ_DIR)/fty-security-wallet-rest/.configured: \
+    $(BUILD_OBJ_DIR)/cxxtools/.installed \
+    $(BUILD_OBJ_DIR)/fty-common-logging/.installed \
+    $(BUILD_OBJ_DIR)/fty-common-mlm/.installed \
+    $(BUILD_OBJ_DIR)/fty-common-rest/.installed \
+    $(BUILD_OBJ_DIR)/fty-security-wallet/.installed
+
 COMPONENTS_FTY += fty-common-nut
 $(BUILD_OBJ_DIR)/fty-common-nut/.configured: $(BUILD_OBJ_DIR)/fty-common-mlm/.installed $(BUILD_OBJ_DIR)/fty-proto/.installed $(BUILD_OBJ_DIR)/cxxtools/.installed $(BUILD_OBJ_DIR)/fty-common-logging/.installed $(BUILD_OBJ_DIR)/fty-security-wallet/.installed
 
