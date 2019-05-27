@@ -806,11 +806,18 @@ COMPONENTS_FTY += fty-common-logging
 $(BUILD_OBJ_DIR)/fty-common-logging/.configured: \
     $(BUILD_OBJ_DIR)/$(COMPONENT_LOG4CPLUS)/.installed
 
+COMPONENTS_FTY += fty-common
+$(BUILD_OBJ_DIR)/fty-common/.configured: \
+    $(BUILD_OBJ_DIR)/libmagic/.installed \
+    $(BUILD_OBJ_DIR)/cxxtools/.installed \
+    $(BUILD_OBJ_DIR)/fty-common-logging/.installed
+
 COMPONENTS_FTY += fty-common-mlm
 $(BUILD_OBJ_DIR)/fty-common-mlm/.configured: \
     $(BUILD_OBJ_DIR)/$(COMPONENT_MLM)/.installed \
     $(BUILD_OBJ_DIR)/$(COMPONENT_LIBSODIUM)/.installed \
     $(BUILD_OBJ_DIR)/cxxtools/.installed \
+    $(BUILD_OBJ_DIR)/fty-common/.installed \
     $(BUILD_OBJ_DIR)/fty-common-logging/.installed
 
 COMPONENTS_FTY += fty-common-db
@@ -828,12 +835,6 @@ $(BUILD_OBJ_DIR)/fty-common-rest/.configured: \
     $(BUILD_OBJ_DIR)/fty-common-logging/.installed \
     $(BUILD_OBJ_DIR)/fty-common-mlm/.installed \
     $(BUILD_OBJ_DIR)/fty-common-db/.installed
-
-COMPONENTS_FTY += fty-common
-$(BUILD_OBJ_DIR)/fty-common/.configured: \
-    $(BUILD_OBJ_DIR)/libmagic/.installed \
-    $(BUILD_OBJ_DIR)/cxxtools/.installed \
-    $(BUILD_OBJ_DIR)/fty-common-logging/.installed
 
 COMPONENTS_FTY += fty-proto
 $(BUILD_OBJ_DIR)/fty-proto/.configured: \
