@@ -97,11 +97,14 @@ pkg_deps_doctools: &pkg_deps_doctools
 pkg_deps_devtools: &pkg_deps_devtools
     - git
     - ccache
+    - gcc-4.9
+    - g++-4.9
 
 # Note: gcc-4.8 => trusty (ubuntu14) or newer
-# liblsan (leak sanitizer) is in gcc-4.9, 5.x etc. - not in trusty
+# liblsan (leak sanitizer) is in gcc-4.9, 5.x etc. - not in trusty default repo
 pkg_deps_asan: &pkg_deps_asan
-    - libgcc-4.8-dev
+#    - libgcc-4.8-dev
+    - libgcc-4.9-dev
 #    - liblsan0
 #    - libasan0
 #    - libasan1
@@ -130,10 +133,17 @@ pkg_src_zeromq_ubuntu14: &pkg_src_zeromq_ubuntu14
 - sourceline: 'deb http://download.opensuse.org/repositories/network:/messaging:/zeromq:/git-draft/xUbuntu_14.04/ ./'
   key_url: 'http://download.opensuse.org/repositories/network:/messaging:/zeromq:/git-draft/xUbuntu_14.04/Release.key'
 
+pkg_src_zeromq_ubuntu16: &pkg_src_zeromq_ubuntu16
+- sourceline: 'deb http://download.opensuse.org/repositories/network:/messaging:/zeromq:/git-draft/xUbuntu_16.04/ ./'
+  key_url: 'http://download.opensuse.org/repositories/network:/messaging:/zeromq:/git-draft/xUbuntu_16.04/Release.key'
+
 # Note: refer to ubuntu14 if you use dist==Trusty for default platform and packaged ZMQ
+# or ubuntu16 for dist==xenial
 addons:
   apt:
-#    sources: *pkg_src_zeromq_ubuntu14
+    sources:
+    - ubuntu-toolchain-r-test
+    #- *pkg_src_zeromq_ubuntu14
     packages: &pkg_deps_common
     - *pkg_deps_devtools
     - *pkg_deps_prereqs_fty_overall
@@ -171,6 +181,8 @@ matrix:
     sudo: required
     addons:
       apt:
+        sources:
+        - ubuntu-toolchain-r-test
         packages:
         - *pkg_deps_common
         - *pkg_deps_doctools
@@ -181,6 +193,8 @@ matrix:
     sudo: required
     addons:
       apt:
+        sources:
+        - ubuntu-toolchain-r-test
         packages:
         - *pkg_deps_common
         - *pkg_deps_doctools
@@ -192,7 +206,9 @@ matrix:
     sudo: required
     addons:
       apt:
-        sources: *pkg_src_zeromq_ubuntu14
+        sources:
+        - *pkg_src_zeromq_ubuntu14
+        - ubuntu-toolchain-r-test
         packages:
         - *pkg_deps_common
         - *pkg_deps_doctools
@@ -205,6 +221,8 @@ matrix:
     sudo: required
     addons:
       apt:
+        sources:
+        - ubuntu-toolchain-r-test
         packages:
         - *pkg_deps_common
         - valgrind
@@ -215,6 +233,8 @@ matrix:
     sudo: required
     addons:
       apt:
+        sources:
+        - ubuntu-toolchain-r-test
         packages:
         - *pkg_deps_common
         - valgrind
@@ -226,7 +246,9 @@ matrix:
     sudo: required
     addons:
       apt:
-        sources: *pkg_src_zeromq_ubuntu14
+        sources:
+        - *pkg_src_zeromq_ubuntu14
+        - ubuntu-toolchain-r-test
         packages:
         - *pkg_deps_common
         - valgrind
@@ -239,6 +261,8 @@ matrix:
     sudo: required
     addons:
       apt:
+        sources:
+        - ubuntu-toolchain-r-test
         packages:
         - *pkg_deps_common
         - *pkg_deps_asan
@@ -249,6 +273,8 @@ matrix:
     sudo: required
     addons:
       apt:
+        sources:
+        - ubuntu-toolchain-r-test
         packages:
         - *pkg_deps_common
         - *pkg_deps_asan
@@ -261,7 +287,9 @@ matrix:
 #    sudo: required
 #    addons:
 #      apt:
-#        sources: *pkg_src_zeromq_ubuntu14
+#        sources:
+#        - ubuntu-toolchain-r-test
+#        - *pkg_src_zeromq_ubuntu14
 #        packages:
 #        - *pkg_deps_common
 #        - *pkg_deps_asan
@@ -274,6 +302,8 @@ matrix:
     sudo: required
     addons:
       apt:
+        sources:
+        - ubuntu-toolchain-r-test
         packages:
         - *pkg_deps_common
   - env: CI_CZMQ_VER=3 BUILD_TYPE=default-tgt:dist
@@ -282,6 +312,8 @@ matrix:
     sudo: required
     addons:
       apt:
+        sources:
+        - ubuntu-toolchain-r-test
         packages:
         - *pkg_deps_common
   - env: CI_CZMQ_VER=3 BUILD_TYPE=default-tgt:distcheck
@@ -290,6 +322,8 @@ matrix:
     sudo: required
     addons:
       apt:
+        sources:
+        - ubuntu-toolchain-r-test
         packages:
         - *pkg_deps_common
         - *pkg_deps_doctools
@@ -299,6 +333,8 @@ matrix:
     sudo: required
     addons:
       apt:
+        sources:
+        - ubuntu-toolchain-r-test
         packages:
         - *pkg_deps_common
         - *pkg_deps_doctools
@@ -310,6 +346,8 @@ matrix:
     sudo: required
     addons:
       apt:
+        sources:
+        - ubuntu-toolchain-r-test
         packages:
         - *pkg_deps_common
   - env: CI_CZMQ_VER=4 BUILD_TYPE=default-tgt:dist
@@ -318,6 +356,8 @@ matrix:
     sudo: required
     addons:
       apt:
+        sources:
+        - ubuntu-toolchain-r-test
         packages:
         - *pkg_deps_common
   - env: CI_CZMQ_VER=4 BUILD_TYPE=default-tgt:distcheck
@@ -326,6 +366,8 @@ matrix:
     sudo: required
     addons:
       apt:
+        sources:
+        - ubuntu-toolchain-r-test
         packages:
         - *pkg_deps_common
         - *pkg_deps_doctools
@@ -335,6 +377,8 @@ matrix:
     sudo: required
     addons:
       apt:
+        sources:
+        - ubuntu-toolchain-r-test
         packages:
         - *pkg_deps_common
         - *pkg_deps_doctools
@@ -347,7 +391,9 @@ matrix:
     sudo: required
     addons:
       apt:
-        sources: *pkg_src_zeromq_ubuntu14
+        sources:
+        - ubuntu-toolchain-r-test
+        - *pkg_src_zeromq_ubuntu14
         packages:
         - *pkg_deps_common
         - *pkg_deps_prereqs_zmq_master
@@ -358,7 +404,9 @@ matrix:
     sudo: required
     addons:
       apt:
-        sources: *pkg_src_zeromq_ubuntu14
+        sources:
+        - ubuntu-toolchain-r-test
+        - *pkg_src_zeromq_ubuntu14
         packages:
         - *pkg_deps_common
         - *pkg_deps_prereqs_zmq_master
@@ -369,7 +417,9 @@ matrix:
     sudo: required
     addons:
       apt:
-        sources: *pkg_src_zeromq_ubuntu14
+        sources:
+        - ubuntu-toolchain-r-test
+        - *pkg_src_zeromq_ubuntu14
         packages:
         - *pkg_deps_common
         - *pkg_deps_doctools
@@ -381,7 +431,9 @@ matrix:
     sudo: required
     addons:
       apt:
-        sources: *pkg_src_zeromq_ubuntu14
+        sources:
+        - ubuntu-toolchain-r-test
+        - *pkg_src_zeromq_ubuntu14
         packages:
         - *pkg_deps_common
         - *pkg_deps_doctools
@@ -398,6 +450,7 @@ before_install:
 - if [ "$TRAVIS_PULL_REQUEST" = "false" ]; then echo "NON-PR BUILD Detected, assuming a montly build from scratch + most recent codebase"; export CI_WIPE_FIRST="true" ; export CI_GIT_RESYNC="true"; fi
 - if [ "$CI_GIT_SUBMODULES" != false ]; then date; echo Syncing Git submodule repos... ; if [ "$CI_GIT_RESYNC" == true ] ; then DO_BUMP=no time ./sync.sh ; else git submodule init && { git submodule update --depth 3 || git submodule update ; } ; fi ; fi
 - if [ $TRAVIS_OS_NAME == "osx" ] ; then brew update; brew install binutils asciidoc docbook-xsl ; XML_CATALOG_FILES=/usr/local/etc/xml/catalog ; export XML_CATALOG_FILES ; fi
+- if [ "$CXX" == "g++" ] ; then export CXX="g++-4.9" CC="gcc-4.9" ; fi
 
 install:
 - date; echo Installing pycparser...
