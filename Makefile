@@ -145,8 +145,20 @@ LN_S_R=$(GNU_LN) -s -f -r
 # GNU Make required (overridable via includes below)
 GMAKE=make
 MAKE=$(GMAKE)
-CC=gcc
-CXX=g++
+
+# Our current codebase works with at least gcc-4.8 for most components,
+# but some require gcc-4.9+ for C++11 regex support, among other things.
+# However at this time there are warnings for newer compilers (gcc-5+),
+# so we do not build for them by default either.
+GCC_VERSION?=4.9
+ifeq ($(strip $(GCC_VERSION)),)
+GCC_VERSION_SUFFIX=
+else
+GCC_VERSION_SUFFIX=-$(GCC_VERSION)
+endif
+CC=gcc$(GCC_VERSION_SUFFIX)
+CXX=g++$(GCC_VERSION_SUFFIX)
+
 export CC
 export CXX
 
