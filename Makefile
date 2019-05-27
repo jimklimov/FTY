@@ -842,6 +842,10 @@ $(BUILD_OBJ_DIR)/fty-proto/.configured: \
     $(BUILD_OBJ_DIR)/fty-common-logging/.installed
 # $(BUILD_OBJ_DIR)/cxxtools/.installed
 
+# Beside MQ, much data is now published via SHM FS more quickly
+COMPONENTS_FTY += fty-shm
+$(BUILD_OBJ_DIR)/fty-shm/.configured: $(BUILD_OBJ_DIR)/fty-proto/.installed $(BUILD_OBJ_DIR)/fty-common-logging/.installed
+
 
 COMPONENTS_FTY += fty-rest
 PREP_TYPE_fty-rest = clonetar-src
@@ -872,6 +876,7 @@ $(BUILD_OBJ_DIR)/fty-rest/.configured: \
     $(BUILD_OBJ_DIR)/tntnet/.installed \
     $(BUILD_OBJ_DIR)/fty-proto/.installed \
     $(BUILD_OBJ_DIR)/fty-core/.installed \
+    $(BUILD_OBJ_DIR)/fty-shm/.installed \
     $(BUILD_OBJ_DIR)/libcidr/.installed \
     $(BUILD_OBJ_DIR)/libmagic/.installed \
     $(BUILD_OBJ_DIR)/fty-common/.installed \
@@ -1006,25 +1011,37 @@ web-test-bios: web-test-bios-deps
 ### to be needed everywhere, some others would need -mlm or -db or the plain
 ### fty-common, and some would not.
 COMPONENTS_FTY += fty-warranty
-$(BUILD_OBJ_DIR)/fty-warranty/.configured: $(BUILD_OBJ_DIR)/fty-proto/.installed $(BUILD_OBJ_DIR)/tntdb/.installed $(BUILD_OBJ_DIR)/cxxtools/.installed $(BUILD_OBJ_DIR)/fty-common/.installed $(BUILD_OBJ_DIR)/fty-common-logging/.installed $(BUILD_OBJ_DIR)/fty-common-db/.installed
+$(BUILD_OBJ_DIR)/fty-warranty/.configured: \
+    $(BUILD_OBJ_DIR)/fty-shm/.installed \
+    $(BUILD_OBJ_DIR)/fty-proto/.installed $(BUILD_OBJ_DIR)/tntdb/.installed $(BUILD_OBJ_DIR)/cxxtools/.installed $(BUILD_OBJ_DIR)/fty-common/.installed $(BUILD_OBJ_DIR)/fty-common-logging/.installed $(BUILD_OBJ_DIR)/fty-common-db/.installed
 
 COMPONENTS_FTY += fty-nut
-$(BUILD_OBJ_DIR)/fty-nut/.configured: $(BUILD_OBJ_DIR)/fty-proto/.installed $(BUILD_OBJ_DIR)/libcidr/.installed $(BUILD_OBJ_DIR)/cxxtools/.installed $(BUILD_OBJ_DIR)/nut/.installed $(BUILD_OBJ_DIR)/fty-common/.installed $(BUILD_OBJ_DIR)/fty-common-logging/.installed $(BUILD_OBJ_DIR)/fty-common-db/.installed $(BUILD_OBJ_DIR)/fty-common-mlm/.installed
+$(BUILD_OBJ_DIR)/fty-nut/.configured: \
+    $(BUILD_OBJ_DIR)/fty-shm/.installed \
+    $(BUILD_OBJ_DIR)/fty-proto/.installed $(BUILD_OBJ_DIR)/libcidr/.installed $(BUILD_OBJ_DIR)/cxxtools/.installed $(BUILD_OBJ_DIR)/nut/.installed $(BUILD_OBJ_DIR)/fty-common/.installed $(BUILD_OBJ_DIR)/fty-common-logging/.installed $(BUILD_OBJ_DIR)/fty-common-db/.installed $(BUILD_OBJ_DIR)/fty-common-mlm/.installed
 
 COMPONENTS_FTY += fty-asset
 $(BUILD_OBJ_DIR)/fty-asset/.configured: $(BUILD_OBJ_DIR)/fty-proto/.installed $(BUILD_OBJ_DIR)/tntdb/.installed $(BUILD_OBJ_DIR)/cxxtools/.installed $(BUILD_OBJ_DIR)/libmagic/.installed $(BUILD_OBJ_DIR)/fty-common/.installed $(BUILD_OBJ_DIR)/fty-common-logging/.installed $(BUILD_OBJ_DIR)/fty-common-db/.installed $(BUILD_OBJ_DIR)/fty-common-mlm/.installed
 
 COMPONENTS_FTY += fty-alert-stats
-$(BUILD_OBJ_DIR)/fty-alert-stats/.configured: $(BUILD_OBJ_DIR)/fty-proto/.installed $(BUILD_OBJ_DIR)/tntdb/.installed $(BUILD_OBJ_DIR)/cxxtools/.installed $(BUILD_OBJ_DIR)/fty-common/.installed $(BUILD_OBJ_DIR)/fty-common-logging/.installed
+$(BUILD_OBJ_DIR)/fty-alert-stats/.configured: \
+    $(BUILD_OBJ_DIR)/fty-shm/.installed \
+    $(BUILD_OBJ_DIR)/fty-proto/.installed $(BUILD_OBJ_DIR)/tntdb/.installed $(BUILD_OBJ_DIR)/cxxtools/.installed $(BUILD_OBJ_DIR)/fty-common/.installed $(BUILD_OBJ_DIR)/fty-common-logging/.installed
 
 COMPONENTS_FTY += fty-metric-tpower
-$(BUILD_OBJ_DIR)/fty-metric-tpower/.configured: $(BUILD_OBJ_DIR)/fty-proto/.installed $(BUILD_OBJ_DIR)/tntdb/.installed $(BUILD_OBJ_DIR)/cxxtools/.installed $(BUILD_OBJ_DIR)/fty-common/.installed $(BUILD_OBJ_DIR)/fty-common-logging/.installed $(BUILD_OBJ_DIR)/fty-common-mlm/.installed $(BUILD_OBJ_DIR)/fty-common-db/.installed
+$(BUILD_OBJ_DIR)/fty-metric-tpower/.configured: \
+    $(BUILD_OBJ_DIR)/fty-shm/.installed \
+    $(BUILD_OBJ_DIR)/fty-proto/.installed $(BUILD_OBJ_DIR)/tntdb/.installed $(BUILD_OBJ_DIR)/cxxtools/.installed $(BUILD_OBJ_DIR)/fty-common/.installed $(BUILD_OBJ_DIR)/fty-common-logging/.installed $(BUILD_OBJ_DIR)/fty-common-mlm/.installed $(BUILD_OBJ_DIR)/fty-common-db/.installed
 
 COMPONENTS_FTY += fty-metric-store
-$(BUILD_OBJ_DIR)/fty-metric-store/.configured: $(BUILD_OBJ_DIR)/fty-proto/.installed $(BUILD_OBJ_DIR)/tntdb/.installed $(BUILD_OBJ_DIR)/cxxtools/.installed $(BUILD_OBJ_DIR)/fty-common-logging/.installed
+$(BUILD_OBJ_DIR)/fty-metric-store/.configured: \
+    $(BUILD_OBJ_DIR)/fty-shm/.installed \
+    $(BUILD_OBJ_DIR)/fty-proto/.installed $(BUILD_OBJ_DIR)/tntdb/.installed $(BUILD_OBJ_DIR)/cxxtools/.installed $(BUILD_OBJ_DIR)/fty-common-logging/.installed
 
 COMPONENTS_FTY += fty-metric-composite
-$(BUILD_OBJ_DIR)/fty-metric-composite/.configured: $(BUILD_OBJ_DIR)/fty-proto/.installed $(BUILD_OBJ_DIR)/cxxtools/.installed $(BUILD_OBJ_DIR)/fty-common-logging/.installed $(BUILD_OBJ_DIR)/fty-common-mlm/.installed
+$(BUILD_OBJ_DIR)/fty-metric-composite/.configured: \
+    $(BUILD_OBJ_DIR)/fty-shm/.installed \
+    $(BUILD_OBJ_DIR)/fty-proto/.installed $(BUILD_OBJ_DIR)/cxxtools/.installed $(BUILD_OBJ_DIR)/fty-common-logging/.installed $(BUILD_OBJ_DIR)/fty-common-mlm/.installed
 
 COMPONENTS_FTY += fty-email
 $(BUILD_OBJ_DIR)/fty-email/.configured: \
@@ -1037,22 +1054,32 @@ $(BUILD_OBJ_DIR)/fty-email/.configured: \
     $(BUILD_OBJ_DIR)/fty-common-translation/.installed
 
 COMPONENTS_FTY += fty-alert-engine
-$(BUILD_OBJ_DIR)/fty-alert-engine/.configured: $(BUILD_OBJ_DIR)/fty-proto/.installed $(BUILD_OBJ_DIR)/cxxtools/.installed $(BUILD_OBJ_DIR)/fty-common/.installed $(BUILD_OBJ_DIR)/fty-common-logging/.installed
+$(BUILD_OBJ_DIR)/fty-alert-engine/.configured: \
+    $(BUILD_OBJ_DIR)/fty-shm/.installed \
+    $(BUILD_OBJ_DIR)/fty-proto/.installed $(BUILD_OBJ_DIR)/cxxtools/.installed $(BUILD_OBJ_DIR)/fty-common/.installed $(BUILD_OBJ_DIR)/fty-common-logging/.installed
 
 COMPONENTS_FTY += fty-alert-list
 $(BUILD_OBJ_DIR)/fty-alert-list/.configured: $(BUILD_OBJ_DIR)/fty-proto/.installed $(BUILD_OBJ_DIR)/fty-common-logging/.installed
 
 COMPONENTS_FTY += fty-kpi-power-uptime
-$(BUILD_OBJ_DIR)/fty-kpi-power-uptime/.configured: $(BUILD_OBJ_DIR)/fty-proto/.installed $(BUILD_OBJ_DIR)/fty-common-logging/.installed
+$(BUILD_OBJ_DIR)/fty-kpi-power-uptime/.configured: \
+    $(BUILD_OBJ_DIR)/fty-shm/.installed \
+    $(BUILD_OBJ_DIR)/fty-proto/.installed $(BUILD_OBJ_DIR)/fty-common-logging/.installed
 
 COMPONENTS_FTY += fty-metric-ambient-location
-$(BUILD_OBJ_DIR)/fty-metric-ambient-location/.configured: $(BUILD_OBJ_DIR)/fty-proto/.installed $(BUILD_OBJ_DIR)/fty-common-logging/.installed
+$(BUILD_OBJ_DIR)/fty-metric-ambient-location/.configured: \
+    $(BUILD_OBJ_DIR)/fty-shm/.installed \
+    $(BUILD_OBJ_DIR)/fty-proto/.installed $(BUILD_OBJ_DIR)/fty-common-logging/.installed
 
 COMPONENTS_FTY += fty-metric-compute
-$(BUILD_OBJ_DIR)/fty-metric-compute/.configured: $(BUILD_OBJ_DIR)/fty-proto/.installed $(BUILD_OBJ_DIR)/fty-common-logging/.installed
+$(BUILD_OBJ_DIR)/fty-metric-compute/.configured: \
+    $(BUILD_OBJ_DIR)/fty-shm/.installed \
+    $(BUILD_OBJ_DIR)/fty-proto/.installed $(BUILD_OBJ_DIR)/fty-common-logging/.installed
 
 COMPONENTS_FTY += fty-outage
-$(BUILD_OBJ_DIR)/fty-outage/.configured: $(BUILD_OBJ_DIR)/fty-proto/.installed $(BUILD_OBJ_DIR)/fty-common/.installed $(BUILD_OBJ_DIR)/fty-common-logging/.installed
+$(BUILD_OBJ_DIR)/fty-outage/.configured: \
+    $(BUILD_OBJ_DIR)/fty-shm/.installed \
+    $(BUILD_OBJ_DIR)/fty-proto/.installed $(BUILD_OBJ_DIR)/fty-common/.installed $(BUILD_OBJ_DIR)/fty-common-logging/.installed
 
 COMPONENTS_FTY += fty-sensor-env
 $(BUILD_OBJ_DIR)/fty-sensor-env/.configured: $(BUILD_OBJ_DIR)/fty-proto/.installed $(BUILD_OBJ_DIR)/fty-common-logging/.installed
@@ -1061,10 +1088,14 @@ COMPONENTS_FTY += fty-example
 $(BUILD_OBJ_DIR)/fty-example/.configured: $(BUILD_OBJ_DIR)/fty-proto/.installed $(BUILD_OBJ_DIR)/fty-common/.installed $(BUILD_OBJ_DIR)/fty-common-logging/.installed
 
 COMPONENTS_FTY += fty-alert-flexible
-$(BUILD_OBJ_DIR)/fty-alert-flexible/.configured: $(BUILD_OBJ_DIR)/fty-proto/.installed $(BUILD_OBJ_DIR)/fty-common-logging/.installed
+$(BUILD_OBJ_DIR)/fty-alert-flexible/.configured: \
+    $(BUILD_OBJ_DIR)/fty-shm/.installed \
+    $(BUILD_OBJ_DIR)/fty-proto/.installed $(BUILD_OBJ_DIR)/fty-common-logging/.installed
 
 COMPONENTS_FTY += fty-info
-$(BUILD_OBJ_DIR)/fty-info/.configured: $(BUILD_OBJ_DIR)/fty-proto/.installed $(BUILD_OBJ_DIR)/cxxtools/.installed $(BUILD_OBJ_DIR)/fty-common-logging/.installed
+$(BUILD_OBJ_DIR)/fty-info/.configured: \
+    $(BUILD_OBJ_DIR)/fty-shm/.installed \
+    $(BUILD_OBJ_DIR)/fty-proto/.installed $(BUILD_OBJ_DIR)/cxxtools/.installed $(BUILD_OBJ_DIR)/fty-common-logging/.installed
 # $(BUILD_OBJ_DIR)/tntdb/.installed
 
 COMPONENTS_FTY += fty-mdns-sd
@@ -1103,9 +1134,6 @@ $(BUILD_OBJ_DIR)/fty-common-nut/.configured: $(BUILD_OBJ_DIR)/fty-common-mlm/.in
 ### Not built by default... but if we do - it's covered
 COMPONENTS_FTY_EXPERIMENTAL += fty-metric-snmp
 $(BUILD_OBJ_DIR)/fty-metric-snmp/.configured: $(BUILD_OBJ_DIR)/fty-proto/.installed $(BUILD_OBJ_DIR)/fty-common-logging/.installed
-
-COMPONENTS_FTY_EXPERIMENTAL += fty-shm
-$(BUILD_OBJ_DIR)/fty-shm/.configured: $(BUILD_OBJ_DIR)/fty-proto/.installed $(BUILD_OBJ_DIR)/fty-common-logging/.installed
 
 ### TODO: does this need prometheus? what dependency pkgs is it in?
 COMPONENTS_FTY_EXPERIMENTAL += fty-prometheus-rest
