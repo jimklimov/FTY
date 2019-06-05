@@ -1130,7 +1130,6 @@ $(BUILD_OBJ_DIR)/fty-asset-mapping-rest/.configured: \
     $(BUILD_OBJ_DIR)/fty-common-rest/.installed \
     $(BUILD_OBJ_DIR)/fty-common-mlm/.installed \
     $(BUILD_OBJ_DIR)/fty-security-wallet/.installed \
-    $(BUILD_OBJ_DIR)/tntnet/.installed \
     $(BUILD_OBJ_DIR)/cxxtools/.installed
 
 COMPONENTS_FTY += fty-common-nut
