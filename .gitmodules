@@ -207,3 +207,7 @@
 	path = fty-security-wallet-rest
 	url = https://github.com/42ity/fty-security-wallet-rest.git
 	branch = master
+[submodule "fty-asset-mapping-rest"]
+	path = fty-asset-mapping-rest
+	url = https://github.com/42ity/fty-asset-mapping-rest.git
+	branch = master
