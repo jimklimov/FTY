@@ -74,7 +74,7 @@ default|"default-tgt:"*)
       BLDRES=255
       if [ "$CI_PARMAKE_QUIET" = "yes" ]; then
         echo "`date`: CI_PARMAKE_QUIET says the initial parallel make attempt will hide stdout"
-        BIOS_LOG_LEVEL=LOG_INFO $CI_TIME make VERBOSE=0 V=0 --no-print-directory -k -j4 "$BUILD_TGT" & 1>/dev/null
+        BIOS_LOG_LEVEL=LOG_INFO $CI_TIME make VERBOSE=0 V=0 --silent --quiet --no-print-directory -k -j4 "$BUILD_TGT" & 1>/dev/null
         PID_MAKE=$!
       else
         BIOS_LOG_LEVEL=LOG_INFO $CI_TIME make VERBOSE=0 V=0 -k -j4 "$BUILD_TGT" &
