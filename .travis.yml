@@ -201,13 +201,13 @@ matrix:
 
   - env: CI_CZMQ_VER=pkg BUILD_TYPE=default-tgt:install-all
     os: linux
-    dist: trusty
+    dist: xenial
     services: docker
     sudo: required
     addons:
       apt:
         sources:
-        - *pkg_src_zeromq_ubuntu14
+        - *pkg_src_zeromq_ubuntu16
         - ubuntu-toolchain-r-test
         packages:
         - *pkg_deps_common
@@ -241,13 +241,13 @@ matrix:
 
   - env: CI_CZMQ_VER=pkg BUILD_TYPE=default-tgt:memcheck
     os: linux
-    dist: trusty
+    dist: xenial
     services: docker
     sudo: required
     addons:
       apt:
         sources:
-        - *pkg_src_zeromq_ubuntu14
+        - *pkg_src_zeromq_ubuntu16
         - ubuntu-toolchain-r-test
         packages:
         - *pkg_deps_common
@@ -294,7 +294,19 @@ matrix:
 #        - *pkg_deps_common
 #        - *pkg_deps_asan
 #        - *pkg_deps_prereqs_zmq_master
-
+  - env: CI_CZMQ_VER=pkg ADDRESS_SANITIZER=enabled BUILD_TYPE=default-tgt:check
+    os: linux
+    dist: xenial
+    sudo: required
+    addons:
+      apt:
+        sources:
+        - ubuntu-toolchain-r-test
+        - *pkg_src_zeromq_ubuntu16
+        packages:
+        - *pkg_deps_common
+        - *pkg_deps_asan
+        - *pkg_deps_prereqs_zmq_master
 
   - env: CI_CZMQ_VER=3 BUILD_TYPE=default-tgt:check
     os: linux
@@ -386,54 +398,54 @@ matrix:
 
   - env: CI_CZMQ_VER=pkg BUILD_TYPE=default-tgt:check
     os: linux
-    dist: trusty
+    dist: xenial
     services: docker
     sudo: required
     addons:
       apt:
         sources:
         - ubuntu-toolchain-r-test
-        - *pkg_src_zeromq_ubuntu14
+        - *pkg_src_zeromq_ubuntu16
         packages:
         - *pkg_deps_common
         - *pkg_deps_prereqs_zmq_master
   - env: CI_CZMQ_VER=pkg BUILD_TYPE=default-tgt:dist
     os: linux
-    dist: trusty
+    dist: xenial
     services: docker
     sudo: required
     addons:
       apt:
         sources:
         - ubuntu-toolchain-r-test
-        - *pkg_src_zeromq_ubuntu14
+        - *pkg_src_zeromq_ubuntu16
         packages:
         - *pkg_deps_common
         - *pkg_deps_prereqs_zmq_master
   - env: CI_CZMQ_VER=pkg BUILD_TYPE=default-tgt:distcheck
     os: linux
-    dist: trusty
+    dist: xenial
     services: docker
     sudo: required
     addons:
       apt:
         sources:
         - ubuntu-toolchain-r-test
-        - *pkg_src_zeromq_ubuntu14
+        - *pkg_src_zeromq_ubuntu16
         packages:
         - *pkg_deps_common
         - *pkg_deps_doctools
         - *pkg_deps_prereqs_zmq_master
   - env: CI_CZMQ_VER=pkg BUILD_TYPE=default-tgt:experimental
     os: linux
-    dist: trusty
+    dist: xenial
     services: docker
     sudo: required
     addons:
       apt:
         sources:
         - ubuntu-toolchain-r-test
-        - *pkg_src_zeromq_ubuntu14
+        - *pkg_src_zeromq_ubuntu16
         packages:
         - *pkg_deps_common
         - *pkg_deps_doctools
