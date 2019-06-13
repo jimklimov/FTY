@@ -125,6 +125,7 @@ pkg_deps_prereqs_zmq_master: &pkg_deps_prereqs_zmq_master
     - libczmq-dev
     - libmlm-dev
 
+# Be careful expanding these in usage below. See https://github.com/zeromq/zproject/issues/1188
 pkg_src_zeromq_ubuntu12: &pkg_src_zeromq_ubuntu12
 - sourceline: 'deb http://download.opensuse.org/repositories/network:/messaging:/zeromq:/git-draft/xUbuntu_12.04/ ./'
   key_url: 'http://download.opensuse.org/repositories/network:/messaging:/zeromq:/git-draft/xUbuntu_12.04/Release.key'
