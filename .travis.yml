@@ -208,7 +208,7 @@ matrix:
     addons:
       apt:
         sources:
-        *pkg_src_zeromq_ubuntu14
+        - *pkg_src_zeromq_ubuntu14
         - ubuntu-toolchain-r-test
         packages:
         - *pkg_deps_common
@@ -248,7 +248,7 @@ matrix:
     addons:
       apt:
         sources:
-        *pkg_src_zeromq_ubuntu14
+        - *pkg_src_zeromq_ubuntu14
         - ubuntu-toolchain-r-test
         packages:
         - *pkg_deps_common
@@ -393,7 +393,7 @@ matrix:
     addons:
       apt:
         sources:
-        *pkg_src_zeromq_ubuntu14
+        - *pkg_src_zeromq_ubuntu14
         - ubuntu-toolchain-r-test
         packages:
         - *pkg_deps_common
@@ -406,7 +406,7 @@ matrix:
     addons:
       apt:
         sources:
-        *pkg_src_zeromq_ubuntu14
+        - *pkg_src_zeromq_ubuntu14
         - ubuntu-toolchain-r-test
         packages:
         - *pkg_deps_common
@@ -419,7 +419,7 @@ matrix:
     addons:
       apt:
         sources:
-        *pkg_src_zeromq_ubuntu14
+        - *pkg_src_zeromq_ubuntu14
         - ubuntu-toolchain-r-test
         packages:
         - *pkg_deps_common
@@ -433,7 +433,7 @@ matrix:
     addons:
       apt:
         sources:
-        *pkg_src_zeromq_ubuntu14
+        - *pkg_src_zeromq_ubuntu14
         - ubuntu-toolchain-r-test
         packages:
         - *pkg_deps_common
