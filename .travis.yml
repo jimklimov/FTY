@@ -134,6 +134,10 @@ pkg_src_zeromq_ubuntu14: &pkg_src_zeromq_ubuntu14
 - sourceline: 'deb http://download.opensuse.org/repositories/network:/messaging:/zeromq:/git-draft/xUbuntu_14.04/ ./'
   key_url: 'http://download.opensuse.org/repositories/network:/messaging:/zeromq:/git-draft/xUbuntu_14.04/Release.key'
 
+pkg_src_zeromq_ubuntu14-noobj: &pkg_src_zeromq_ubuntu14-noobj
+  sourceline: 'deb http://download.opensuse.org/repositories/network:/messaging:/zeromq:/git-draft/xUbuntu_14.04/ ./'
+  key_url: 'http://download.opensuse.org/repositories/network:/messaging:/zeromq:/git-draft/xUbuntu_14.04/Release.key'
+
 pkg_src_zeromq_ubuntu14-tc: &pkg_src_zeromq_ubuntu14-tc
 - sourceline: 'deb http://download.opensuse.org/repositories/network:/messaging:/zeromq:/git-draft/xUbuntu_14.04/ ./'
   key_url: 'http://download.opensuse.org/repositories/network:/messaging:/zeromq:/git-draft/xUbuntu_14.04/Release.key'
@@ -223,7 +227,8 @@ matrix:
 #          key_url: 'http://download.opensuse.org/repositories/network:/messaging:/zeromq:/git-draft/xUbuntu_14.04/Release.key'
 #        - ubuntu-toolchain-r-test
         sources:
-        <<: *pkg_src_zeromq_ubuntu14
+        - *pkg_src_zeromq_ubuntu14-noobj
+#        <<: *pkg_src_zeromq_ubuntu14
         - ubuntu-toolchain-r-test
         packages:
         - *pkg_deps_common
