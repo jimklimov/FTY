@@ -207,9 +207,9 @@ matrix:
     sudo: required
     addons:
       apt:
+        sources: *pkg_src_zeromq_ubuntu14
         sources:
         - ubuntu-toolchain-r-test
-        sources: *pkg_src_zeromq_ubuntu14
         packages:
         - *pkg_deps_common
         - *pkg_deps_doctools
@@ -249,7 +249,7 @@ matrix:
       apt:
         sources:
         - ubuntu-toolchain-r-test
-        *pkg_src_zeromq_ubuntu14
+        - *pkg_src_zeromq_ubuntu14
         packages:
         - *pkg_deps_common
         - valgrind
