@@ -249,7 +249,7 @@ matrix:
       apt:
         sources:
         - ubuntu-toolchain-r-test
-        - *pkg_src_zeromq_ubuntu14
+        *pkg_src_zeromq_ubuntu14
         packages:
         - *pkg_deps_common
         - valgrind
