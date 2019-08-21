@@ -97,6 +97,16 @@ if [ "$ZPROJECT_REMOVE_CMAKE" = yes ]; then
     echo "REMOVING CMAKE files from `pwd` zproject..."
     rm -f CMake* *.cmake || true
     rm -rf builds/cmake || true
+
+    if ! grep -q "Remove CMake" .gitignore ; then
+    	sed -i '3s/^/### Note: CMake files has been added in gitignore; take care upon regens\n\n/' .gitignore
+	echo "" >> .gitignore
+    	echo "# Remove CMake" >> .gitignore
+    	echo "CTestTestfile.cmake" >> .gitignore
+    	echo "cmake_install.cmake" >> .gitignore
+    	echo "builds/cmake/" >> .gitignore
+    	echo "*.cmake" >> .gitignore
+   fi
 fi
 
 ./autogen.sh && git difftool -y && git status
