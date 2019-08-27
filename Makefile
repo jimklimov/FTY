@@ -836,6 +836,10 @@ $(BUILD_OBJ_DIR)/fty-common-rest/.configured: \
     $(BUILD_OBJ_DIR)/fty-common-mlm/.installed \
     $(BUILD_OBJ_DIR)/fty-common-db/.installed
 
+#COMPONENTS_FTY_EXPERIMENTAL += fty-common-socket
+$(BUILD_OBJ_DIR)/fty-common-socket/.configured: \
+    $(BUILD_OBJ_DIR)/fty-common-logging/.installed
+
 COMPONENTS_FTY += fty-proto
 $(BUILD_OBJ_DIR)/fty-proto/.configured: \
     $(BUILD_OBJ_DIR)/fty-common-mlm/.installed \
