@@ -100,14 +100,37 @@ if [ "$ZPROJECT_REMOVE_CMAKE" = yes ]; then
 
     if ! egrep -q "(Remove CMake|CMake in general)" .gitignore ; then
         echo "GitIgnoring CMAKE files from `pwd` zproject..."
-        sed -i '3s/^/### Note: CMake files has been added in gitignore; take care upon regens\n\n/' .gitignore
-        cat >> .gitignore << EOF
+        sed -i '3s/^/### Note: General ignorance of CMake files has been added in gitignore; take care upon regens\n\n/' .gitignore
+
+        # Primarily, try to fit the ignorance near other CMake rules as we do elsewhere
+        CMAKE_PATCH='diff --git a/.gitignore b/.gitignore
+--- a/.gitignore
++++ b/.gitignore
+@@ -93,4 +74,9 @@
+ Testing/
+ 
++# CMake in general
++builds/cmake/
++CMake*
++*.cmake
++
+ # Repositories downloaded by CI integration scripts
+ tmp-deps/
+'
+        if echo "$CMAKE_PATCH" | gpatch --dry-run --quiet 2>/dev/null >/dev/null ; then
+            echo "GITIGNORE CMAKE files via GNU patching near other CMake rules..."
+            echo "$CMAKE_PATCH" | gpatch && rm -f .gitignore.orig
+        else
+            # Append the data somewhere at least
+            echo "GITIGNORE CMAKE files via appending to end of file..."
+            cat >> .gitignore << EOF
 # CMake in general
 builds/cmake/
 CMake*
 *.cmake
 EOF
-   fi
+        fi
+    fi
 fi
 
 ./autogen.sh && git difftool -y && git status
