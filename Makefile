@@ -836,8 +836,12 @@ $(BUILD_OBJ_DIR)/fty-common-rest/.configured: \
     $(BUILD_OBJ_DIR)/fty-common-mlm/.installed \
     $(BUILD_OBJ_DIR)/fty-common-db/.installed
 
-#COMPONENTS_FTY_EXPERIMENTAL += fty-common-socket
+# Used for trusted direct Unix-socket communications
+# between secured components running on same host
+COMPONENTS_FTY += fty-common-socket
 $(BUILD_OBJ_DIR)/fty-common-socket/.configured: \
+    $(BUILD_OBJ_DIR)/cxxtools/.installed \
+    $(BUILD_OBJ_DIR)/fty-common/.installed \
     $(BUILD_OBJ_DIR)/fty-common-logging/.installed
 
 COMPONENTS_FTY += fty-proto
