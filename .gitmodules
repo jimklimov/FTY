@@ -215,3 +215,7 @@
 	path = fty-common-socket
 	url = https://github.com/42ity/fty-common-socket.git
 	branch = master
+[submodule "fty-certificate-generator"]
+	path = fty-certificate-generator
+	url = https://github.com/42ity/fty-certificate-generator.git
+	branch = master
