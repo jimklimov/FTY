@@ -221,3 +221,7 @@
 	path = fty-certificate-generator
 	url = https://github.com/42ity/fty-certificate-generator.git
 	branch = master
+[submodule "fty-asset-activator"]
+	path = fty-asset-activator
+	url = https://github.com/42ity/fty-asset-activator.git
+	branch = master
