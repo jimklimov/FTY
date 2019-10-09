@@ -225,3 +225,7 @@
 	path = fty-asset-activator
 	url = https://github.com/42ity/fty-asset-activator.git
 	branch = master
+[submodule "fty-common-dto"]
+	path = fty-common-dto
+	url = https://github.com/42ity/fty-common-dto.git
+	branch = master
