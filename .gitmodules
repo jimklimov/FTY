@@ -235,3 +235,7 @@
 	path = fty-lib-certificate
 	url = https://github.com/42ity/fty-lib-certificate.git
 	branch = master
+[submodule "fty-srr-rest"]
+	path = fty-srr-rest
+	url = https://github.com/42ity/fty-srr-rest.git
+	branch = master
