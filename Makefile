@@ -1143,6 +1143,12 @@ $(BUILD_OBJ_DIR)/fty-asset-mapping-rest/.configured: \
 COMPONENTS_FTY += fty-common-nut
 $(BUILD_OBJ_DIR)/fty-common-nut/.configured: $(BUILD_OBJ_DIR)/fty-common-mlm/.installed $(BUILD_OBJ_DIR)/fty-proto/.installed $(BUILD_OBJ_DIR)/cxxtools/.installed $(BUILD_OBJ_DIR)/fty-common-logging/.installed $(BUILD_OBJ_DIR)/fty-security-wallet/.installed
 
+# TODO: Revise this list per project.xml as it matures
+COMPONENTS_FTY += fty-asset-activator
+$(BUILD_OBJ_DIR)/fty-asset-activator/.configured: \
+    $(BUILD_OBJ_DIR)/fty-proto/.installed \
+    $(BUILD_OBJ_DIR)/fty-common-logging/.installed
+
 ### Note: The following components are experimental recent additions,
 ### and in their current state they break FTY builds (and they do not
 ### yet do anything useful). So while this Makefile supports a basic
