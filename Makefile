@@ -1292,6 +1292,9 @@ $(BUILD_OBJ_DIR)/fty-metric-cache/.configured: \
     $(BUILD_OBJ_DIR)/fty-proto/.installed \
     $(BUILD_OBJ_DIR)/fty-common-logging/.installed
 
+# Quiesce sanity-checker in sync-repos.sh
+# COMPONENTS_NOBUILD += JSON.sh
+
 COMPONENTS_ALL += $(COMPONENTS_FTY)
 
 ############################# Common route ##################################

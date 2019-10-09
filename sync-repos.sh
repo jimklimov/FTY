@@ -74,12 +74,17 @@ do_findmatch() {
         echo "$REPOS_TRACKED" | ( while IFS='|' read REPO_LOCAL URL_LOCAL BRANCH_LOCAL ; do
             if [ "$REPO_REMOTE" = "$REPO_LOCAL" ]; then
                 echo "SKIP: '$REPO_REMOTE' is already tracked" >&2
+                egrep "COMPONENT.*+=[ \t]*${REPO_REMOTE}([ \t]+.*|)\$" Makefile > /dev/null \
+                    || echo "WARNING: Seems that ${REPO_REMOTE} is not added among COMPONENTS in the Makefile"
                 exit 0
             fi
             URL_REMOTE="$(echo "$URL_REMOTE" | sed 's,\.git$,,')"
             URL_LOCAL="$(echo "$URL_LOCAL" | sed 's,\.git$,,')"
             if [ "$URL_REMOTE" = "$URL_LOCAL" ] ; then
                 echo "SKIP: '$URL_REMOTE' is already tracked as '$REPO_LOCAL'" >&2
+                egrep "COMPONENT.*+=[ \t]*${REPO_LOCAL}([ \t]+.*|)\$" Makefile > /dev/null \
+                    || egrep "COMPONENT.*+=[ \t]*${REPO_REMOTE}([ \t\\\$]+.*|)\$" Makefile > /dev/null \
+                    || echo "WARNING: Seems that neither ${REPO_LOCAL} nor ${REPO_REMOTE} are not added among COMPONENTS in the Makefile"
                 exit 0
             fi
         done ; exit 1 ) && continue
@@ -91,6 +96,9 @@ do_findmatch() {
 
         echo "TRY to link developer fork of '$REPO_REMOTE', if available..." >&2
         ./git-myorigin "$REPO_REMOTE"
+
+        egrep "COMPONENT.*+=[ \t]*${REPO_REMOTE}([ \t]+.*|)\$" Makefile > /dev/null \
+            || echo "WARNING: Seems that ${REPO_REMOTE} is not yet added among COMPONENTS in the Makefile"
     done
 }
 
