@@ -1297,6 +1297,27 @@ $(BUILD_OBJ_DIR)/fty-metric-cache/.configured: \
 
 COMPONENTS_ALL += $(COMPONENTS_FTY)
 
+# Note that our PATH includes INSTDIR and DESTDIR for built AND installed tools
+.autodeps.fty-stable: make-FTY-deps.gsl .gitmodules $(addsuffix /project.xml,$(filter-out fty-core,$(filter fty-%,$(COMPONENTS_FTY))))
+	@PATH="$(BUILD_OBJ_DIR)/gsl/src:$(PATH)"; export PATH; \
+	 if ! ( which gsl 2>/dev/null >/dev/null) ; then echo "NOTE : No 'gsl' in PATH, so making ours ..." >&2; $(MAKE) build/gsl || exit ; fi ; \
+	 if ! ( which gsl 2>/dev/null >/dev/null) ; then echo "FATAL : Can not find executable GSL" >&2 ; exit 1 ; fi ; \
+	 rm -f $@ ; \
+	 gsl "-script:$<" "-make_depfile_name:$@" "-make_depfile_mode:a" $(filter %.xml,$^)
+
+.autodeps.fty-experimental: make-FTY-deps.gsl .gitmodules $(addsuffix /project.xml,$(filter-out fty-core,$(filter fty-%,$(COMPONENTS_FTY_EXPERIMENTAL))))
+	@PATH="$(BUILD_OBJ_DIR)/gsl/src:$(PATH)"; export PATH; \
+	 if ! ( which gsl 2>/dev/null >/dev/null) ; then echo "NOTE : No 'gsl' in PATH, so making ours ..." >&2; $(MAKE) build/gsl || exit ; fi ; \
+	 if ! ( which gsl 2>/dev/null >/dev/null) ; then echo "FATAL : Can not find executable GSL" >&2 ; exit 1 ; fi ; \
+	 rm -f $@ ; \
+	 gsl "-script:$<" "-make_depfile_name:$@" "-make_depfile_mode:a" $(filter %.xml,$^)
+
+.autodeps: .autodeps.fty-stable .autodeps.fty-experimental
+
+# Make sure to (re)generate dependency rules before building code
+# The generated files are included at the end of this Makefile
+$(COMPONENTS_FTY_EXPERIMENTAL) $(COMPONENTS_FTY) : .autodeps
+
 ############################# Common route ##################################
 # The prep step handles preparation of source directory (unpack, patch etc.)
 # At a later stage this cound "git clone" a workspace for host-arch build
@@ -1820,3 +1841,8 @@ help:
 	  else echo "Use 'make help HELP_LIST_COMPONENTS=yes' to also detail the component lists"; fi; \
 	 if [ -n "$(HELP_ADDONS)" ] ; then echo ""; for LINE in $(HELP_ADDONS) ; do echo "$$LINE"; done ; fi; \
 	 echo ""; echo "Again, see https://github.com/42ity/FTY.git and the README for more details."
+
+# Note: these come in last, so we can "make emerge"
+# to have the needed project.xml's and generate these
+-include .autodeps.fty-stable
+-include .autodeps.fty-experimental
