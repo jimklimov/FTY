@@ -1255,10 +1255,10 @@ $(BUILD_OBJ_DIR)/fty-common-messagebus/.configured: \
 #    $(BUILD_OBJ_DIR)/fty-common-logging/.installed
 
 # TODO: Revise this list per project.xml as it matures
-COMPONENTS_FTY_EXPERIMENTAL += fty-certificate-generator
-$(BUILD_OBJ_DIR)/fty-certificate-generator/.configured: \
-    $(BUILD_OBJ_DIR)/fty-proto/.installed \
-    $(BUILD_OBJ_DIR)/fty-common-logging/.installed
+#COMPONENTS_FTY_EXPERIMENTAL += fty-certificate-generator
+#$(BUILD_OBJ_DIR)/fty-certificate-generator/.configured: \
+#    $(BUILD_OBJ_DIR)/fty-proto/.installed \
+#    $(BUILD_OBJ_DIR)/fty-common-logging/.installed
 
 # TODO: Revise this list per project.xml as it matures
 COMPONENTS_FTY_EXPERIMENTAL += fty-lib-certificate
@@ -1267,11 +1267,11 @@ $(BUILD_OBJ_DIR)/fty-lib-certificate/.configured: \
     $(BUILD_OBJ_DIR)/fty-common-logging/.installed
 
 # TODO: Revise this list per project.xml as it matures
-COMPONENTS_FTY_EXPERIMENTAL += fty-srr-rest
-$(BUILD_OBJ_DIR)/fty-srr-rest/.configured: \
-    $(BUILD_OBJ_DIR)/fty-proto/.installed \
-    $(BUILD_OBJ_DIR)/fty-common-rest/.installed
-    $(BUILD_OBJ_DIR)/fty-common-logging/.installed
+#COMPONENTS_FTY_EXPERIMENTAL += fty-srr-rest
+#$(BUILD_OBJ_DIR)/fty-srr-rest/.configured: \
+#    $(BUILD_OBJ_DIR)/fty-proto/.installed \
+#    $(BUILD_OBJ_DIR)/fty-common-rest/.installed \
+#    $(BUILD_OBJ_DIR)/fty-common-logging/.installed
 
 ### TODO: does this need prometheus? what dependency pkgs is it in?
 COMPONENTS_FTY_EXPERIMENTAL += fty-prometheus-rest
