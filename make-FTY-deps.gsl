@@ -12,10 +12,46 @@ function map_project_makename(prj)
     # Certain projects are named differently in the Makefile
     # (e.g. expanded variables for master/version builds) -
     # so we map them here and below
-    return my.prj
 
     # if regexp.match ("^(cxxtools|czmq|libzmq)", my.prj)
+    #    return "$(my.prj:no)-\$(SUFFIX)"
     # endif
+
+    # These should "just be there" from the OS, skip the build deps
+    if regexp.match ("^(lib)?(openssl|lua|sasl|cidr|curl|avahi|amqp|qpid)", my.prj)
+        return ""
+    endif
+
+    if regexp.match ("^(magic|cidr)", my.prj)
+        return "lib$(my.prj)"
+    endif
+
+    if ("log4cplus" = my.prj)
+        return "\$(COMPONENT_LOG4CPLUS)"
+    endif
+
+    if ("czmq" = my.prj)
+        return "\$(COMPONENT_CZMQ)"
+    endif
+
+    if ("malamute" = my.prj)
+        return "\$(COMPONENT_MLM)"
+    endif
+
+    if ("libsodium" = my.prj)
+        return "\$(COMPONENT_LIBSODIUM)"
+    endif
+
+    if ("libnutclient" = my.prj)
+        return "nut"
+    endif
+
+    # Typo fix
+    if ("fty_shm" = my.prj)
+        return "fty-shm"
+    endif
+
+    return my.prj
 endfunction
 
 
@@ -34,7 +70,9 @@ function parse_project_uses(xml)
             abort "E: required attribute 'project' not defined in a 'use' tag"
         endif
         my.use_makename = map_project_makename(use.project)
-        my.depline +=  " \\\n    \$(BUILD_OBJ_DIR)/$(my.use_makename)/.installed"
+        if (defined(my.use_makename) & (my.use_makename <> ""))
+            my.depline +=  " \\\n    \$(BUILD_OBJ_DIR)/$(my.use_makename)/.installed"
+        endif
     endfor
     my.depline += "\n\n"
     return my.depline
