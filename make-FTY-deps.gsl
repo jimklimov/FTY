@@ -1,0 +1,68 @@
+.template 0
+
+# This GSL script should list dependencies of a 42ity component
+# (top-level <use> tags from its project.xml) in a form usable
+# by the FTY dispatcher repo master Makefile concept. Call like:
+#    gsl -script:make-FTY-deps.gsl fty-example/project.xml
+# You can call this for several input XMLs, the script will be
+# re-executed for each; to make one common output file do:
+#    rm -f .autodeps.all-fty ; gsl -script:make-FTY-deps.gsl -make_depfile_name:.autodeps.all-fty -make_depfile_mode:a fty*/project.xml
+
+function map_project_makename(prj)
+    # Certain projects are named differently in the Makefile
+    # (e.g. expanded variables for master/version builds) -
+    # so we map them here and below
+    return my.prj
+
+    # if regexp.match ("^(cxxtools|czmq|libzmq)", my.prj)
+    # endif
+endfunction
+
+
+# Take a project.xml and look at its use tags:
+function parse_project_uses(xml)
+    if !defined (my.xml.name)
+        abort "E: required attribute 'name' not defined in a 'project' tag"
+    endif
+    my.project_makename = map_project_makename(my.xml.name)
+
+    my.depline = "\$(BUILD_OBJ_DIR)/$(my.project_makename)/.configured:"
+
+    # Skim only top level
+    for my.xml.use
+        if !defined (use.project)
+            abort "E: required attribute 'project' not defined in a 'use' tag"
+        endif
+        my.use_makename = map_project_makename(use.project)
+        my.depline +=  " \\\n    \$(BUILD_OBJ_DIR)/$(my.use_makename)/.installed"
+    endfor
+    my.depline += "\n\n"
+    return my.depline
+endfunction
+
+
+# These can be passed along with `gsl -var:value`
+if !defined(switches.make_depfile_name)
+    switches.make_depfile_name ?= ".autodeps.$(project.name)"
+endif
+# "a"ppend or "w"rite anew?
+if !defined (switches.make_depfile_mode)
+    switches.make_depfile_mode ?= "w"
+endif
+
+
+#    echo "Processing '$(project.name)'"
+    project.make_depline = parse_project_uses(project)
+#    echo "$(project.make_depline:no)"
+
+.if switches.make_depfile_mode = "w"
+.    output switches.make_depfile_name
+.else
+.    append switches.make_depfile_name
+.endif
+>$(project.make_depline:no)
+.close
+
+#    echo "Processed '$(project.name)'"
+
+.endtemplate
