@@ -62,7 +62,7 @@ function parse_project_uses(xml)
     endif
     my.project_makename = map_project_makename(my.xml.name)
 
-    my.depline = "\$(BUILD_OBJ_DIR)/$(my.project_makename)/.configured:"
+    my.depline = "\$(BUILD_OBJ_DIR)/$(my.project_makename:no)/.configured:"
 
     # Skim only top level
     for my.xml.use
@@ -71,7 +71,7 @@ function parse_project_uses(xml)
         endif
         my.use_makename = map_project_makename(use.project)
         if (defined(my.use_makename) & (my.use_makename <> ""))
-            my.depline +=  " \\\n    \$(BUILD_OBJ_DIR)/$(my.use_makename)/.installed"
+            my.depline +=  " \\\n    \$(BUILD_OBJ_DIR)/$(my.use_makename:no)/.installed"
         endif
     endfor
     my.depline += "\n\n"
