@@ -712,7 +712,8 @@ $(BUILD_OBJ_DIR)/$(COMPONENT_LIBSODIUM)/.memchecked: $(BUILD_OBJ_DIR)/$(COMPONEN
 
     COMPONENTS_FTY += $(COMPONENT_LIBZMQ)
     PREP_TYPE_$(COMPONENT_LIBZMQ) = clonetar-src
-$(BUILD_OBJ_DIR)/$(COMPONENT_LIBZMQ)/.configured: $(BUILD_OBJ_DIR)/$(COMPONENT_LIBSODIUM)/.installed
+$(BUILD_OBJ_DIR)/$(COMPONENT_LIBZMQ)/.configured: \
+    $(BUILD_OBJ_DIR)/$(COMPONENT_LIBSODIUM)/.installed
 # TODO: It was called "make check-valgrind-memcheck" back then
 $(BUILD_OBJ_DIR)/$(COMPONENT_LIBZMQ)/.memchecked: $(BUILD_OBJ_DIR)/$(COMPONENT_LIBZMQ)/.built
 	@$(call echo_noop,$@)
@@ -734,7 +735,8 @@ ifeq ($(strip $(ADDRESS_SANITIZER)),enabled)
 CONFIG_OPTS_libczmq += --enable-address-sanitizer=no
 endif
 
-$(BUILD_OBJ_DIR)/$(COMPONENT_CZMQ)/.configured: $(BUILD_OBJ_DIR)/$(COMPONENT_LIBZMQ)/.installed
+$(BUILD_OBJ_DIR)/$(COMPONENT_CZMQ)/.configured: \
+    $(BUILD_OBJ_DIR)/$(COMPONENT_LIBZMQ)/.installed
 
 ifneq ($strip($(COMPONENT_CZMQ)),czmq)
     PREP_TYPE_czmq = $(PREP_TYPE_$(COMPONENT_CZMQ))
@@ -757,7 +759,9 @@ endif
 # ENDIF czmq is not verbatim "czmq"
 
     COMPONENTS_FTY += $(COMPONENT_MLM)
-$(BUILD_OBJ_DIR)/$(COMPONENT_MLM)/.configured: $(BUILD_OBJ_DIR)/$(COMPONENT_CZMQ)/.installed $(BUILD_OBJ_DIR)/$(COMPONENT_LIBSODIUM)/.installed
+$(BUILD_OBJ_DIR)/$(COMPONENT_MLM)/.configured: \
+    $(BUILD_OBJ_DIR)/$(COMPONENT_CZMQ)/.installed \
+    $(BUILD_OBJ_DIR)/$(COMPONENT_LIBSODIUM)/.installed
 
 endif
 
@@ -781,9 +785,14 @@ CONFIG_OPTS_nut += --with-devd-dir="$(DESTDIR)$(PREFIX_ETCDIR)/devd"
 CONFIG_OPTS_nut += --with-hotplug-dir="$(DESTDIR)$(PREFIX_ETCDIR)/hotplug"
 
 # Note: more and more core is a collection of scripts, so should need less deps
+# Also note it is not zproject'ized so we list them here
 COMPONENTS_FTY += fty-core
 PREP_TYPE_fty-core = clonetar-src
-$(BUILD_OBJ_DIR)/fty-core/.configured: $(BUILD_OBJ_DIR)/$(COMPONENT_MLM)/.installed $(BUILD_OBJ_DIR)/tntdb/.installed $(BUILD_OBJ_DIR)/tntnet/.installed $(BUILD_OBJ_DIR)/libcidr/.installed
+$(BUILD_OBJ_DIR)/fty-core/.configured: \
+    $(BUILD_OBJ_DIR)/$(COMPONENT_MLM)/.installed \
+    $(BUILD_OBJ_DIR)/tntdb/.installed \
+    $(BUILD_OBJ_DIR)/tntnet/.installed \
+    $(BUILD_OBJ_DIR)/libcidr/.installed
 $(BUILD_OBJ_DIR)/fty-core/.memchecked: $(BUILD_OBJ_DIR)/fty-core/.built
 	@$(call echo_noop,$@)
 
