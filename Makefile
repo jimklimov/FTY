@@ -1069,19 +1069,27 @@ COMPONENTS_FTY_EXPERIMENTAL += fty-metric-cache
 COMPONENTS_ALL += $(COMPONENTS_FTY)
 
 # Note that our PATH includes INSTDIR and DESTDIR for built AND installed tools
+ifeq ($(AUTODEPS_NOT_REQUIRED), true)
+.autodeps.fty-stable .autodeps.fty-experimental:
+	@echo "SKIP : $@ is not required for this run"
+
+else
+
 .autodeps.fty-stable: make-FTY-deps.gsl .gitmodules Makefile $(addsuffix /project.xml,$(sort $(filter-out fty-core,$(filter fty-%,$(COMPONENTS_FTY)))))
 	@PATH="$(BUILD_OBJ_DIR)/gsl/src:$(PATH)"; export PATH; \
-	 if ! ( which gsl 2>/dev/null >/dev/null) ; then echo "NOTE : No 'gsl' in PATH, so making ours ..." >&2; $(MAKE) build/gsl || exit ; fi ; \
+	 if ! ( which gsl 2>/dev/null >/dev/null) ; then echo "NOTE : No 'gsl' in PATH, so making ours ..." >&2; $(MAKE) AUTODEPS_NOT_REQUIRED=true build/gsl || exit ; fi ; \
 	 if ! ( which gsl 2>/dev/null >/dev/null) ; then echo "FATAL : Can not find executable GSL" >&2 ; exit 1 ; fi ; \
 	 rm -f $@ ; \
 	 gsl "-script:$<" "-make_depfile_name:$@" "-make_depfile_mode:a" $(filter %.xml,$^)
 
 .autodeps.fty-experimental: make-FTY-deps.gsl .gitmodules Makefile $(addsuffix /project.xml,$(sort $(filter fty-%,$(COMPONENTS_FTY_EXPERIMENTAL))))
 	@PATH="$(BUILD_OBJ_DIR)/gsl/src:$(PATH)"; export PATH; \
-	 if ! ( which gsl 2>/dev/null >/dev/null) ; then echo "NOTE : No 'gsl' in PATH, so making ours ..." >&2; $(MAKE) build/gsl || exit ; fi ; \
+	 if ! ( which gsl 2>/dev/null >/dev/null) ; then echo "NOTE : No 'gsl' in PATH, so making ours ..." >&2; $(MAKE) AUTODEPS_NOT_REQUIRED=true build/gsl || exit ; fi ; \
 	 if ! ( which gsl 2>/dev/null >/dev/null) ; then echo "FATAL : Can not find executable GSL" >&2 ; exit 1 ; fi ; \
 	 rm -f $@ ; \
 	 gsl "-script:$<" "-make_depfile_name:$@" "-make_depfile_mode:a" $(filter %.xml,$^)
+
+endif
 
 .autodeps: .autodeps.fty-stable .autodeps.fty-experimental
 
