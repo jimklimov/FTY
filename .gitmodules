@@ -239,3 +239,7 @@
 	path = fty-srr-rest
 	url = https://github.com/42ity/fty-srr-rest.git
 	branch = master
+[submodule "fty-srr"]
+	path = fty-srr
+	url = https://github.com/42ity/fty-srr.git
+	branch = master
