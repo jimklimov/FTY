@@ -825,6 +825,10 @@ COMPONENTS_FTY += fty-common-rest
 # between secured components running on same host
 COMPONENTS_FTY += fty-common-socket
 
+COMPONENTS_FTY += fty-common-messagebus
+
+COMPONENTS_FTY += fty-common-dto
+
 COMPONENTS_FTY += fty-proto
 
 # Beside MQ, much data is now published via SHM FS more quickly
@@ -1034,6 +1038,10 @@ COMPONENTS_FTY += fty-common-nut
 
 COMPONENTS_FTY += fty-asset-activator
 
+COMPONENTS_FTY += fty-lib-certificate
+
+COMPONENTS_FTY += fty-srr-rest
+
 ### Note: The following components are experimental recent additions,
 ### and in their current state they break FTY builds (and they do not
 ### yet do anything useful). So while this Makefile supports a basic
@@ -1041,20 +1049,11 @@ COMPONENTS_FTY += fty-asset-activator
 ### Not built by default... but if we do - it's covered
 COMPONENTS_FTY_EXPERIMENTAL += fty-metric-snmp
 
-COMPONENTS_FTY_EXPERIMENTAL += fty-common-dto
-
-COMPONENTS_FTY_EXPERIMENTAL += fty-common-messagebus
-
 # TODO: Uncomment as it matures and gets some code and recipes
 #COMPONENTS_FTY_EXPERIMENTAL += fty-config
 
 # TODO: Uncomment as it matures and gets some code and recipes
 #COMPONENTS_FTY_EXPERIMENTAL += fty-certificate-generator
-
-COMPONENTS_FTY_EXPERIMENTAL += fty-lib-certificate
-
-# TODO: Uncomment as it matures and gets some code and recipes
-#COMPONENTS_FTY_EXPERIMENTAL += fty-srr-rest
 
 # TODO: Uncomment as it matures and gets some code and recipes
 #COMPONENTS_FTY_EXPERIMENTAL += fty-srr
