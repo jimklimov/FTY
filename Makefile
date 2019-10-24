@@ -1056,6 +1056,9 @@ COMPONENTS_FTY_EXPERIMENTAL += fty-lib-certificate
 # TODO: Uncomment as it matures and gets some code and recipes
 #COMPONENTS_FTY_EXPERIMENTAL += fty-srr-rest
 
+# TODO: Uncomment as it matures and gets some code and recipes
+#COMPONENTS_FTY_EXPERIMENTAL += fty-srr
+
 ### TODO: does this need prometheus? what dependency pkgs is it in?
 COMPONENTS_FTY_EXPERIMENTAL += fty-prometheus-rest
 
