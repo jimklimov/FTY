@@ -6,6 +6,8 @@
 
 set -o pipefail
 
+unset GREP_OPTIONS
+
 # Github ORG name to query
 GITHUB_ORG="42ity"
 

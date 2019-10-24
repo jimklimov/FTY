@@ -11,6 +11,7 @@
 # http://stackoverflow.com/questions/1979167/git-submodule-update/1979194#1979194
 
 set -e
+unset GREP_OPTIONS
 
 # Set this to enable verbose profiling
 [ -n "${CI_TIME-}" ] || CI_TIME=""
