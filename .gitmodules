@@ -249,3 +249,7 @@
 	path = fty-template-rest
 	url = https://github.com/42ity/fty-template-rest.git
 	branch = master
+[submodule "fty-template"]
+	path = fty-template
+	url = https://github.com/42ity/fty-template.git
+	branch = master
