@@ -1627,5 +1627,5 @@ help:
 
 # Note: these come in last, so we can "make emerge"
 # to have the needed project.xml's and generate these
--include .autodeps.fty-stable
--include .autodeps.fty-experimental
+sinclude .autodeps.fty-stable
+sinclude .autodeps.fty-experimental
