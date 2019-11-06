@@ -1067,6 +1067,8 @@ COMPONENTS_FTY_EXPERIMENTAL += fty-metric-cache
 
 # Quiesce sanity-checker in sync-repos.sh
 # COMPONENTS_NOBUILD += JSON.sh
+# COMPONENTS_NOBUILD += fty-template
+# COMPONENTS_NOBUILD += fty-template-rest
 
 COMPONENTS_ALL += $(COMPONENTS_FTY)
 
