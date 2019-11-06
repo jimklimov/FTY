@@ -4,3 +4,4 @@
 travis*.log
 czmq/
 czmq
+.autodeps*
