@@ -1040,6 +1040,12 @@ COMPONENTS_FTY += fty-asset-activator
 
 COMPONENTS_FTY += fty-lib-certificate
 
+COMPONENTS_FTY += fty-config
+
+COMPONENTS_FTY += fty-certificate-generator
+
+COMPONENTS_FTY += fty-srr
+
 COMPONENTS_FTY += fty-srr-rest
 
 ### Note: The following components are experimental recent additions,
@@ -1048,15 +1054,6 @@ COMPONENTS_FTY += fty-srr-rest
 ### config for them, it does not count them as part of the team yet.
 ### Not built by default... but if we do - it's covered
 COMPONENTS_FTY_EXPERIMENTAL += fty-metric-snmp
-
-# TODO: Uncomment as it matures and gets some code and recipes
-#COMPONENTS_FTY_EXPERIMENTAL += fty-config
-
-# TODO: Uncomment as it matures and gets some code and recipes
-#COMPONENTS_FTY_EXPERIMENTAL += fty-certificate-generator
-
-# TODO: Uncomment as it matures and gets some code and recipes
-#COMPONENTS_FTY_EXPERIMENTAL += fty-srr
 
 ### TODO: does this need prometheus? what dependency pkgs is it in?
 COMPONENTS_FTY_EXPERIMENTAL += fty-prometheus-rest
