@@ -18,7 +18,7 @@ function map_project_makename(prj)
     # endif
 
     # These should "just be there" from the OS, skip the build deps
-    if regexp.match ("^(lib)?(openssl|lua|sasl|cidr|curl|avahi|amqp|qpid)", my.prj)
+    if regexp.match ("^(lib)?(openssl|lua|sasl|cidr|curl|avahi|amqp|qpid|(net-?|ucd-?)?snmp)", my.prj)
         return ""
     endif
 
