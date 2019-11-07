@@ -229,6 +229,10 @@
 	path = fty-common-dto
 	url = https://github.com/42ity/fty-common-dto.git
 	branch = master
+[submodule "fty-config"]
+	path = fty-config
+	url = https://github.com/42ity/fty-config.git
+	branch = master
 [submodule "fty-common-messagebus"]
 	path = fty-common-messagebus
 	url = https://github.com/42ity/fty-common-messagebus.git

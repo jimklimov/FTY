@@ -2,7 +2,7 @@
 
 # Check if any new "fty-*" repos appeared since we last looked
 # Register them, sync them, reference developer's fork if possible
-# Copyright (C) 2017 by Jim Klimov <EvgenyKlimov@eaton.com>
+# Copyright (C) 2017-2019 by Jim Klimov <EvgenyKlimov@eaton.com>
 
 set -o pipefail
 
@@ -14,7 +14,7 @@ GITHUB_ORG="42ity"
 # Repo names we know we do not want added to tracking
 REPOS_EXCLUDE="FTY 42ity.github.io 42ity-org-website fty-log" # czmq
 # Some repos have just been made and are empty; comment this away later
-REPOS_EXCLUDE="$REPOS_EXCLUDE fty-config"
+#REPOS_EXCLUDE="$REPOS_EXCLUDE fty-config"
 
 LANG=C
 LC_ALL=C
