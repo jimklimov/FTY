@@ -64,6 +64,7 @@ pkg_deps_prereqs_fty_overall: &pkg_deps_prereqs_fty_overall
     - libavahi-common-dev
     - libavahi-core-dev
     - libavahi-client-dev
+    - libaugeas-dev
     - libgd2-xpm-dev
     - libpng-dev
     - libjpeg-dev
