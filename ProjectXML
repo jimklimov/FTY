@@ -75,6 +75,7 @@ if [ -n "$ZPROJECT_SRC" ] && [ "$ZPROJECT_SRC" != " " ]; then
           sudo make install || exit ) || exit
     else
         echo "NOTE: Using custom sources of zproject from $ZPROJECT_SRC"
+        [ -s "$ZPROJECT_SRC/zproject.gsl" ] || { echo "FATAL: No zproject.gsl in '$ZPROJECT_SRC' directory (-d must point to a zproject source dir)!" >&2 ; exit 1; }
         PATH="$ZPROJECT_SRC:$PATH"
         export PATH
     fi
