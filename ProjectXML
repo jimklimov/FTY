@@ -86,6 +86,7 @@ gsl project.xml || exit
 
 [ "$ZPROJECT_REMOVE_CMAKE" = auto ] && \
 case "`pwd`" in
+#    */etn-mass-management*) ZPROJECT_REMOVE_CMAKE=no ;;
     */fty-*|*/etn-*|/ipm-*)
         echo "REMOVING CMAKE files from fty-* sources by default"
         ZPROJECT_REMOVE_CMAKE=yes ;;
