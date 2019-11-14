@@ -27,7 +27,8 @@
 	url = https://github.com/zeromq/gsl
 [submodule "zproject"]
 	path = zproject
-	url = https://github.com/zeromq/zproject
+	url = https://github.com/42ity/zproject
+	branch = FTY
 [submodule "libzmq-master"]
 	path = libzmq-master
 	url = https://github.com/zeromq/libzmq
