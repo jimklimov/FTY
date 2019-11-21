@@ -54,9 +54,14 @@ function map_project_makename(prj)
     return my.prj
 endfunction
 
+# For now return the same string as Makefile into Dot file
+function map_project_dotname(prj)
+    return map_project_makename(my.prj)
+endfunction
+
 
 # Take a project.xml and look at its use tags:
-function parse_project_uses(xml)
+function parse_project_uses_Makefile(xml)
     if !defined (my.xml.name)
         abort "E: required attribute 'name' not defined in a 'project' tag"
     endif
@@ -79,6 +84,32 @@ function parse_project_uses(xml)
 endfunction
 
 
+# Take a project.xml and look at its use tags:
+#    https://www.graphviz.org/pdf/dotguide.pdf
+#    https://en.wikipedia.org/wiki/DOT_(graph_description_language)
+function parse_project_uses_DOT(xml)
+    if !defined (my.xml.name)
+        abort "E: required attribute 'name' not defined in a 'project' tag"
+    endif
+    my.project_dotname = map_project_dotname(my.xml.name)
+
+    my.depline = ""
+
+    # Skim only top level
+    for my.xml.use
+        if !defined (use.project)
+            abort "E: required attribute 'project' not defined in a 'use' tag"
+        endif
+        my.use_dotname = map_project_dotname(use.project)
+        if (defined(my.use_dotname) & (my.use_dotname <> ""))
+            my.depline += "\t\"$(my.project_dotname:no)\" -> \"$(my.use_dotname:no)\";\n"
+        endif
+    endfor
+    return my.depline
+endfunction
+
+
+#######################################################
 # These can be passed along with `gsl -var:value`
 if !defined(switches.make_depfile_name)
     switches.make_depfile_name ?= ".autodeps.$(project.name)"
@@ -89,8 +120,8 @@ if !defined (switches.make_depfile_mode)
 endif
 
 
-#    echo "Processing '$(project.name)'"
-    project.make_depline = parse_project_uses(project)
+#    echo "Processing '$(project.name)' into Makefile format"
+    project.make_depline = parse_project_uses_Makefile(project)
 #    echo "$(project.make_depline:no)"
 
 .if switches.make_depfile_mode = "w"
@@ -101,6 +132,31 @@ endif
 >$(project.make_depline:no)
 .close
 
-#    echo "Processed '$(project.name)'"
+#    echo "Processed '$(project.name)' into Makefile format"
+
+#######################################################
+# These can be passed along with `gsl -var:value`
+if !defined(switches.dot_depfile_name)
+    switches.dot_depfile_name ?= ".autodeps.$(project.name).dot"
+endif
+# "a"ppend or "w"rite anew?
+if !defined (switches.dot_depfile_mode)
+    switches.dot_depfile_mode ?= "w"
+endif
+
+
+#    echo "Processing '$(project.name)' into DOT format"
+    project.dot_depline = parse_project_uses_DOT(project)
+#    echo "$(project.dot_depline:no)"
+
+.if switches.dot_depfile_mode = "w"
+.    output switches.dot_depfile_name
+.else
+.    append switches.dot_depfile_name
+.endif
+>$(project.dot_depline:no)
+.close
+
+#    echo "Processed '$(project.name)' into DOT format"
 
 .endtemplate
