@@ -120,7 +120,10 @@ if !defined (switches.make_depfile_mode)
 endif
 
 
-#    echo "Processing '$(project.name)' into Makefile format"
+.if switches.make_depfile_mode = "skip"
+    echo "NOT Processing '$(project.name)' into Makefile format"
+.else
+    echo "Processing '$(project.name)' into Makefile format"
     project.make_depline = parse_project_uses_Makefile(project)
 #    echo "$(project.make_depline:no)"
 
@@ -132,7 +135,8 @@ endif
 >$(project.make_depline:no)
 .close
 
-#    echo "Processed '$(project.name)' into Makefile format"
+    echo "Processed '$(project.name)' into Makefile format"
+.endif
 
 #######################################################
 # These can be passed along with `gsl -var:value`
@@ -144,8 +148,10 @@ if !defined (switches.dot_depfile_mode)
     switches.dot_depfile_mode ?= "w"
 endif
 
-
-#    echo "Processing '$(project.name)' into DOT format"
+.if switches.dot_depfile_mode = "skip"
+    echo "NOT Processing '$(project.name)' into DOT format"
+.else
+    echo "Processing '$(project.name)' into DOT format"
     project.dot_depline = parse_project_uses_DOT(project)
 #    echo "$(project.dot_depline:no)"
 
@@ -157,6 +163,7 @@ endif
 >$(project.dot_depline:no)
 .close
 
-#    echo "Processed '$(project.name)' into DOT format"
+    echo "Processed '$(project.name)' into DOT format"
+.endif
 
 .endtemplate
