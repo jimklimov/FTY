@@ -1113,6 +1113,9 @@ dot: 42ity-deps.dot
 42ity-deps.svg: 42ity-deps.dot
 	dot -Tsvg -o$@ < $<
 
+42ity-deps.pdf: 42ity-deps.dot
+	dot -Tpdf -o$@ < $<
+
 svg: 42ity-deps.svg
 
 # Make sure to (re)generate dependency rules before building code
