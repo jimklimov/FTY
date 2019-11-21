@@ -1082,6 +1082,7 @@ else
 	 if ! ( which gsl 2>/dev/null >/dev/null) ; then echo "FATAL : Can not find executable GSL" >&2 ; exit 1 ; fi ; \
 	 rm -f $@ ; \
 	 gsl "-script:$<" "-make_depfile_name:$@" "-make_depfile_mode:a" $(filter %.xml,$^)
+	@echo "GENERATED $@"
 
 .autodeps.fty-experimental: make-FTY-deps.gsl .gitmodules Makefile $(addsuffix /project.xml,$(sort $(filter fty-%,$(COMPONENTS_FTY_EXPERIMENTAL))))
 	@PATH="$(BUILD_OBJ_DIR)/gsl/src:$(PATH)"; export PATH; \
@@ -1089,6 +1090,7 @@ else
 	 if ! ( which gsl 2>/dev/null >/dev/null) ; then echo "FATAL : Can not find executable GSL" >&2 ; exit 1 ; fi ; \
 	 rm -f $@ ; \
 	 gsl "-script:$<" "-make_depfile_name:$@" "-make_depfile_mode:a" $(filter %.xml,$^)
+	@echo "GENERATED $@"
 
 endif
 
@@ -1104,6 +1106,7 @@ endif
 	 echo 'digraph FTY_Dependencies {' > $@ && \
 	 gsl "-script:$<" "-dot_depfile_name:$@" "-dot_depfile_mode:a" $(filter %.xml,$^) && \
 	 echo '}' >> $@
+	@echo "GENERATED $@"
 
 dot: 42ity-deps.dot
 
