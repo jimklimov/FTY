@@ -1081,18 +1081,42 @@ else
 	 if ! ( which gsl 2>/dev/null >/dev/null) ; then echo "NOTE : No 'gsl' in PATH, so making ours ..." >&2; $(MAKE) AUTODEPS_NOT_REQUIRED=true build/gsl || exit ; fi ; \
 	 if ! ( which gsl 2>/dev/null >/dev/null) ; then echo "FATAL : Can not find executable GSL" >&2 ; exit 1 ; fi ; \
 	 rm -f $@ ; \
-	 gsl "-script:$<" "-make_depfile_name:$@" "-make_depfile_mode:a" $(filter %.xml,$^)
+	 gsl "-script:$<" "-make_depfile_name:$@" "-make_depfile_mode:a" "-dot_depfile_mode:skip" $(filter %.xml,$^)
+	@echo "GENERATED $@"
 
 .autodeps.fty-experimental: make-FTY-deps.gsl .gitmodules Makefile $(addsuffix /project.xml,$(sort $(filter fty-%,$(COMPONENTS_FTY_EXPERIMENTAL))))
 	@PATH="$(BUILD_OBJ_DIR)/gsl/src:$(PATH)"; export PATH; \
 	 if ! ( which gsl 2>/dev/null >/dev/null) ; then echo "NOTE : No 'gsl' in PATH, so making ours ..." >&2; $(MAKE) AUTODEPS_NOT_REQUIRED=true build/gsl || exit ; fi ; \
 	 if ! ( which gsl 2>/dev/null >/dev/null) ; then echo "FATAL : Can not find executable GSL" >&2 ; exit 1 ; fi ; \
 	 rm -f $@ ; \
-	 gsl "-script:$<" "-make_depfile_name:$@" "-make_depfile_mode:a" $(filter %.xml,$^)
+	 gsl "-script:$<" "-make_depfile_name:$@" "-make_depfile_mode:a" "-dot_depfile_mode:skip" $(filter %.xml,$^)
+	@echo "GENERATED $@"
 
 endif
 
 .autodeps: .autodeps.fty-stable .autodeps.fty-experimental
+
+# Make a DOT-format graph of dependencies for imaging
+# TODO: Mark the time/branch/commit/...?
+42ity-deps.dot: make-FTY-deps.gsl .gitmodules Makefile $(addsuffix /project.xml,$(sort $(filter-out fty-core,$(filter fty-%,$(COMPONENTS_FTY_EXPERIMENTAL) $(COMPONENTS_FTY)))))
+	@PATH="$(BUILD_OBJ_DIR)/gsl/src:$(PATH)"; export PATH; \
+	 if ! ( which gsl 2>/dev/null >/dev/null) ; then echo "NOTE : No 'gsl' in PATH, so making ours ..." >&2; $(MAKE) AUTODEPS_NOT_REQUIRED=true build/gsl || exit ; fi ; \
+	 if ! ( which gsl 2>/dev/null >/dev/null) ; then echo "FATAL : Can not find executable GSL" >&2 ; exit 1 ; fi ; \
+	 rm -f $@ && \
+	 echo 'digraph FTY_Dependencies {' > $@ && \
+	 gsl "-script:$<" "-dot_depfile_name:$@" "-dot_depfile_mode:a" "-make_depfile_mode:skip" $(filter %.xml,$^) && \
+	 echo '}' >> $@
+	@echo "GENERATED $@"
+
+dot: 42ity-deps.dot
+
+42ity-deps.svg: 42ity-deps.dot
+	dot -Tsvg -o$@ < $<
+
+42ity-deps.pdf: 42ity-deps.dot
+	dot -Tpdf -o$@ < $<
+
+svg: 42ity-deps.svg
 
 # Make sure to (re)generate dependency rules before building code
 # The generated files are included at the end of this Makefile
