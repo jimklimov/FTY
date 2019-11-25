@@ -256,3 +256,7 @@
 	path = fty-template
 	url = https://github.com/42ity/fty-template.git
 	branch = master
+[submodule "protobuf"]
+	path = protobuf
+	url = https://github.com/42ity/protobuf.git
+	branch = FTY
