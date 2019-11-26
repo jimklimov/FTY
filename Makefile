@@ -958,7 +958,8 @@ web-test-bios: web-test-bios-deps
 	@cd $(<D) && \
 	    echo "TRYING TO STOP tntnet@bios systemd service to avoid conflicts..." >&2 && \
 	    { sudo systemctl stop tntnet@bios.service || echo "FAILED TO STOP tntnet@bios systemd service, maybe it is already down?" >&2 ; } && \
-	    if ! test -e /var/lib/bios/license && ! test -e /var/lib/fty/license ; then \
+	    if ! test -e /var/lib/bios/license && ! test -e /var/lib/fty/license && \
+	       ! test -e /var/lib/fty/fty-eula/license ; then \
 	        echo "WARNING: Starting $@ while the FTY license is not accepted yet" >&2 ; \
 	    fi && \
 	    if ! test -e /var/run/fty-db-ready ; then \
