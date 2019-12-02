@@ -770,6 +770,12 @@ COMPONENTS_FTY += $(COMPONENT_LOG4CPLUS)
 $(BUILD_OBJ_DIR)/$(COMPONENT_LOG4CPLUS)/.memchecked: $(BUILD_OBJ_DIR)/$(COMPONENT_LOG4CPLUS)/.built
 	@$(call echo_noop,$@)
 
+# Our fork of Google protobuf with constrained OBS recipe to build just
+# the C/C++ libraries package and protoc tool... and some auto_ptr fixes.
+COMPONENTS_FTY += protobuf
+#CONFIG_OPTS_protobuf ?=
+#CONFIG_OPTS_protobuf += ...
+
 COMPONENTS_FTY += nut
 CONFIG_OPTS_nut ?=
 CONFIG_OPTS_nut += --with-doc=skip
