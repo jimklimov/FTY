@@ -1070,6 +1070,9 @@ COMPONENTS_FTY_EXPERIMENTAL += fty-metric-cache
 # COMPONENTS_NOBUILD += fty-template
 # COMPONENTS_NOBUILD += fty-template-rest
 
+### Maybe this one should later be "built" to deliver the pkgconfig file if needed
+# COMPONENTS_NOBUILD += libpam0g-dev-pkgconfig
+
 COMPONENTS_ALL += $(COMPONENTS_FTY)
 
 # Note that our PATH includes INSTDIR and DESTDIR for built AND installed tools
