@@ -1045,6 +1045,8 @@ COMPONENTS_FTY += fty-config
 
 COMPONENTS_FTY += fty-certificate-generator
 
+COMPONENTS_FTY += fty-certificate-generator-rest
+
 COMPONENTS_FTY += fty-srr
 
 COMPONENTS_FTY += fty-srr-rest
