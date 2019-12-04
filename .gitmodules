@@ -264,3 +264,7 @@
 	path = fty-certificate-generator-rest
 	url = https://github.com/42ity/fty-certificate-generator-rest.git
 	branch = master
+[submodule "libpam0g-dev-pkgconfig"]
+	path = libpam0g-dev-pkgconfig
+	url = https://github.com/42ity/libpam0g-dev-pkgconfig.git
+	branch = master
