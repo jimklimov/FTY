@@ -260,3 +260,7 @@
 	path = protobuf
 	url = https://github.com/42ity/protobuf.git
 	branch = FTY
+[submodule "fty-certificate-generator-rest"]
+	path = fty-certificate-generator-rest
+	url = https://github.com/42ity/fty-certificate-generator-rest.git
+	branch = master
