@@ -2,6 +2,7 @@
 
 usage() {
 cat << EOF
+
 Quick regenerator of zproject templates as used by 42ity ecosystem workflow,
 including removal of CMake recipes we do not use in our common components
 (see --kill-cmake|--keep-cmake for definitive behavior).
@@ -32,7 +33,9 @@ export PATH=/usr/local/bin:$PATH
 #ZPROJECT_REMAKE=yes
 #ZPROJECT_SRC="$HOME/zeromq/zproject"
 [ -n "$ZPROJECT_REMAKE" ] || ZPROJECT_REMAKE=no
-[ -n "$ZPROJECT_SRC" ] || { [ -d "`dirname $0`/zproject" ] && ZPROJECT_SRC="`dirname $0`/zproject" ; }
+[ -n "$ZPROJECT_SRC" ] \
+&& echo "NOTE: The calling environment has defined ZPROJECT_SRC='$ZPROJECT_SRC'" >&2 \
+|| { [ -d "`dirname $0`/zproject" ] && ZPROJECT_SRC="`dirname $0`/zproject" ; }
 [ -n "$ZPROJECT_UPDATE_TRAVIS_FILE" ] || ZPROJECT_UPDATE_TRAVIS_FILE=no
 [ -n "$ZPROJECT_UPDATE_JENKINSFILE" ] || ZPROJECT_UPDATE_JENKINSFILE=no
 [ -n "$ZPROJECT_UPDATE_HELPER_FILE" ] || ZPROJECT_UPDATE_HELPER_FILE=no
