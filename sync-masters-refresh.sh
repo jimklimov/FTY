@@ -2,10 +2,13 @@
 
 cat << EOF
 This helper script allows developers to update their workspaces
-with same contents of "main branch" (usually named "master") of
-each fty component they track. See sync-update-origin.sh for a
-similar activity script that would also push the current master
-(equivalent) to your GitHub "origin" forks.
+with same contents of "main branch" (usually named "master",
+but for release/featureimage it may differ) of each FTY component
+they track.
+
+See sync-update-origin.sh for a similar activity script that would
+also push the current master (equivalent) to your GitHub "origin"
+forks.
 
 Note this script WILL CHANGE CURRENT BRANCH in your checkouts!
 (Sleeping 5 sec so you can Ctrl+C)
