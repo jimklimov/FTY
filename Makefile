@@ -479,6 +479,7 @@ CONFIG_OPTS += PKG_CONFIG_PATH="$(PKG_CONFIG_PATH)"
 CONFIG_OPTS += --with-pkgconfdir="$(PKG_CONFIG_DIR)"
 CONFIG_OPTS += --with-docs=no --without-docs
 CONFIG_OPTS += --with-doc=no --without-doc
+CONFIG_OPTS += --with-systemd-units=yes
 CONFIG_OPTS += --with-systemdtmpfilesdir="$(DESTDIR)$(PREFIX)/lib/tmpfiles.d"
 CONFIG_OPTS += --with-systemdsystempresetdir="$(DESTDIR)$(PREFIX)/lib/systemd/system-preset"
 CONFIG_OPTS += --with-systemdsystemunitdir="$(DESTDIR)$(PREFIX)/lib/systemd/system"
