@@ -276,3 +276,7 @@
 	path = fty-service-status-systemd
 	url = https://github.com/42ity/fty-service-status-systemd.git
 	branch = master
+[submodule "fty-service-status"]
+	path = fty-service-status
+	url = https://github.com/42ity/fty-service-status.git
+	branch = master
