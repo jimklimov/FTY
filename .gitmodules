@@ -268,3 +268,7 @@
 	path = libpam0g-dev-pkgconfig
 	url = https://github.com/42ity/libpam0g-dev-pkgconfig.git
 	branch = master
+[submodule "fty-protoc"]
+	path = fty-protoc
+	url = https://github.com/42ity/fty-protoc.git
+	branch = master
