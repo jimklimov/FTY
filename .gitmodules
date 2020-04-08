@@ -280,3 +280,7 @@
 	path = fty-service-status
 	url = https://github.com/42ity/fty-service-status.git
 	branch = master
+[submodule "raven-cmake"]
+	path = raven-cmake
+	url = https://github.com/42ity/raven-cmake.git
+	branch = master
