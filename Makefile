@@ -1075,6 +1075,12 @@ COMPONENTS_FTY_EXPERIMENTAL += fty-prometheus-rest
 ### is becoming part of replacement for fty-metric-cache
 COMPONENTS_FTY_EXPERIMENTAL += fty-metric-cache
 
+# Not yet buildable
+#COMPONENTS_FTY_EXPERIMENTAL += fty-protoc
+
+# Not in systems as old as Debian 8...
+COMPONENTS_FTY_EXPERIMENTAL += raven-cmake
+
 # Quiesce sanity-checker in sync-repos.sh
 # COMPONENTS_NOBUILD += JSON.sh
 # COMPONENTS_NOBUILD += fty-template
