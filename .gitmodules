@@ -272,3 +272,7 @@
 	path = fty-protoc
 	url = https://github.com/42ity/fty-protoc.git
 	branch = master
+[submodule "fty-service-status-systemd"]
+	path = fty-service-status-systemd
+	url = https://github.com/42ity/fty-service-status-systemd.git
+	branch = master
