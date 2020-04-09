@@ -71,10 +71,30 @@ export BIOS_LOG_LEVEL
 BIOS_LOG_INIT_LEVEL ?= LOG_CRIT
 export BIOS_LOG_INIT_LEVEL
 
-BUILD_OS ?= $(shell uname -s)
+OSIMAGE_DISTRO ?= $(shell if test -s /etc/update-rc3.d/image-os-type.conf ; then grep OSIMAGE_DISTRO= /etc/update-rc3.d/image-os-type.conf | sed -e 's,^.*=,,' -e 's,^"\(.*\)" *$$,\1,' -e "s,^'\(.*\)' *$$,\1,"; fi)
+
 BUILD_ARCH ?= $(shell uname -m)
 ARCH=$(BUILD_ARCH)
 export ARCH
+
+ifeq ($(OSIMAGE_DISTRO),Debian_10.0)
+BUILD_OS ?= LinuxDeb10
+else
+ifeq ($(OSIMAGE_DISTRO),Debian_9.0)
+BUILD_OS ?= LinuxDeb9
+else
+ifeq ($(OSIMAGE_DISTRO),Debian_8.0)
+### Legacy compat for existing workspaces
+ifeq ($(shell ls -1d .build/Linux-$(BUILD_ARCH)* .install/Linux-$(BUILD_ARCH)* .srcclone/Linux-$(BUILD_ARCH)* 2>/dev/null || true),)
+BUILD_OS ?= LinuxDeb8
+else
+BUILD_OS ?= Linux
+endif
+else
+BUILD_OS ?= $(shell uname -s)
+endif
+endif
+endif
 
 # Current legacy default, and something to have definite recipe behavior
 ifeq ($(strip $(CI_CZMQ_VER)),)
@@ -150,7 +170,16 @@ MAKE=$(GMAKE)
 # but some require gcc-4.9+ for C++11 regex support, among other things.
 # However at this time there are warnings for newer compilers (gcc-5+),
 # so we do not build for them by default either.
+# Note that newer distros marched on, so to build in them use e.g.
+#   GCC_VERSION=8 BUILD_OS=LinuxDeb10
+ifeq ($(OSIMAGE_DISTRO),Debian_10.0)
+GCC_VERSION?=8
+else
+ifeq ($(OSIMAGE_DISTRO),Debian_8.0)
 GCC_VERSION?=4.9
+endif
+endif
+
 ifeq ($(strip $(GCC_VERSION)),)
 GCC_VERSION_SUFFIX=
 else
