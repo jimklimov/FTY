@@ -492,6 +492,36 @@ define echo_noop_pkg
 	( echo "  NOOP    Generally recipe for $@ has nothing to do because dependency is used pre-packaged" ; $(MKDIR) $(@D); $(TOUCH) $@ )
 endef
 
+# Helper for "make .autodeps" using a fake project.xml in CMake-only components
+define fake_projectxml
+	( \
+	if [ ! -s "$(1)/CMakeLists.txt" ]; then echo "FATAL: No '$(1)/CMakeLists.txt' was found" >&2 ; exit 1; fi; \
+	printf '<project name="$(1)">\n' > "$(1)/project-fake.xml" ; \
+	grep -w find_package "$(1)/CMakeLists.txt" \
+	    | sed 's,^.*find_package[ \t]*([ \t]*\([a-zA-Z0-9_-]*\)[^a-zA-Z0-9_-].*$$,\1,' \
+	    | ( while read P ; do case "$$P" in \
+	    "") ;; Doxygen) ;; \
+	    *) if [ -d "$(ORIGIN_SRC_DIR)/$$P" ]; then printf '    <use project="$$P" />\n' ; \
+	        else echo "WARNING: CMake dependency '$$P' is not in local workspace under '$(ORIGIN_SRC_DIR)'" >&2 ; \
+	       fi ;; \
+	esac ; done ; echo '</project>' ) >> "$(1)/project-fake.xml" ; \
+	ln -sf "./project-fake.xml" "$(1)/project.xml" ; \
+	)
+endef
+
+# TODO: Find a way to populate this list from FTY_COMPONENTS*
+# automatically, via some shell magic
+COMPONENTS_CMAKE_ONLY =
+define ADD_CMAKE_ONLY
+$(eval COMPONENTS_CMAKE_ONLY += $(1) )
+
+$(1)/project.xml: $(1)/CMakeLists.txt
+	@echo "GENERATE FAKE $$@ from $$< for autodeps listing"
+	@$$(call fake_projectxml,$(1))
+
+endef
+
+
 CFLAGS ?=
 CPPFLAGS ?=
 CXXFLAGS ?=
@@ -1115,8 +1145,8 @@ COMPONENTS_FTY_EXPERIMENTAL += fty-metric-cache
 # Not yet buildable
 #COMPONENTS_FTY_EXPERIMENTAL += fty-protoc
 ### TODO: Make way to parse CMakeLists.txt :: find_package() to pick dependencies
-$(BUILD_OBJ_DIR)/fty-protoc/.configured: \
-    $(BUILD_OBJ_DIR)/raven-cmake/.installed
+#$(BUILD_OBJ_DIR)/fty-protoc/.configured: \
+#    $(BUILD_OBJ_DIR)/raven-cmake/.installed
 
 # Not in systems as old as Debian 8...
 COMPONENTS_FTY_EXPERIMENTAL += raven-cmake
@@ -1130,6 +1160,10 @@ COMPONENTS_FTY_EXPERIMENTAL += raven-cmake
 # COMPONENTS_NOBUILD += libpam0g-dev-pkgconfig
 
 COMPONENTS_ALL += $(COMPONENTS_FTY)
+
+# TODO: Find a way to automate this further
+$(foreach C,fty-service-status fty-service-status-systemd raven-cmake fty-protoc, \
+    $(eval $(call ADD_CMAKE_ONLY,$(C))))
 
 # Note that our PATH includes INSTDIR and DESTDIR for built AND installed tools
 ifeq ($(AUTODEPS_NOT_REQUIRED), true)
