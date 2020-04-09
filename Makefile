@@ -235,8 +235,9 @@ define autogen_sub
 	        ./autogen.sh  || exit ; \
 	      elif [ -x ./buildconf ]; then \
 	        ./buildconf || exit ; \
-	      else \
+	      elif [ -f configure.ac ]; then \
 	        autoreconf -fiv || exit ; \
+	      else echo "FATAL: Unsupported source project type" >&2 ; exit 2 ; \
 	      fi ) && \
 	  $(TOUCH) "$(BUILD_OBJ_DIR)/$(1)"/.autogened && \
 	  $(RMFILE) "$(BUILD_OBJ_DIR)/$(1)"/.autogen-failed ) || \
