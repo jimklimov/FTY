@@ -237,6 +237,9 @@ define autogen_sub
 	        ./buildconf || exit ; \
 	      elif [ -f configure.ac ]; then \
 	        autoreconf -fiv || exit ; \
+	      elif [ -f CMakeLists.txt ]; then \
+	        echo "WARNING: Only CMakeLists.txt found for $(1)" ; \
+	        printf '#!/bin/sh\ncmake "$(BUILD_SRC_DIR)/$(1)"\n' > configure && chmod +x configure || exit ; \
 	      else echo "FATAL: Unsupported source project type" >&2 ; exit 2 ; \
 	      fi ) && \
 	  $(TOUCH) "$(BUILD_OBJ_DIR)/$(1)"/.autogened && \
