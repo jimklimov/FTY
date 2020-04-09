@@ -139,6 +139,9 @@ INSTDIR ?= $(abs_builddir)/.install/$(BUILD_OS)-$(BUILD_ARCH)-czmq_$(CI_CZMQ_VER
 PREFIX = $(INSTDIR)/usr
 PREFIX_ETCDIR = $(INSTDIR)/etc
 
+CMAKE_INSTALL_PREFIX = $(PREFIX)
+export CMAKE_INSTALL_PREFIX
+
 PATH:=/usr/lib/ccache:$(DESTDIR)$(PREFIX)/libexec/fty:$(DESTDIR)$(PREFIX)/libexec/bios:$(DESTDIR)$(PREFIX)/share/fty/scripts:$(DESTDIR)$(PREFIX)/share/bios/scripts:$(DESTDIR)$(PREFIX)/local/bin:$(DESTDIR)$(PREFIX)/bin:/usr/libexec/fty:/usr/libexec/bios:/usr/share/fty/scripts:/usr/share/bios/scripts:/usr/local/bin:/usr/bin:${PATH}
 export PATH
 export DESTDIR
@@ -239,7 +242,8 @@ define autogen_sub
 	        autoreconf -fiv || exit ; \
 	      elif [ -f CMakeLists.txt ]; then \
 	        echo "WARNING: Only CMakeLists.txt found for $(1)" ; \
-	        printf '#!/bin/sh\ncmake "$(BUILD_SRC_DIR)/$(1)"\n' > configure && chmod +x configure || exit ; \
+	        printf '#!/bin/sh\ncmake "$(BUILD_SRC_DIR)/$(1)" -DCMAKE_SOURCE_DIR="$(BUILD_SRC_DIR)/$(1)" -DCMAKE_INSTALL_PREFIX="$(CMAKE_INSTALL_PREFIX)"\n' \
+	        > configure && chmod +x configure || exit ; \
 	      else echo "FATAL: Unsupported source project type" >&2 ; exit 2 ; \
 	      fi ) && \
 	  $(TOUCH) "$(BUILD_OBJ_DIR)/$(1)"/.autogened && \
