@@ -1145,8 +1145,9 @@ COMPONENTS_FTY_EXPERIMENTAL += fty-metric-cache
 # Not yet buildable
 #COMPONENTS_FTY_EXPERIMENTAL += fty-protoc
 ### TODO: Make way to parse CMakeLists.txt :: find_package() to pick dependencies
-#$(BUILD_OBJ_DIR)/fty-protoc/.configured: \
-#    $(BUILD_OBJ_DIR)/raven-cmake/.installed
+$(BUILD_OBJ_DIR)/fty-protoc/.configured: \
+    $(BUILD_OBJ_DIR)/protobuf/.installed \
+    $(BUILD_OBJ_DIR)/raven-cmake/.installed
 
 # Not in systems as old as Debian 8...
 COMPONENTS_FTY_EXPERIMENTAL += raven-cmake
