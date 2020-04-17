@@ -501,6 +501,7 @@ define fake_projectxml
 	    | sed 's,^.*find_package[ \t]*([ \t]*\([a-zA-Z0-9_-]*\)[^a-zA-Z0-9_-].*$$,\1,' \
 	    | ( while read P ; do case "$$P" in \
 	    "") ;; Doxygen) ;; \
+	    *find_package*) echo "WARNING: Could not parse CMake dependency line, got: $$P" >&2 ;; \
 	    *) if [ -d "$(ORIGIN_SRC_DIR)/$$P" ]; then printf '    <use project="$$P" />\n' ; \
 	        else echo "WARNING: CMake dependency '$$P' is not in local workspace under '$(ORIGIN_SRC_DIR)'" >&2 ; \
 	       fi ;; \
