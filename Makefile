@@ -1722,7 +1722,8 @@ HELP_SPECIALDEVTGT += "    world	Does an 'emerge' and then 'install-all install-
                       "        so you have the whole ecosystem built and ready to develop in as" \
                       "        far as development dependencies go, all by one simple command"
 world:
-	$(MAKE) emerge
+	$(MAKE) AUTODEPS_NOT_REQUIRED=true -j8 emerge \
+	    || $(MAKE) AUTODEPS_NOT_REQUIRED=true emerge
 	$(MAKE) install-all install-fty-experimental
 
 HELP_LIST_COMPONENTS ?= no
