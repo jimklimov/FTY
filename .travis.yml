@@ -35,7 +35,7 @@ os:
 sudo: required
 
 dist:
-- trusty
+- xenial
 
 services:
 - docker
@@ -147,7 +147,7 @@ addons:
   apt:
     sources:
     - ubuntu-toolchain-r-test
-    #- *pkg_src_zeromq_ubuntu14
+    #- *pkg_src_zeromq_ubuntu16
     packages: &pkg_deps_common
     - *pkg_deps_devtools
     - *pkg_deps_prereqs_fty_overall
@@ -205,13 +205,13 @@ matrix:
 
   - env: CI_CZMQ_VER=pkg BUILD_TYPE=default-tgt:install-all
     os: linux
-    dist: trusty
+    dist: xenial
     services: docker
     sudo: required
     addons:
       apt:
         sources:
-        - *pkg_src_zeromq_ubuntu14
+        - *pkg_src_zeromq_ubuntu16
         - ubuntu-toolchain-r-test
         packages:
         - *pkg_deps_common
@@ -245,13 +245,13 @@ matrix:
 
   - env: CI_CZMQ_VER=pkg BUILD_TYPE=default-tgt:memcheck
     os: linux
-    dist: trusty
+    dist: xenial
     services: docker
     sudo: required
     addons:
       apt:
         sources:
-        - *pkg_src_zeromq_ubuntu14
+        - *pkg_src_zeromq_ubuntu16
         - ubuntu-toolchain-r-test
         packages:
         - *pkg_deps_common
@@ -261,7 +261,7 @@ matrix:
 
   - env: CI_CZMQ_VER=3 ADDRESS_SANITIZER=enabled BUILD_TYPE=default-tgt:check
     os: linux
-    dist: trusty
+    dist: xenial
     sudo: required
     addons:
       apt:
@@ -273,7 +273,7 @@ matrix:
 
   - env: CI_CZMQ_VER=4 ADDRESS_SANITIZER=enabled BUILD_TYPE=default-tgt:check
     os: linux
-    dist: trusty
+    dist: xenial
     sudo: required
     addons:
       apt:
@@ -287,13 +287,13 @@ matrix:
 # Travis CI has available - so these runs fail due to "can not find -llsan"...
 #  - env: CI_CZMQ_VER=pkg ADDRESS_SANITIZER=enabled BUILD_TYPE=default-tgt:check
 #    os: linux
-#    dist: trusty
+#    dist: xenial
 #    sudo: required
 #    addons:
 #      apt:
 #        sources:
 #        - ubuntu-toolchain-r-test
-#        - *pkg_src_zeromq_ubuntu14
+#        - *pkg_src_zeromq_ubuntu16
 #        packages:
 #        - *pkg_deps_common
 #        - *pkg_deps_asan
@@ -390,54 +390,54 @@ matrix:
 
   - env: CI_CZMQ_VER=pkg BUILD_TYPE=default-tgt:check
     os: linux
-    dist: trusty
+    dist: xenial
     services: docker
     sudo: required
     addons:
       apt:
         sources:
         - ubuntu-toolchain-r-test
-        - *pkg_src_zeromq_ubuntu14
+        - *pkg_src_zeromq_ubuntu16
         packages:
         - *pkg_deps_common
         - *pkg_deps_prereqs_zmq_master
   - env: CI_CZMQ_VER=pkg BUILD_TYPE=default-tgt:dist
     os: linux
-    dist: trusty
+    dist: xenial
     services: docker
     sudo: required
     addons:
       apt:
         sources:
         - ubuntu-toolchain-r-test
-        - *pkg_src_zeromq_ubuntu14
+        - *pkg_src_zeromq_ubuntu16
         packages:
         - *pkg_deps_common
         - *pkg_deps_prereqs_zmq_master
   - env: CI_CZMQ_VER=pkg BUILD_TYPE=default-tgt:distcheck
     os: linux
-    dist: trusty
+    dist: xenial
     services: docker
     sudo: required
     addons:
       apt:
         sources:
         - ubuntu-toolchain-r-test
-        - *pkg_src_zeromq_ubuntu14
+        - *pkg_src_zeromq_ubuntu16
         packages:
         - *pkg_deps_common
         - *pkg_deps_doctools
         - *pkg_deps_prereqs_zmq_master
   - env: CI_CZMQ_VER=pkg BUILD_TYPE=default-tgt:experimental
     os: linux
-    dist: trusty
+    dist: xenial
     services: docker
     sudo: required
     addons:
       apt:
         sources:
         - ubuntu-toolchain-r-test
-        - *pkg_src_zeromq_ubuntu14
+        - *pkg_src_zeromq_ubuntu16
         packages:
         - *pkg_deps_common
         - *pkg_deps_doctools
