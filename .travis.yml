@@ -71,6 +71,7 @@ pkg_deps_prereqs_fty_overall: &pkg_deps_prereqs_fty_overall
     - libfreetype6-dev
     - libxpm-dev
     - libxml2-utils
+    - libsystemd-dev
     - xsltproc
     - uuid-dev
     - libsasl2-2
@@ -98,6 +99,8 @@ pkg_deps_doctools: &pkg_deps_doctools
 pkg_deps_devtools: &pkg_deps_devtools
     - git
     - ccache
+    - cmake
+    - autoconf
     - gcc-4.9
     - g++-4.9
 
