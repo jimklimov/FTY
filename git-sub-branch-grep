@@ -7,7 +7,7 @@
 
 
 echo "Top-level FTY:"
-git grep "$@"
+PAGER=cat git grep "$@"
 
-git submodule foreach "git grep $* || true"
+PAGER=cat git submodule foreach "git grep $* || true"
 
