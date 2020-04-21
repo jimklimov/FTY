@@ -454,7 +454,8 @@ before_install:
 - if [ "$TRAVIS_PULL_REQUEST" = "false" ]; then echo "NON-PR BUILD Detected, assuming a montly build from scratch + most recent codebase"; export CI_WIPE_FIRST="true" ; export CI_GIT_RESYNC="true"; fi
 - if [ "$CI_GIT_SUBMODULES" != false ]; then date; echo Syncing Git submodule repos... ; if [ "$CI_GIT_RESYNC" == true ] ; then DO_BUMP=no time ./sync.sh ; else git submodule init && { git submodule update --depth 3 || git submodule update ; } ; fi ; fi
 - if [ $TRAVIS_OS_NAME == "osx" ] ; then brew update; brew install binutils asciidoc docbook-xsl ; XML_CATALOG_FILES=/usr/local/etc/xml/catalog ; export XML_CATALOG_FILES ; fi
-- if [ "$CXX" == "g++" ] ; then export CXX="g++-4.9" CC="gcc-4.9" ; fi
+# Now our toolchain requires at least g++-4.9 for fully-usable C++11:
+- if [ "$CXX" == "g++" ] || [ -z "$CXX" ] ; then export CXX="g++-4.9" CC="gcc-4.9" ; fi
 
 install:
 - date; echo Installing pycparser...
