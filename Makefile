@@ -509,9 +509,13 @@ endef
 
 # TODO: Find a way to populate this list from FTY_COMPONENTS*
 # automatically, via some shell magic
+# NOTE: Catch2 is not really a CMake dependency, but our new
+# components generally need it for unit tests. And CMake too.
 COMPONENTS_CMAKE_ONLY =
 define ADD_CMAKE_ONLY
 $(eval COMPONENTS_CMAKE_ONLY += $(1) )
+
+$(BUILD_OBJ_DIR)/$(1)/.configured: $(BUILD_OBJ_DIR)/Catch2/.installed
 
 $(1)/project.xml: $(1)/CMakeLists.txt
 	@echo "GENERATE FAKE $$@ from $$< for autodeps listing"
@@ -620,6 +624,17 @@ $(BUILD_OBJ_DIR)/libcidr/.autogened: $(BUILD_OBJ_DIR)/libcidr/.prepped
 
 $(BUILD_OBJ_DIR)/libcidr/.checked $(BUILD_OBJ_DIR)/libcidr/.checked-verbose $(BUILD_OBJ_DIR)/libcidr/.distchecked $(BUILD_OBJ_DIR)/libcidr/.memchecked $(BUILD_OBJ_DIR)/libcidr/.disted: $(BUILD_OBJ_DIR)/libcidr/.built
 	@$(call echo_noop,$@)
+
+# Note: Catch2 goes with capital "C":
+COMPONENTS_ALL += Catch2
+MAKE_COMMON_ARGS_Catch2 ?= -DBUILD_TESTING=OFF
+PREP_TYPE_Catch2 = cloneln-obj
+
+#$(BUILD_OBJ_DIR)/Catch2/.autogened: $(BUILD_OBJ_DIR)/Catch2/.prepped
+#	@$(call echo_noop,$@)
+
+# cmake -Bbuild -H. -DBUILD_TESTING=OFF
+# sudo cmake --build build/ --target install
 
 ######################## Other components ##################################
 # Note: for rebuilds with a ccache in place, the biggest time-consumers are
