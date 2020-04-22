@@ -239,7 +239,7 @@ define autogen_sub
 	        autoreconf -fiv || exit ; \
 	      elif [ -f CMakeLists.txt ]; then \
 	        echo "WARNING: Only CMakeLists.txt found for $(1)" ; \
-	        printf '#!/bin/sh\ncmake "$(BUILD_SRC_DIR)/$(1)" -DCMAKE_SOURCE_DIR="$(BUILD_SRC_DIR)/$(1)" -DCMAKE_INSTALL_PREFIX="$(DESTDIR)$(PREFIX)" -DCMAKE_PREFIX_PATH="$(DESTDIR)$(PREFIX)" -DPKG_CONFIG_USE_CMAKE_PREFIX_PATH=true\n' \
+	        printf '#!/bin/sh\ncmake "$(BUILD_SRC_DIR)/$(1)" -DCMAKE_SOURCE_DIR="$(BUILD_SRC_DIR)/$(1)" -DCMAKE_INSTALL_PREFIX="$(DESTDIR)$(PREFIX)" -DCMAKE_PREFIX_PATH="$(DESTDIR)$(PREFIX)" -DPKG_CONFIG_USE_CMAKE_PREFIX_PATH=true $(CONFIG_OPTS_$(1))\n' \
 	        > configure && chmod +x configure || exit ; \
 	      else echo "FATAL: Unsupported source project type" >&2 ; exit 2 ; \
 	      fi ) && \
@@ -319,9 +319,10 @@ define check_sub
 	    xclone*-obj)    CCACHE_BASEDIR="$(BUILD_OBJ_DIR)/$(1)" ;; \
 	    xclone*-src|*)  CCACHE_BASEDIR="$(BUILD_SRC_DIR)/$(1)" ;; \
 	  esac && \
+	  if [ -n "$(MAKE_CHECK_TARGET_$(1))" ] ; then CHECK_TARGET="$(MAKE_CHECK_TARGET_$(1))" ; else CHECK_TARGET=check ; fi && \
 	  export CCACHE_BASEDIR && \
 	  $(MAKE) DESTDIR="$(DESTDIR)" \
-	    $(MAKE_COMMON_ARGS_$(1)) $(MAKE_INSTALL_ARGS_$(1)) check && \
+	    $(MAKE_COMMON_ARGS_$(1)) $(MAKE_INSTALL_ARGS_$(1)) $$CHECK_TARGET && \
 	  $(TOUCH) "$(BUILD_OBJ_DIR)/$(1)/".checked && \
 	  $(RMFILE) "$(BUILD_OBJ_DIR)/$(1)"/.check-failed || \
 	  { $(TOUCH) "$(BUILD_OBJ_DIR)/$(1)/".check-failed ; exit 1; } \
@@ -340,9 +341,10 @@ define check_verbose_sub
 	    xclone*-obj)    CCACHE_BASEDIR="$(BUILD_OBJ_DIR)/$(1)" ;; \
 	    xclone*-src|*)  CCACHE_BASEDIR="$(BUILD_SRC_DIR)/$(1)" ;; \
 	  esac && \
+	  if [ -n "$(MAKE_CHECK_TARGET_$(1))" ] ; then CHECK_TARGET="$(MAKE_CHECK_TARGET_$(1))" ; else CHECK_TARGET=check-verbose ; fi && \
 	  export CCACHE_BASEDIR && \
 	  $(MAKE) DESTDIR="$(DESTDIR)" \
-	    $(MAKE_COMMON_ARGS_$(1)) $(MAKE_INSTALL_ARGS_$(1)) check-verbose && \
+	    $(MAKE_COMMON_ARGS_$(1)) $(MAKE_INSTALL_ARGS_$(1)) $$CHECK_TARGET && \
 	  $(TOUCH) "$(BUILD_OBJ_DIR)/$(1)/".checked-verbose && \
 	  $(RMFILE) "$(BUILD_OBJ_DIR)/$(1)"/.check-verbose-failed || \
 	  { $(TOUCH) "$(BUILD_OBJ_DIR)/$(1)/".check-verbose-failed ; exit 1; } \
@@ -514,6 +516,7 @@ endef
 COMPONENTS_CMAKE_ONLY =
 define ADD_CMAKE_ONLY
 $(eval COMPONENTS_CMAKE_ONLY += $(1) )
+$(eval MAKE_CHECK_TARGET_$(1) ?= test )
 
 $(BUILD_OBJ_DIR)/$(1)/.configured: $(BUILD_OBJ_DIR)/Catch2/.installed
 
@@ -627,8 +630,8 @@ $(BUILD_OBJ_DIR)/libcidr/.checked $(BUILD_OBJ_DIR)/libcidr/.checked-verbose $(BU
 
 # Note: Catch2 goes with capital "C":
 COMPONENTS_ALL += Catch2
-MAKE_COMMON_ARGS_Catch2 ?= -DBUILD_TESTING=OFF
-PREP_TYPE_Catch2 = cloneln-obj
+CONFIG_OPTS_Catch2 ?= -DBUILD_TESTING=OFF
+#PREP_TYPE_Catch2 = cloneln-obj
 
 #$(BUILD_OBJ_DIR)/Catch2/.autogened: $(BUILD_OBJ_DIR)/Catch2/.prepped
 #	@$(call echo_noop,$@)
