@@ -93,6 +93,7 @@ pkg_deps_doctools: &pkg_deps_doctools
     - docbook-xsl
     - docbook-xsl-ns
     - source-highlight
+    - doxygen
     - aspell
     - aspell-en
 
