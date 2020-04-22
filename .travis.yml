@@ -151,9 +151,9 @@ pkg_src_cmake: &pkg_src_cmake
 addons:
   apt:
     sources:
+    #- *pkg_src_cmake
     - ubuntu-toolchain-r-test
     #- *pkg_src_zeromq_ubuntu16
-    - *pkg_src_cmake
     packages: &pkg_deps_common
     - *pkg_deps_devtools
     - *pkg_deps_prereqs_fty_overall
@@ -462,7 +462,7 @@ before_install:
 - if [ $TRAVIS_OS_NAME == "osx" ] ; then brew update; brew install binutils asciidoc docbook-xsl ; XML_CATALOG_FILES=/usr/local/etc/xml/catalog ; export XML_CATALOG_FILES ; fi
 # Now our toolchain requires at least g++-4.9 for fully-usable C++11:
 - if [ "$CXX" == "g++" ] || [ -z "$CXX" ] ; then export CXX="g++-4.9" CC="gcc-4.9" ; fi
-###INSTALLER_DIALOG### - echo "Setting up modern CMake..." ; wget https://github.com/Kitware/CMake/releases/download/v3.13.4/cmake-3.13.4-Linux-x86_64.sh && sh cmake-3.13.4-Linux-x86_64.sh
+- echo "Setting up modern CMake..." ; sudo -E apt-add-repository -y "ppa:george-edison55/cmake-3.x" && sudo apt update && sudo apt install cmake
 
 install:
 - date; echo Installing pycparser...
