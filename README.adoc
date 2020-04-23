@@ -22,6 +22,7 @@ build after installing dependencies), the ordinary `make` should suffice.
 
 It is recommended to have installed `ccache` to speed up subsequent
 rebuilds, as well as certain other common dependencies and tools.
+You will need a compiler and related tool stack for C++11 or newer.
 For reference, you can find a list of additional packages needed on
 Debian and Ubuntu Linux distributions in the `.travis.yml` file.
 
@@ -84,8 +85,15 @@ take advantage of `ccache` if available on your system.
 It is up to the developer to provide a build environment with appropriate
 third-party software dependencies which our project does not modify, nor
 track git HEADs, nor build (such as MySQL/MariaDB libraries to link against,
-or lua-5.1/5.2, or libneon, or libapr, maybe openssl etc.), as well as an
-internet connection to completely check out the source code to build.
+or lua-5.1/5.2, or libneon, or libapr, maybe openssl, libsnmp, etc.), as well
+as an internet connection to completely check out the source code to build.
+
+You can consult with the `.travis.yml` for a list of distro-provided packages
+used on Ubuntu/Debian ecosystem. Note that the current codebase requires at
+least C++11 (and is marching on) so you would need to provide GCC-4.9 or newer
+and CMake 3.10 or newer (to get it on older OSes, see https://apt.kitware.com/
+https://www.osetc.com/en/how-to-install-the-latest-version-of-cmake-on-ubuntu-16-04-18-04-linux.html
+for helpful links and commands).
 
 The `Makefile` defines dependencies and recipes that can cause download or
 update of sources from designated remote repositories using `git`, so the
@@ -112,7 +120,10 @@ When running parallel `make -jN` beware that if you spawn too many workers,
 the operating system might kill off some of them if it is insufficiently
 resourced, causing the build to fail not due to source code errors. In order
 to take advantage of parallel processing, you may be well served by running
-first a parallel and then a sequential build attempt: `make -j 4 -k || make`
+first a parallel and then a sequential build attempt: `make -j 4 -k || make`.
+Also remember that with GNU make you can set a dynamic limit to number of
+running compilers based on system load average (though it can still run
+out of memory or swap space).
 
 ==== Developer incremental build support
 
