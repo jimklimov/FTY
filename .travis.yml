@@ -463,6 +463,7 @@ before_install:
 - if [ "$CXX" == "g++" ] || [ -z "$CXX" ] ; then export CXX="g++-4.9" CC="gcc-4.9" ; fi
 ###TOO_OLD###- echo "Setting up modern CMake..." ; sudo -E apt-add-repository -y "ppa:george-edison55/cmake-3.x" && sudo apt update && sudo apt install cmake
 - echo "Setting up modern CMake..." ; wget -O - https://apt.kitware.com/keys/kitware-archive-latest.asc 2>/dev/null | sudo apt-key add - && sudo apt-add-repository 'deb https://apt.kitware.com/ubuntu/ xenial main' && sudo apt-get update && sudo apt install cmake
+- if [ -z "$CMAKE_CXX_FLAGS" ] ; then export CMAKE_CXX_FLAGS="-std=gnu++11" ; fi
 - if [ "$CI_GIT_SUBMODULES" != false ]; then date; echo Syncing Git submodule repos... ; if [ "$CI_GIT_RESYNC" == true ] ; then DO_BUMP=no time ./sync.sh ; else git submodule init && { git submodule update --depth 3 || git submodule update ; } ; fi ; fi
 
 install:
