@@ -924,9 +924,9 @@ COMPONENTS_FTY += fty-proto
 # Beside MQ, much data is now published via SHM FS more quickly
 COMPONENTS_FTY += fty-shm
 
-# Library, and one of implementation plugins
-COMPONENTS_FTY += fty-service-status
-COMPONENTS_FTY += fty-service-status-systemd
+# Library to report service health, and one of implementation plugins
+COMPONENTS_FTY_EXPERIMENTAL += fty-service-status
+COMPONENTS_FTY_EXPERIMENTAL += fty-service-status-systemd
 
 COMPONENTS_FTY += fty-rest
 PREP_TYPE_fty-rest = clonetar-src
