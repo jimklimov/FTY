@@ -94,6 +94,7 @@ pkg_deps_doctools: &pkg_deps_doctools
     - docbook-xsl-ns
     - source-highlight
     - doxygen
+    - graphviz
     - aspell
     - aspell-en
 
