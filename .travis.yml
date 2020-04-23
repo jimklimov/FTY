@@ -461,7 +461,8 @@ before_install:
 - if [ $TRAVIS_OS_NAME == "osx" ] ; then brew update; brew install binutils asciidoc docbook-xsl ; XML_CATALOG_FILES=/usr/local/etc/xml/catalog ; export XML_CATALOG_FILES ; fi
 # Now our toolchain requires at least g++-4.9 for fully-usable C++11:
 - if [ "$CXX" == "g++" ] || [ -z "$CXX" ] ; then export CXX="g++-4.9" CC="gcc-4.9" ; fi
-- echo "Setting up modern CMake..." ; sudo -E apt-add-repository -y "ppa:george-edison55/cmake-3.x" && sudo apt update && sudo apt install cmake
+###TOO_OLD###- echo "Setting up modern CMake..." ; sudo -E apt-add-repository -y "ppa:george-edison55/cmake-3.x" && sudo apt update && sudo apt install cmake
+- echo "Setting up modern CMake..." ; wget -O - https://apt.kitware.com/keys/kitware-archive-latest.asc 2>/dev/null | sudo apt-key add - && sudo apt-add-repository 'deb https://apt.kitware.com/ubuntu/ xenial main' && sudo apt-get update && sudo apt install cmake
 - if [ "$CI_GIT_SUBMODULES" != false ]; then date; echo Syncing Git submodule repos... ; if [ "$CI_GIT_RESYNC" == true ] ; then DO_BUMP=no time ./sync.sh ; else git submodule init && { git submodule update --depth 3 || git submodule update ; } ; fi ; fi
 
 install:
