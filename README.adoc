@@ -87,6 +87,8 @@ third-party software dependencies which our project does not modify, nor
 track git HEADs, nor build (such as MySQL/MariaDB libraries to link against,
 or lua-5.1/5.2, or libneon, or libapr, maybe openssl, libsnmp, etc.), as well
 as an internet connection to completely check out the source code to build.
+To build against linux with systemd, you would need libsystemd-dev (or some
+equivalent) for `sd_notify()` et al; so far this is optional.
 
 You can consult with the `.travis.yml` for a list of distro-provided packages
 used on Ubuntu/Debian ecosystem. Note that the current codebase requires at
