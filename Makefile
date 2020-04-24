@@ -383,8 +383,9 @@ define dist_sub
 	    xclone*-src|*)  CCACHE_BASEDIR="$(BUILD_SRC_DIR)/$(1)" ;; \
 	  esac && \
 	  export CCACHE_BASEDIR && \
+	  if [ -n "$(MAKE_DIST_TARGET_$(1))" ] ; then DIST_TARGET="$(MAKE_DIST_TARGET_$(1))" ; else DIST_TARGET=check-verbose ; fi && \
 	  $(MAKE) DESTDIR="$(DESTDIR)" $(MAKE_COMMON_ARGS_$(1)) $(MAKE_INSTALL_ARGS_$(1)) \
-	    dist && \
+	    $$DIST_TARGET && \
 	  $(TOUCH) "$(BUILD_OBJ_DIR)/$(1)/".disted && \
 	  $(RMFILE) "$(BUILD_OBJ_DIR)/$(1)"/.dist-failed || \
 	  { $(TOUCH) "$(BUILD_OBJ_DIR)/$(1)/".dist-failed ; exit 1; } \
@@ -517,6 +518,7 @@ COMPONENTS_CMAKE_ONLY =
 define ADD_CMAKE_ONLY
 $(eval COMPONENTS_CMAKE_ONLY += $(1) )
 $(eval MAKE_CHECK_TARGET_$(1) ?= test )
+$(eval MAKE_DIST_TARGET_$(1) ?= package_source )
 
 $(BUILD_OBJ_DIR)/$(1)/.configured: $(BUILD_OBJ_DIR)/Catch2/.installed
 
