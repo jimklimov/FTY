@@ -191,6 +191,14 @@ CXX=g++$(GCC_VERSION_SUFFIX)
 export CC
 export CXX
 
+LDFLAGS ?=
+ifeq ($(OSIMAGE_DISTRO),Debian_10.0)
+# Avoid setting RUNPATH instead of older preference of RPATH - it confuses the
+# libtool into generating an explicit LD_LIBRARY_PATH into the wrapper scripts
+LDFLAGS += -Wl,--disable-new-dtags
+export LDFLAGS
+endif
+
 # "ALL" are the components tracked by this makefile, even if not required
 # for an FTY build (e.g. gsl and zproject are not an always used codepath)
 COMPONENTS_ALL =
