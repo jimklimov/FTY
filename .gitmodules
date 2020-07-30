@@ -287,3 +287,7 @@
 [submodule "Catch2"]
 	path = Catch2
 	url = https://github.com/catchorg/Catch2.git
+[submodule "fty-alert-srr"]
+	path = fty-alert-srr
+	url = https://github.com/42ity/fty-alert-srr.git
+	branch = master
