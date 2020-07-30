@@ -295,3 +295,7 @@
 	path = fty-cmake
 	url = https://github.com/42ity/fty-cmake.git
 	branch = master
+[submodule "fty-discovery-ng"]
+	path = fty-discovery-ng
+	url = https://github.com/42ity/fty-discovery-ng.git
+	branch = master
