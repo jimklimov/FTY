@@ -299,3 +299,7 @@
 	path = fty-discovery-ng
 	url = https://github.com/42ity/fty-discovery-ng.git
 	branch = master
+[submodule "fty-pack"]
+	path = fty-pack
+	url = https://github.com/42ity/fty-pack.git
+	branch = master
