@@ -1172,11 +1172,13 @@ COMPONENTS_FTY_EXPERIMENTAL += fty-metric-cache
 #COMPONENTS_FTY_EXPERIMENTAL += fty-protoc
 ### TODO: Make way to parse CMakeLists.txt :: find_package() to pick dependencies
 $(BUILD_OBJ_DIR)/fty-protoc/.configured: \
-    $(BUILD_OBJ_DIR)/protobuf/.installed \
-    $(BUILD_OBJ_DIR)/raven-cmake/.installed
+    $(BUILD_OBJ_DIR)/protobuf/.installed
+
+#$(BUILD_OBJ_DIR)/fty-protoc/.configured: \
+#    $(BUILD_OBJ_DIR)/raven-cmake/.installed
 
 # Not in systems as old as Debian 8...
-COMPONENTS_FTY_EXPERIMENTAL += raven-cmake
+#COMPONENTS_FTY_EXPERIMENTAL += raven-cmake
 
 # Quiesce sanity-checker in sync-repos.sh
 # COMPONENTS_NOBUILD += JSON.sh
@@ -1189,7 +1191,8 @@ COMPONENTS_FTY_EXPERIMENTAL += raven-cmake
 COMPONENTS_ALL += $(COMPONENTS_FTY)
 
 # TODO: Find a way to automate this further
-$(foreach C,fty-service-status fty-service-status-systemd raven-cmake fty-protoc, \
+###  raven-cmake
+$(foreach C,fty-service-status fty-service-status-systemd fty-protoc, \
     $(eval $(call ADD_CMAKE_ONLY,$(C))))
 
 # Note that our PATH includes INSTDIR and DESTDIR for built AND installed tools
