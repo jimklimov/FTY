@@ -1185,6 +1185,13 @@ $(BUILD_OBJ_DIR)/fty-protoc/.configured: \
 # COMPONENTS_NOBUILD += fty-template
 # COMPONENTS_NOBUILD += fty-template-rest
 
+#COMPONENTS_FTY_EXPERIMENTAL += fty-alert-srr
+#COMPONENTS_FTY_EXPERIMENTAL += fty-discovery-ng
+
+#COMPONENTS_FTY_EXPERIMENTAL += fty-cmake
+#COMPONENTS_FTY_EXPERIMENTAL += fty-pack
+#COMPONENTS_FTY_EXPERIMENTAL += fty-utils
+
 ### Maybe this one should later be "built" to deliver the pkgconfig file if needed
 # COMPONENTS_NOBUILD += libpam0g-dev-pkgconfig
 
