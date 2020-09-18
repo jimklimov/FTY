@@ -311,3 +311,7 @@
 	path = fty-cmake-example
 	url = https://github.com/42ity/fty-cmake-example.git
 	branch = master
+[submodule "fty-cmake-rest"]
+	path = fty-cmake-rest
+	url = https://github.com/42ity/fty-cmake-rest.git
+	branch = master
