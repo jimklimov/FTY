@@ -1189,6 +1189,8 @@ $(BUILD_OBJ_DIR)/fty-protoc/.configured: \
 #COMPONENTS_FTY_EXPERIMENTAL += fty-discovery-ng
 
 #COMPONENTS_FTY_EXPERIMENTAL += fty-cmake
+#COMPONENTS_FTY_EXPERIMENTAL += fty-cmake-rest
+#COMPONENTS_FTY_EXPERIMENTAL += fty-cmake-example
 #COMPONENTS_FTY_EXPERIMENTAL += fty-pack
 #COMPONENTS_FTY_EXPERIMENTAL += fty-utils
 
