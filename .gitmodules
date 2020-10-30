@@ -307,3 +307,7 @@
 	path = fty-asset-rest
 	url = https://github.com/42ity/fty-asset-rest.git
 	branch = master
+[submodule "fty-lib-jenkins"]
+	path = fty-lib-jenkins
+	url = https://github.com/42ity/fty-lib-jenkins.git
+	branch = master
