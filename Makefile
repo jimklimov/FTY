@@ -904,6 +904,8 @@ $(BUILD_OBJ_DIR)/fty-core/.git: $(BUILD_OBJ_DIR)/fty-core/.prepped $(BUILD_OBJ_D
 $(BUILD_SRC_DIR)/fty-core/.git: $(BUILD_OBJ_DIR)/fty-core/.prepped $(BUILD_SRC_DIR)/.git
 	$(LN_S_R) $(ORIGIN_SRC_DIR)/fty-core/.git $(BUILD_SRC_DIR)/fty-core/
 
+### 3rd party bit
+COMPONENTS_FTY += spdlog
 
 # Note: over early 2018, the old big fty-rest is breaking up into smaller,
 # better reusable components. Much of the shareable payload goes into the
@@ -1092,6 +1094,8 @@ COMPONENTS_FTY += fty-nut
 
 COMPONENTS_FTY += fty-asset
 
+COMPONENTS_FTY += fty-asset-rest
+
 COMPONENTS_FTY += fty-alert-stats
 
 COMPONENTS_FTY += fty-metric-tpower
@@ -1182,6 +1186,7 @@ $(BUILD_OBJ_DIR)/fty-protoc/.configured: \
 
 # Quiesce sanity-checker in sync-repos.sh
 # COMPONENTS_NOBUILD += JSON.sh
+# COMPONENTS_NOBUILD += fty-lib-jenkins
 # COMPONENTS_NOBUILD += fty-template
 # COMPONENTS_NOBUILD += fty-template-rest
 
