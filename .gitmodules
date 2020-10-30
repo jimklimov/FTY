@@ -303,3 +303,7 @@
 	path = fty-cmake-rest
 	url = https://github.com/42ity/fty-cmake-rest.git
 	branch = master
+[submodule "fty-asset-rest"]
+	path = fty-asset-rest
+	url = https://github.com/42ity/fty-asset-rest.git
+	branch = master
